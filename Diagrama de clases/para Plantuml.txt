@@ -1,0 +1,193 @@
+@startuml
+
+' Abstract classes and classes
+abstract class Usuario {
+    -idUsuario: int
+    -nombre: string
+    -email: string
+    -contraseña: string
+    -tipoUsuario: TipoUsuario
+    +registrarUsuario()
+    +iniciarSesion()
+    +actualizarPerfil()
+    +cerrarSesion()
+}
+
+class Cliente {
+    -direccion: string
+    -telefono: string
+    -historialOrdenes: List
+    +solicitarOrden()
+    +verHistorial()
+}
+
+class Trabajador {
+    -cargo: string
+    -departamento: Departamento
+    -salario: double
+    +atenderOrden()
+    +registrarActividad()
+}
+
+class Servicio {
+    -idServicio: int
+    -nombre: string
+    -descripcion: string
+    -precioBase: double
+    -departamento: Departamento
+    -tipoServicio: TipoServicio
+    +calcularPrecio()
+}
+
+class Departamento {
+    -idDepartamento: int
+    -nombre: TipoDepartamento
+    -responsable: Trabajador
+    -serviciosOfrecidos: List<Servicio>
+    +agregarServicio()
+    +asignarTrabajador()
+}
+
+class Almacen {
+    -idAlmacen: int
+    -nombre: string
+    -ubicacion: string
+    +agregarPieza()
+    +retirarPieza()
+    +verificarStock()
+    +actualizarInventario()
+}
+
+class Pieza {
+    -idPieza: int
+    -codigo: string
+    -nombre: string
+    -descripcion: string
+    -precio: double
+    -stock: int
+    -stockMinimo: int
+    -tipoPieza: TipoPieza
+    +actualizarStock()
+    +verificarStockMinimo()
+}
+
+class Orden {
+    -idOrden: int
+    -fechaCreacion: Date
+    -fechaProgramada: Date
+    -cliente: Cliente
+    -entidad: string
+    -trabajador: Trabajador
+    -descripcion: string
+    -serviciosSolicitados: List<ServicioSolicitado>
+    -estado: EstadoOrden
+    +crearOrden()
+    +actualizarEstado()
+    +agregarServicio()
+    +eliminarServicio()
+    +modificarServicio()
+    +programarFecha()
+    +asignarTrabajador()
+}
+
+class ServicioSolicitado {
+    -servicio: Servicio
+    -cantidad: int
+    -observaciones: string
+    +actualizarCantidad()
+    +actualizarObservaciones()
+}
+
+class Factura {
+    -idFactura: int
+    -fecha: Date
+    -orden: Orden
+    -subtotal: double
+    -total: double
+    +calcularTotal()
+    +generarFactura()
+}
+
+class Notificacion {
+    -idNotificacion: int
+    -tipo: TipoNotificacion
+    -mensaje: string
+    -fecha: DateTime
+    -destinatario: Usuario
+    -estado: EstadoNotificacion
+    +enviarNotificacion()
+    +marcarComoLeida()
+}
+
+' Enumerations
+enum TipoUsuario {
+    CLIENTE
+    TRABAJADOR
+}
+
+enum TipoServicio {
+    TELEMATICA
+    OFIMATICA
+    COMUNICACIONES
+    MULTISERVICIO
+}
+
+enum TipoDepartamento {
+    TELEMATICA
+    OFIMATICA
+    COMUNICACIONES
+    CENTRO_MULTISERVICIO
+}
+
+enum TipoPieza {
+    SERVICIO
+    TIENDA
+}
+
+enum EstadoOrden {
+    SOLICITADA
+    PROGRAMADA
+    EN_PROCESO
+    COMPLETADA
+    CANCELADA
+}
+
+enum TipoNotificacion {
+    ORDEN_CREADA
+    ORDEN_PROGRAMADA
+    ORDEN_EN_PROCESO
+    ORDEN_COMPLETADA
+    ORDEN_CANCELADA
+}
+
+enum EstadoNotificacion {
+    PENDIENTE
+    ENVIADA
+    LEIDA
+}
+
+' Relationships
+Usuario <|-- Cliente
+Usuario <|-- Trabajador
+Usuario -- TipoUsuario
+
+Servicio -- TipoServicio
+Departamento -- TipoDepartamento
+Orden -- EstadoOrden
+Notificacion -- TipoNotificacion
+Notificacion -- EstadoNotificacion
+Pieza -- TipoPieza
+
+Cliente "1" -- "*" Orden : solicita
+Trabajador "1" -- "1" Departamento : pertenece
+Trabajador "1" -- "*" Orden : atiende
+Departamento "1" -- "*" Servicio : ofrece
+Orden "1" -- "*" ServicioSolicitado : contiene
+ServicioSolicitado "*" -- "1" Servicio : referencia
+Orden "1" -- "1" Factura : genera
+Usuario "1" -- "*" Notificacion : recibe
+Orden "1" -- "*" Notificacion : genera
+Almacen "1" -- "*" Pieza : contiene
+ServicioSolicitado "*" -- "*" Pieza : utiliza
+
+@enduml
