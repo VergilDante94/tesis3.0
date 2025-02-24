@@ -135,7 +135,7 @@
 
                 <div id="perfil" class="section" style="display: none;">
                     <h1 class="h2">Perfil</h1>
-                    <div id="perfilDatos">
+                    <div id="perfilDatos" class="perfil-container">
                         <p>Cargando datos del usuario...</p>
                     </div>
                 </div>
@@ -168,7 +168,7 @@
             fetch(`http://localhost:3000/api/usuario/${userId}`)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Error al cargar los datos del usuario');
+                        throw new Error('Error al cargar los datos del usuario: ' + response.statusText);
                     }
                     return response.json();
                 })

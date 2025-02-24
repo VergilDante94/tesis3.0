@@ -129,3 +129,23 @@ body {
 .table-striped tbody tr:nth-of-type(odd) {
     background-color: #f8f9fa;
 }
+
+.perfil-container {
+    background-color: #f8f9fa; /* Color de fondo claro */
+    border: 1px solid #ced4da; /* Borde gris claro */
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 20px; /* Espaciado interno */
+    margin-top: 20px; /* Espaciado superior */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+.perfil-container h2 {
+    color: #343a40; /* Color del texto del nombre */
+    margin-bottom: 15px; /* Espaciado inferior */
+}
+
+.perfil-container p {
+    font-size: 16px; /* Tamaño de fuente */
+    color: #495057; /* Color del texto */
+    margin: 5px 0; /* Espaciado superior e inferior */
+}

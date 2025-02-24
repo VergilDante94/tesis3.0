@@ -31,19 +31,25 @@ db.connect((err) => {
     console.log('Conexión exitosa a la base de datos');
 });
 
-// Rutas de ejemplo
-app.get('/api/usuarios', (req, res) => {
-    db.query('SELECT * FROM Usuario', (err, results) => {
-        if (err) {
-            return res.status(500).send(err);
-        }
-        res.json(results);
-    });
-});
-
 // Ruta para servir el archivo index.html
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Endpoint para obtener datos del usuario por ID
+app.get('/api/usuario/:id', (req, res) => {
+    const userId = req.params.id;
+
+    db.query('SELECT u.nombre, u.email, c.direccion, c.telefono FROM Usuario u JOIN Cliente c ON u.idUsuario = c.idUsuario WHERE u.idUsuario = ?', [userId], (err, results) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        if (results.length > 0) {
+            res.json(results[0]); // Devuelve el primer usuario encontrado
+        } else {
+            res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+    });
 });
 
 // Iniciar el servidor

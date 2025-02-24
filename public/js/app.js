@@ -16,3 +16,28 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => console.error('Error al obtener los usuarios:', error));
 });
+
+// Función para obtener la información del usuario
+function obtenerUsuario(userId) {
+    fetch(`/api/usuario/${userId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al obtener la información del usuario');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Aquí puedes mostrar la información del usuario en el perfil
+            document.getElementById('nombre').innerText = data.nombre;
+            document.getElementById('email').innerText = data.email;
+            document.getElementById('direccion').innerText = data.direccion;
+            document.getElementById('telefono').innerText = data.telefono;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+// Llama a la función con el ID del usuario (puedes obtenerlo de la sesión o de otra manera)
+const userId = 1; // Reemplaza con el ID del usuario actual
+obtenerUsuario(userId);
