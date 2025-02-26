@@ -39,39 +39,22 @@
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#" onclick="showSection('datos')">
-                                Datos
-                            </a>
+                            <a class="nav-link active" href="#" onclick="showSection('datos')">Datos</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="showSection('ordenes')">
-                                Órdenes
-                            </a>
+                            <a class="nav-link" href="#" onclick="showSection('ordenes')">Órdenes</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="showSection('facturas')">
-                                Facturas
-                            </a>
+                            <a class="nav-link" href="#" onclick="showSection('servicios')">Servicios</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="showSection('tienda')">
-                                Tienda
-                            </a>
+                            <a class="nav-link" href="#" onclick="showSection('facturas')">Facturas</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="showSection('notificaciones')">
-                                Notificaciones
-                            </a>
+                            <a class="nav-link" href="#" onclick="showSection('notificaciones')">Notificaciones</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="showSection('servicios')">
-                                Servicios
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="showSection('perfil')">
-                                Perfil
-                            </a>
+                            <a class="nav-link" href="#" onclick="showSection('perfil')">Perfil</a>
                         </li>
                     </ul>
                 </div>
@@ -85,24 +68,12 @@
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">Encabezado</th>
-                                    <th scope="col">Encabezado</th>
-                                    <th scope="col">Encabezado</th>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Email</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>Datos 1</td>
-                                    <td>Datos 2</td>
-                                    <td>Datos 3</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Datos 4</td>
-                                    <td>Datos 5</td>
-                                    <td>Datos 6</td>
-                                </tr>
+                            <tbody id="usuarios">
+                                <!-- Los datos de los usuarios se cargarán aquí -->
                             </tbody>
                         </table>
                     </div>
@@ -110,27 +81,30 @@
 
                 <div id="ordenes" class="section" style="display: none;">
                     <h1 class="h2">Órdenes</h1>
-                    <p>Contenido de la sección Órdenes.</p>
-                </div>
-
-                <div id="facturas" class="section" style="display: none;">
-                    <h1 class="h2">Facturas</h1>
-                    <p>Contenido de la sección Facturas.</p>
-                </div>
-
-                <div id="tienda" class="section" style="display: none;">
-                    <h1 class="h2">Tienda</h1>
-                    <p>Contenido de la sección Tienda.</p>
-                </div>
-
-                <div id="notificaciones" class="section" style="display: none;">
-                    <h1 class="h2">Notificaciones</h1>
-                    <p>Contenido de la sección Notificaciones.</p>
+                    <div id="ordenesDatos">
+                        <p>Cargando órdenes...</p>
+                    </div>
                 </div>
 
                 <div id="servicios" class="section" style="display: none;">
                     <h1 class="h2">Servicios</h1>
-                    <p>Contenido de la sección Servicios.</p>
+                    <div id="serviciosDatos">
+                        <p>Cargando servicios...</p>
+                    </div>
+                </div>
+
+                <div id="facturas" class="section" style="display: none;">
+                    <h1 class="h2">Facturas</h1>
+                    <div id="facturasDatos">
+                        <p>Cargando facturas...</p>
+                    </div>
+                </div>
+
+                <div id="notificaciones" class="section" style="display: none;">
+                    <h1 class="h2">Notificaciones</h1>
+                    <div id="notificacionesDatos">
+                        <p>Cargando notificaciones...</p>
+                    </div>
                 </div>
 
                 <div id="perfil" class="section" style="display: none;">
@@ -146,20 +120,25 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.2/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="js/dashboard.js"></script>
+    <script src="js/script.js"></script>
     <script>
         function showSection(sectionId) {
-            // Ocultar todas las secciones
             const sections = document.querySelectorAll('.section');
             sections.forEach(section => {
                 section.style.display = 'none';
             });
-
-            // Mostrar la sección seleccionada
             document.getElementById(sectionId).style.display = 'block';
 
-            // Cargar datos del perfil si la sección es "perfil"
             if (sectionId === 'perfil') {
                 loadUserProfile();
+            } else if (sectionId === 'ordenes') {
+                loadOrders();
+            } else if (sectionId === 'servicios') {
+                loadServices();
+            } else if (sectionId === 'facturas') {
+                loadInvoices();
+            } else if (sectionId === 'notificaciones') {
+                loadNotifications();
             }
         }
 
@@ -185,6 +164,30 @@
                     const perfilDatos = document.getElementById('perfilDatos');
                     perfilDatos.innerHTML = `<p>Error: ${error.message}</p>`;
                 });
+        }
+
+        function loadOrders() {
+            // Aquí puedes implementar la lógica para cargar las órdenes
+            const ordenesDatos = document.getElementById('ordenesDatos');
+            ordenesDatos.innerHTML = '<p>Órdenes cargadas correctamente.</p>'; // Simulación de carga
+        }
+
+        function loadServices() {
+            // Aquí puedes implementar la lógica para cargar los servicios
+            const serviciosDatos = document.getElementById('serviciosDatos');
+            serviciosDatos.innerHTML = '<p>Servicios cargados correctamente.</p>'; // Simulación de carga
+        }
+
+        function loadInvoices() {
+            // Aquí puedes implementar la lógica para cargar las facturas
+            const facturasDatos = document.getElementById('facturasDatos');
+            facturasDatos.innerHTML = '<p>Facturas cargadas correctamente.</p>'; // Simulación de carga
+        }
+
+        function loadNotifications() {
+            // Aquí puedes implementar la lógica para cargar las notificaciones
+            const notificacionesDatos = document.getElementById('notificacionesDatos');
+            notificacionesDatos.innerHTML = '<p>Notificaciones cargadas correctamente.</p>'; // Simulación de carga
         }
 
         // Mostrar la sección de Datos por defecto
