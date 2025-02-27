@@ -77,7 +77,7 @@ app.get('/api/ordenes', (req, res) => {
 });
 
 app.get('/api/servicios', (req, res) => {
-    db.query('SELECT * FROM Servicios', (err, results) => {
+    db.query('SELECT idServicio, nombre, descripcion, precioBase, departamento, tipoServicio FROM Servicios', (err, results) => {
         if (err) {
             return res.status(500).send(err);
         }

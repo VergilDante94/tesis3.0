@@ -173,9 +173,46 @@
         }
 
         function loadServices() {
-            // Aquí puedes implementar la lógica para cargar los servicios
-            const serviciosDatos = document.getElementById('serviciosDatos');
-            serviciosDatos.innerHTML = '<p>Servicios cargados correctamente.</p>'; // Simulación de carga
+            fetch('http://localhost:3000/api/servicios')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la red: ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const serviciosDatos = document.getElementById('serviciosDatos');
+                    serviciosDatos.innerHTML = ''; // Limpiar el contenido anterior
+
+                    // Crear un contenedor para los servicios
+                    const serviciosContainer = document.createElement('div');
+                    serviciosContainer.className = 'list-group';
+
+                    data.forEach(servicio => {
+                        const servicioItem = document.createElement('div');
+                        servicioItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+
+                        servicioItem.innerHTML = `
+                            <div>
+                                <h5>${servicio.nombre}</h5>
+                                <p>${servicio.descripcion}</p>
+                                <small>Precio: $${servicio.precioBase.toFixed(2)}</small><br>
+                                <small>Departamento: ${servicio.departamento}</small><br>
+                                <small>Tipo de Servicio: ${servicio.tipoServicio}</small>
+                            </div>
+                            <input class="form-check-input" type="checkbox" value="${servicio.idServicio}" id="servicio${servicio.idServicio}">
+                        `;
+
+                        serviciosContainer.appendChild(servicioItem);
+                    });
+
+                    serviciosDatos.appendChild(serviciosContainer);
+                })
+                .catch(error => {
+                    console.error('Error al cargar servicios:', error);
+                    const serviciosDatos = document.getElementById('serviciosDatos');
+                    serviciosDatos.innerHTML = '<p class="text-danger">Error al cargar los servicios.</p>';
+                });
         }
 
         function loadInvoices() {
