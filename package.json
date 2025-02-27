@@ -7,12 +7,17 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "@prisma/client": "^6.4.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mysql": "^2.18.1",
     "mysql2": "^3.12.0"
   },
   "author": "BRYAN",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "prisma": "^6.4.1"
+  }
 }
