@@ -5,22 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dashboard EICMAPRI</title>
 
-    <!-- Bootstrap core CSS -->
+    <!-- Bootstrap core CSS desde la ruta local -->
     <link href="css/bootstrap-5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/styles.css" rel="stylesheet">
-
-    <style>
-        .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            user-select: none;
-        }
-        @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-                font-size: 3.5rem;
-            }
-        }
-    </style>
 </head>
 <body>
     <header class="navbar navbar-dark sticky-top bg-success flex-md-nowrap p-0 shadow">
@@ -61,28 +48,17 @@
             </nav>
 
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div id="datos" class="section">
+                <div id="datos" class="section" style="display: none;">
                     <h1 class="h2">Datos</h1>
-                    <div class="table-responsive">
-                        <table class="table table-striped table-sm">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Nombre</th>
-                                    <th scope="col">Email</th>
-                                </tr>
-                            </thead>
-                            <tbody id="usuarios">
-                                <!-- Los datos de los usuarios se cargarán aquí -->
-                            </tbody>
-                        </table>
+                    <div id="usuarios">
+                        <!-- Los datos de los usuarios se cargarán aquí -->
                     </div>
                 </div>
 
                 <div id="ordenes" class="section" style="display: none;">
                     <h1 class="h2">Órdenes</h1>
                     <div id="ordenesDatos">
-                        <p>Cargando órdenes...</p>
+                        <!-- Contenido de órdenes -->
                     </div>
                 </div>
 
@@ -96,14 +72,14 @@
                 <div id="facturas" class="section" style="display: none;">
                     <h1 class="h2">Facturas</h1>
                     <div id="facturasDatos">
-                        <p>Cargando facturas...</p>
+                        <!-- Contenido de facturas -->
                     </div>
                 </div>
 
                 <div id="notificaciones" class="section" style="display: none;">
                     <h1 class="h2">Notificaciones</h1>
                     <div id="notificacionesDatos">
-                        <p>Cargando notificaciones...</p>
+                        <!-- Contenido de notificaciones -->
                     </div>
                 </div>
 
@@ -117,8 +93,8 @@
         </div>
     </div>
 
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.2/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <!-- Bootstrap JS desde la ruta local -->
+    <script src="css/bootstrap-5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/script.js"></script>
     <script>
@@ -129,16 +105,12 @@
             });
             document.getElementById(sectionId).style.display = 'block';
 
+            // Aquí puedes agregar la lógica para cargar datos según la sección
             if (sectionId === 'perfil') {
                 loadUserProfile();
-            } else if (sectionId === 'ordenes') {
-                loadOrders();
-            } else if (sectionId === 'servicios') {
+            }
+            if (sectionId === 'servicios') {
                 loadServices();
-            } else if (sectionId === 'facturas') {
-                loadInvoices();
-            } else if (sectionId === 'notificaciones') {
-                loadNotifications();
             }
         }
 
@@ -166,12 +138,6 @@
                 });
         }
 
-        function loadOrders() {
-            // Aquí puedes implementar la lógica para cargar las órdenes
-            const ordenesDatos = document.getElementById('ordenesDatos');
-            ordenesDatos.innerHTML = '<p>Órdenes cargadas correctamente.</p>'; // Simulación de carga
-        }
-
         function loadServices() {
             fetch('http://localhost:3000/api/servicios')
                 .then(response => {
@@ -192,13 +158,16 @@
                         const servicioItem = document.createElement('div');
                         servicioItem.className = 'list-group-item d-flex justify-content-between align-items-center';
 
+                        // Asegúrate de que precioBase sea un número
+                        const precioBase = parseFloat(servicio.precioBase) || 0; // Convertir a número o usar 0 si no es válido
+
                         servicioItem.innerHTML = `
                             <div>
                                 <h5>${servicio.nombre}</h5>
                                 <p>${servicio.descripcion}</p>
-                                <small>Precio: $${servicio.precioBase.toFixed(2)}</small><br>
-                                <small>Departamento: ${servicio.departamento}</small><br>
-                                <small>Tipo de Servicio: ${servicio.tipoServicio}</small>
+                                <small>Precio: $${precioBase.toFixed(2)}</small><br>
+                                <small>Departamento: ${servicio.departamento || 'No especificado'}</small><br>
+                                <small>Tipo de Servicio: ${servicio.tipoServicio || 'No especificado'}</small>
                             </div>
                             <input class="form-check-input" type="checkbox" value="${servicio.idServicio}" id="servicio${servicio.idServicio}">
                         `;
@@ -213,18 +182,6 @@
                     const serviciosDatos = document.getElementById('serviciosDatos');
                     serviciosDatos.innerHTML = '<p class="text-danger">Error al cargar los servicios.</p>';
                 });
-        }
-
-        function loadInvoices() {
-            // Aquí puedes implementar la lógica para cargar las facturas
-            const facturasDatos = document.getElementById('facturasDatos');
-            facturasDatos.innerHTML = '<p>Facturas cargadas correctamente.</p>'; // Simulación de carga
-        }
-
-        function loadNotifications() {
-            // Aquí puedes implementar la lógica para cargar las notificaciones
-            const notificacionesDatos = document.getElementById('notificacionesDatos');
-            notificacionesDatos.innerHTML = '<p>Notificaciones cargadas correctamente.</p>'; // Simulación de carga
         }
 
         // Mostrar la sección de Datos por defecto
