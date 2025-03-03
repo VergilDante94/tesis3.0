@@ -10,14 +10,20 @@ const port = 3000;
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(express.static(path.join(__dirname, '..', 'public'), {
+    setHeaders: (res, path) => {
+        if (path.endsWith('.js')) {
+            res.set('Content-Type', 'application/javascript');
+        }
+    }
+}));
 
 // Configuración de la conexión a la base de datos
 const db = mysql.createConnection({
     host: 'localhost',
-    user: 'root', // Reemplaza con tu usuario
-    password: 'Bryan940730*', // Reemplaza con tu contraseña
-    database: 'gestion_servicios' // Reemplaza con tu base de datos
+    user: 'root',
+    password: 'Bryan940730*',
+    database: 'gestion_servicios'
 });
 
 // Conectar a la base de datos
@@ -31,7 +37,7 @@ db.connect((err) => {
 
 // Ruta para servir el archivo index.html
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'public', 'index.html')); // Ajusta según la estructura
+    res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 
 // Ruta para obtener información del usuario por ID
