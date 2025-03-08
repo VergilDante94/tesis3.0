@@ -54,7 +54,7 @@ function mostrarFormularioOrden() {
             
             serviciosContainer.innerHTML = servicios.map(servicio => `
                 <div class="card mb-3">
-                    <div class="card-body">
+                        <div class="card-body">
                         <h5 class="card-title">${servicio.nombre}</h5>
                         <p class="card-text">${servicio.descripcion}</p>
                         <p class="card-text">Precio: $${servicio.precioBase}</p>
@@ -109,8 +109,8 @@ function mostrarFormularioOrden() {
             </ul>
             <div class="mt-3">
                 <h5>Total: $${total}</h5>
-            </div>
-        `;
+                </div>
+            `;
 
         // Eventos para eliminar servicios
         document.querySelectorAll('.eliminar-servicio').forEach(btn => {

@@ -14,73 +14,99 @@
     <link href="/css/bootstrap-5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <link href="/css/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <!-- Skip link para accesibilidad -->
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
 
-    <header class="navbar navbar-dark sticky-top bg-success flex-md-nowrap p-0 shadow" role="banner">
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#" aria-label="EICMAPRI">
-            <img src="/images/logo.png" alt="Logo EICMAPRI" height="30" class="d-inline-block align-text-top me-2">
-            EICMAPRI
+    <header class="navbar navbar-dark sticky-top bg-success flex-md-nowrap p-0">
+        <!-- Logo -->
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">
+            Gestión de Servicios
         </a>
-        <button class="navbar-toggler d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+
+        <!-- Botón para móviles -->
+        <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" 
+                data-bs-toggle="collapse" data-bs-target="#sidebarMenu" 
+                aria-controls="sidebarMenu" aria-expanded="false" 
+                aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="search-container w-100 position-relative">
-            <input class="form-control form-control-dark" type="search" placeholder="Buscar..." aria-label="Buscar">
-            <div id="searchResults" class="search-results d-none"></div>
+
+        <!-- Barra de búsqueda -->
+        <div class="navbar-search-block flex-grow-1">
+            <input class="form-control form-control-dark w-100" 
+                   type="text" placeholder="Buscar" aria-label="Buscar">
         </div>
-        <div class="navbar-nav">
-            <div class="nav-item text-nowrap d-flex align-items-center">
-                <div class="notification-badge me-3" data-count="0">
-                    <button class="btn btn-link text-white" id="notificationsBtn" aria-label="Notificaciones">
-                        <i class="bi bi-bell-fill"></i>
-                    </button>
-                </div>
-                <button class="btn btn-link text-white me-2" id="darkModeToggle" aria-label="Cambiar modo oscuro">
-                    <i class="bi bi-moon-fill"></i>
-                </button>
-                <button class="nav-link px-3 btn btn-link" id="logoutBtn" onclick="cerrarSesion()">
-                    <i class="bi bi-box-arrow-right"></i> Cerrar sesión
-                </button>
-            </div>
+
+        <!-- Barra de navegación derecha -->
+        <div class="navbar-nav navbar-right">
+            <!-- Botón modo oscuro -->
+            <button class="nav-link px-3" id="darkModeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+
+            <!-- Info usuario -->
+            <span class="nav-link px-3 d-flex align-items-center">
+                <i class="fas fa-user me-2"></i>
+                <span id="usuario-actual"></span>
+                (<span id="tipo-usuario-actual"></span>)
+            </span>
+
+            <!-- Botón salir -->
+            <a class="nav-link px-3" href="#" id="btn-logout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Salir</span>
+            </a>
         </div>
     </header>
 
     <div class="container-fluid">
         <div class="row">
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse" aria-label="Menú principal">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#" onclick="showSection('datos')" aria-current="page">
-                                <i class="bi bi-house-door"></i> Datos
+                            <a class="nav-link" href="#" data-section="datos">
+                                <i class="fas fa-chart-bar"></i>
+                                Datos
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="showSection('ordenes')">
-                                <i class="bi bi-list-check"></i> Órdenes
+                            <a class="nav-link" href="#" data-section="ordenes">
+                                <i class="fas fa-clipboard-list"></i>
+                                Órdenes
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="showSection('servicios')">
-                                <i class="bi bi-gear"></i> Servicios
-                            </a>
-                        </li>
-                        <li class="nav-item">                     
-                            <a class="nav-link" href="#" onclick="showSection('facturas')">
-                                <i class="bi bi-receipt"></i> Facturas
+                            <a class="nav-link" href="#" data-section="servicios">
+                                <i class="fas fa-tools"></i>
+                                Servicios
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="showSection('notificaciones')">
-                                <i class="bi bi-bell"></i> Notificaciones
+                            <a class="nav-link" href="#" data-section="facturas">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                                Facturas
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="showSection('perfil')">
-                                <i class="bi bi-person"></i> Perfil
+                            <a class="nav-link" href="#" data-section="notificaciones">
+                                <i class="fas fa-bell"></i>
+                                Notificaciones
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-section="perfil">
+                                <i class="fas fa-user"></i>
+                                Mi Perfil
+                            </a>
+                        </li>
+                        <li class="nav-item admin-only">
+                            <a class="nav-link" href="#" data-section="usuarios">
+                                <i class="fas fa-users-cog"></i>
+                                Gestión Usuarios
                             </a>
                         </li>
                     </ul>
@@ -91,7 +117,7 @@
                 <!-- Contenedor de mensajes de estado -->
                 <div id="statusMessages" aria-live="polite"></div>
 
-                <div id="datos" class="section" aria-labelledby="datosTitle">
+                <div id="datos" class="content-section">
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                         <h1 class="h2" id="datosTitle">Datos</h1>
                     </div>
@@ -101,7 +127,7 @@
                     </div>
                 </div>
 
-                <div id="ordenes" class="section" aria-labelledby="ordenesTitle" style="display: none;">
+                <div id="ordenes" class="content-section" style="display: none;">
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                         <h1 class="h2" id="ordenesTitle">Órdenes</h1>
                         <button class="btn btn-primary" onclick="nuevaOrden()">
@@ -115,19 +141,19 @@
                     </form>
                 </div>
 
-                <div id="servicios" class="section" aria-labelledby="serviciosTitle" style="display: none;">
+                <div id="servicios" class="content-section" style="display: none;">
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                         <h1 class="h2" id="serviciosTitle">Servicios</h1>
-                        <button class="btn btn-primary" onclick="nuevoServicio()">
+                        <button class="btn btn-primary admin-only" onclick="nuevoServicio()" style="display: none;">
                             <i class="bi bi-plus-circle"></i> Nuevo Servicio
                         </button>
                     </div>
-                    <div id="serviciosDatos" class="row">
-                        <div class="loader" aria-label="Cargando servicios"></div>
+                    <div id="servicios-container" class="row">
+                        <!-- Los servicios se cargarán aquí dinámicamente -->
                     </div>
                 </div>
 
-                <div id="facturas" class="section" aria-labelledby="facturasTitle" style="display: none;">
+                <div id="facturas" class="content-section" style="display: none;">
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                         <h1 class="h2" id="facturasTitle">Facturas</h1>
                     </div>
@@ -136,7 +162,7 @@
                     </div>
                 </div>
 
-                <div id="notificaciones" class="section" aria-labelledby="notificacionesTitle" style="display: none;">
+                <div id="notificaciones" class="content-section" style="display: none;">
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                         <h1 class="h2" id="notificacionesTitle">Notificaciones</h1>
                         <button class="btn btn-outline-primary" onclick="marcarTodasLeidas()">
@@ -148,15 +174,89 @@
                     </div>
                 </div>
 
-                <div id="perfil" class="section" aria-labelledby="perfilTitle" style="display: none;">
+                <!-- Sección de Perfil Personal -->
+                <div id="perfil" class="content-section" style="display: none;">
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                        <h1 class="h2" id="perfilTitle">Perfil</h1>
-                        <button class="btn btn-primary" onclick="editarPerfil()">
-                            <i class="bi bi-pencil"></i> Editar Perfil
-                        </button>
+                        <h1 class="h2">Mi Perfil</h1>
                     </div>
-                    <div id="perfilDatos" class="perfil-container">
-                        <div class="loader" aria-label="Cargando datos del perfil"></div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Email:</strong> <span id="perfil-email"></span></p>
+                                    <p><strong>Tipo:</strong> <span id="perfil-tipo"></span></p>
+                                </div>
+                            </div>
+                            <button id="btn-editar-perfil" class="btn btn-secondary">
+                                <i class="fas fa-edit"></i> Editar Perfil
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dentro del contenedor principal, actualiza la sección de usuarios -->
+                <div id="usuarios" class="content-section" style="display: none;">
+                    <div class="container-fluid">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2>Lista de usuarios</h2>
+                            <button class="btn btn-info text-white" onclick="showCreateModal()">
+                                Crear usuario
+                            </button>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead class="bg-primary text-white">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Correo</th>
+                                        <th>Rol</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersList">
+                                    <!-- Aquí se cargarán los usuarios dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Modal para crear/editar usuario -->
+                    <div class="modal fade" id="userModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="userModalLabel">Crear Usuario</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="userForm">
+                                        <div class="mb-3">
+                                            <label for="userName" class="form-label">Nombre</label>
+                                            <input type="text" class="form-control" id="userName" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="userEmail" class="form-label">Correo</label>
+                                            <input type="email" class="form-control" id="userEmail" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="userType" class="form-label">Rol</label>
+                                            <select class="form-select" id="userType" required>
+                                                <option value="ADMIN">Administrador</option>
+                                                <option value="CLIENTE">Cliente</option>
+                                                <option value="TRABAJADOR">Trabajador</option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn btn-primary" onclick="saveUser()">Guardar</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>
@@ -181,13 +281,15 @@
     <!-- Scripts -->
     <script src="/css/bootstrap-5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
     <script src="/js/auth.js"></script>
-    <script src="/js/dashboard.js"></script>
     <script src="/js/script.js"></script>
+    <script src="/js/dashboard.js"></script>
     <script src="/js/ordenes.js"></script>
     <script src="/js/facturas.js"></script>
     <script src="/js/notificaciones.js"></script>
+    <script src="/js/servicios.js"></script>
+    <script src="/js/perfil.js"></script>
+    <script src="/js/usuarios.js"></script>
     <script>
         // Verificar autenticación al cargar la página
         document.addEventListener('DOMContentLoaded', function() {
@@ -202,27 +304,35 @@
 
             // Configurar modo oscuro
             const darkModeToggle = document.getElementById('darkModeToggle');
-            darkModeToggle.addEventListener('click', function() {
-                document.body.classList.toggle('dark-mode');
-                const icon = this.querySelector('i');
-                if (document.body.classList.contains('dark-mode')) {
-                    icon.classList.replace('bi-moon-fill', 'bi-sun-fill');
-                    localStorage.setItem('darkMode', 'enabled');
-                } else {
-                    icon.classList.replace('bi-sun-fill', 'bi-moon-fill');
-                    localStorage.setItem('darkMode', 'disabled');
-                }
-            });
+            const icon = darkModeToggle.querySelector('i');
 
-            // Restaurar preferencia de modo oscuro
+            function toggleDarkMode() {
+                document.body.classList.toggle('dark-mode');
+                const isDarkMode = document.body.classList.contains('dark-mode');
+                
+                // Cambiar el icono
+                if (isDarkMode) {
+                    icon.classList.replace('fas fa-moon', 'fas fa-sun');
+                } else {
+                    icon.classList.replace('fas fa-sun', 'fas fa-moon');
+                }
+                
+                // Guardar preferencia
+                localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+            }
+
+            // Verificar preferencia guardada
             if (localStorage.getItem('darkMode') === 'enabled') {
                 document.body.classList.add('dark-mode');
-                darkModeToggle.querySelector('i').classList.replace('bi-moon-fill', 'bi-sun-fill');
+                icon.classList.replace('fas fa-moon', 'fas fa-sun');
             }
+
+            // Agregar evento click
+            darkModeToggle.addEventListener('click', toggleDarkMode);
         });
 
         function showSection(sectionId) {
-            const sections = document.querySelectorAll('.section');
+            const sections = document.querySelectorAll('.content-section');
             sections.forEach(section => {
                 section.style.display = 'none';
                 section.classList.remove('active');
@@ -239,7 +349,7 @@
             const links = document.querySelectorAll('.nav-link');
             links.forEach(link => {
                 link.classList.remove('active');
-                if (link.getAttribute('onclick').includes(sectionId)) {
+                if (link.getAttribute('data-section') === sectionId) {
                     link.classList.add('active');
                 }
             });
