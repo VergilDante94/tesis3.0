@@ -4,7 +4,7 @@ CREATE TABLE `Usuario` (
     `nombre` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `contrasena` VARCHAR(191) NOT NULL,
-    `tipoUsuario` ENUM('ADMIN', 'CLIENTE', 'TRABAJADOR') NOT NULL,
+    `tipo` ENUM('ADMIN', 'CLIENTE', 'TRABAJADOR') NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
     `createdBy` INTEGER NULL,
@@ -106,3 +106,6 @@ ALTER TABLE `OrdenServicio` ADD CONSTRAINT `OrdenServicio_servicioId_fkey` FOREI
 
 -- AddForeignKey
 ALTER TABLE `Factura` ADD CONSTRAINT `Factura_ordenId_fkey` FOREIGN KEY (`ordenId`) REFERENCES `Orden`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Notificacion` ADD CONSTRAINT `Notificacion_usuarioId_fkey` FOREIGN KEY (`usuarioId`) REFERENCES `Usuario`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

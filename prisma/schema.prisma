@@ -1,10 +1,10 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 enum TipoUsuario {
@@ -14,17 +14,17 @@ enum TipoUsuario {
 }
 
 model Usuario {
-  id            Int      @id @default(autoincrement())
+  id            Int            @id @default(autoincrement())
   nombre        String
-  email         String   @unique
+  email         String         @unique
   contrasena    String
   tipo          TipoUsuario
   cliente       Cliente?
   trabajador    Trabajador?
   notificaciones Notificacion[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  createdBy     Int?        // ID del administrador que creó el usuario
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  createdBy     Int?
 }
 
 model Cliente {
