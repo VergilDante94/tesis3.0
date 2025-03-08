@@ -180,5 +180,106 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+const facturasManager = {
+    async generarFactura(ordenId) {
+        try {
+            const response = await fetch(`/api/facturas/orden/${ordenId}`, {
+                method: 'POST',
+                headers: auth.getHeaders()
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Error al generar factura:', error);
+            throw error;
+        }
+    },
+
+    async obtenerFacturasCliente(clienteId) {
+        try {
+            const response = await fetch(`/api/facturas/cliente/${clienteId}`, {
+                headers: auth.getHeaders()
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Error al obtener facturas:', error);
+            throw error;
+        }
+    }
+};
+
+// Función para mostrar lista de facturas
+async function mostrarListaFacturas() {
+    try {
+        const clienteId = auth.usuario.perfil.id;
+        const facturas = await facturasManager.obtenerFacturasCliente(clienteId);
+        const facturasContainer = document.getElementById('facturasDatos');
+
+        facturasContainer.innerHTML = `
+            <div class="list-group">
+                ${facturas.map(factura => `
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Factura #${factura.id}</h5>
+                            <small>${new Date(factura.fecha).toLocaleDateString()}</small>
+                        </div>
+                        <p class="mb-1">Orden #${factura.orden.id}</p>
+                        <div class="servicios-facturados">
+                            <h6>Servicios:</h6>
+                            <ul class="list-unstyled">
+                                ${factura.orden.servicios.map(s => `
+                                    <li>${s.servicio.nombre} x ${s.cantidad}</li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                        <div class="totales mt-2">
+                            <p class="mb-0">Subtotal: $${factura.subtotal.toFixed(2)}</p>
+                            <p class="mb-0">Total: $${factura.total.toFixed(2)}</p>
+                        </div>
+                        <button class="btn btn-sm btn-primary mt-2" onclick="descargarFactura(${factura.id})">
+                            Descargar PDF
+                        </button>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    } catch (error) {
+        console.error('Error al mostrar facturas:', error);
+    }
+}
+
+// Función para descargar factura en PDF (implementar después)
+async function descargarFactura(facturaId) {
+    try {
+        const response = await fetch(`/api/facturas/${facturaId}/pdf`, {
+            headers: auth.getHeaders()
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al descargar la factura');
+        }
+
+        // Crear blob del PDF
+        const blob = await response.blob();
+        
+        // Crear URL del blob
+        const url = window.URL.createObjectURL(blob);
+        
+        // Crear elemento temporal para la descarga
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `factura-${facturaId}.pdf`;
+        
+        // Agregar al documento, hacer clic y remover
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        
+        // Liberar la URL del blob
+        window.URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('Error al descargar factura:', error);
+        alert('Error al descargar la factura');
+    }
+}
 
 //BORRA ESTE COMENTARIO

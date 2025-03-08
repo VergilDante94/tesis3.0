@@ -1,83 +1,68 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const mysql = require('mysql2');
 const path = require('path');
+const jwt = require('jsonwebtoken');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
+
+console.log('Variables de entorno cargadas:', {
+    DATABASE_URL: process.env.DATABASE_URL,
+    JWT_SECRET: process.env.JWT_SECRET
+});
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '..', 'public'), {
-    setHeaders: (res, path) => {
-        if (path.endsWith('.js')) {
-            res.set('Content-Type', 'application/javascript');
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
+// Rutas
+const usuarioRoutes = require('./routes/usuarioRoutes');
+const servicioRoutes = require('./routes/servicioRoutes');
+const ordenRoutes = require('./routes/ordenRoutes');
+const facturaRoutes = require('./routes/facturaRoutes');
+const notificacionRoutes = require('./routes/notificacionRoutes');
+
+// Middleware de autenticación para rutas protegidas
+app.use((req, res, next) => {
+    const publicPaths = ['/login.html', '/registro.html', '/css', '/js/auth.js'];
+    const isPublicPath = publicPaths.some(path => req.path.startsWith(path));
+
+    if (!isPublicPath && !req.path.startsWith('/api/')) {
+        // Verificar token
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.redirect('/login.html');
         }
+        try {
+            jwt.verify(token, process.env.JWT_SECRET);
+            next();
+        } catch (error) {
+            return res.redirect('/login.html');
+        }
+    } else {
+        next();
     }
-}));
-
-// Configuración de la conexión a la base de datos
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'Bryan940730*',
-    database: 'gestion_servicios'
 });
 
-// Conectar a la base de datos
-db.connect((err) => {
-    if (err) {
-        console.error('Error al conectar a la base de datos:', err);
-        return;
-    }
-    console.log('Conexión exitosa a la base de datos');
-});
+app.use('/api/usuarios', usuarioRoutes);
+app.use('/api/servicios', servicioRoutes);
+app.use('/api/ordenes', ordenRoutes);
+app.use('/api/facturas', facturaRoutes);
+app.use('/api/notificaciones', notificacionRoutes);
 
-// Ruta para servir el archivo index.html
+// Ruta principal
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 
-// Ruta para obtener información del usuario por ID
-app.get('/api/usuario/:id', (req, res) => {
-    const userId = req.params.id;
-
-    db.query('SELECT * FROM Usuario WHERE idUsuario = ?', [userId], (err, userResults) => {
-        if (err) {
-            console.error('Error en la consulta:', err);
-            return res.status(500).json({ error: 'Error al cargar los datos del usuario' });
-        }
-        if (userResults.length > 0) {
-            const user = userResults[0];
-            res.json({
-                id: user.idUsuario,
-                nombre: user.nombre,
-                telefono: user.telefono,
-                email: user.email,
-                entidad: user.entidad,
-                historialOrdenes: user.historialOrdenes,
-                direccion: user.direccion
-            });
-        } else {
-            res.status(404).json({ message: 'Usuario no encontrado' });
-        }
+// Solo iniciar el servidor si no estamos en modo de prueba
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(port, () => {
+        console.log(`Servidor escuchando en http://localhost:${port}`);
     });
-});
+}
 
-// Ruta para obtener todos los servicios
-app.get('/api/servicios', (req, res) => {
-    db.query('SELECT idServicio, nombre, descripcion, precioBase, departamento, tipoServicio FROM Servicios', (err, results) => {
-        if (err) {
-            console.error('Error en la consulta:', err);
-            return res.status(500).json({ error: 'Error al cargar los servicios' });
-        }
-        res.json(results);
-    });
-});
-
-// Iniciar el servidor
-app.listen(port, () => {
-    console.log(`Servidor escuchando en http://localhost:${port}`);
-});
+module.exports = app;

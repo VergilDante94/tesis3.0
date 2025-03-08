@@ -1,23 +1,91 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-   model servicios {
-       idServicio   Int     @id @default(autoincrement())
-       nombre       String
-       descripcion  String?
-       precioBase   Float
-       departamento String?
-       tipoServicio String?
-   }
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum TipoUsuario {
+  ADMIN
+  CLIENTE
+  TRABAJADOR
+}
+
+model Usuario {
+  id            Int      @id @default(autoincrement())
+  nombre        String
+  email         String   @unique
+  contrasena    String
+  tipo          TipoUsuario
+  cliente       Cliente?
+  trabajador    Trabajador?
+  notificaciones Notificacion[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  createdBy     Int?        // ID del administrador que creó el usuario
+}
+
+model Cliente {
+  id        Int      @id @default(autoincrement())
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId Int      @unique
+  direccion String
+  telefono  String
+  ordenes   Orden[]
+}
+
+model Trabajador {
+  id          Int      @id @default(autoincrement())
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId   Int      @unique
+  posicion    String
+  departamento String
+}
+
+model Servicio {
+  id          Int      @id @default(autoincrement())
+  nombre      String
+  descripcion String
+  precioBase  Float
+  ordenes     OrdenServicio[]
+}
+
+model Orden {
+  id          Int      @id @default(autoincrement())
+  cliente     Cliente  @relation(fields: [clienteId], references: [id])
+  clienteId   Int
+  fecha       DateTime @default(now())
+  estado      String
+  servicios   OrdenServicio[]
+  factura     Factura?
+}
+
+model OrdenServicio {
+  id          Int      @id @default(autoincrement())
+  orden       Orden    @relation(fields: [ordenId], references: [id])
+  ordenId     Int
+  servicio    Servicio @relation(fields: [servicioId], references: [id])
+  servicioId  Int
+  cantidad    Int
+  precioUnitario Float
+}
+
+model Factura {
+  id          Int      @id @default(autoincrement())
+  orden       Orden    @relation(fields: [ordenId], references: [id])
+  ordenId     Int      @unique
+  fecha       DateTime @default(now())
+  subtotal    Float
+  total       Float
+}
+
+model Notificacion {
+  id          Int      @id @default(autoincrement())
+  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
+  usuarioId   Int
+  mensaje     String
+  fecha       DateTime @default(now())
+  leida       Boolean  @default(false)
+} 

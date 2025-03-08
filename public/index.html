@@ -1,9 +1,14 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Dashboard de EICMAPRI - Sistema de gestión de servicios y órdenes">
+    <meta name="theme-color" content="#218838">
     <title>Dashboard EICMAPRI</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/images/favicon.png">
 
     <!-- Bootstrap core CSS y Bootstrap Icons -->
     <link href="/css/bootstrap-5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -11,185 +16,279 @@
     <link href="/css/styles.css" rel="stylesheet">
 </head>
 <body>
-    <header class="navbar navbar-dark sticky-top bg-success flex-md-nowrap p-0 shadow">
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">EICMAPRI PRUEBA</a>
-        <input class="form-control form-control-dark w-100" type="text" placeholder="Buscar" aria-label="Search">
+    <!-- Skip link para accesibilidad -->
+    <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+
+    <header class="navbar navbar-dark sticky-top bg-success flex-md-nowrap p-0 shadow" role="banner">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#" aria-label="EICMAPRI">
+            <img src="/images/logo.png" alt="Logo EICMAPRI" height="30" class="d-inline-block align-text-top me-2">
+            EICMAPRI
+        </a>
+        <button class="navbar-toggler d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="search-container w-100 position-relative">
+            <input class="form-control form-control-dark" type="search" placeholder="Buscar..." aria-label="Buscar">
+            <div id="searchResults" class="search-results d-none"></div>
+        </div>
         <div class="navbar-nav">
-            <div class="nav-item text-nowrap">
-                <a class="nav-link px-3" href="#">Cerrar sesión</a>
+            <div class="nav-item text-nowrap d-flex align-items-center">
+                <div class="notification-badge me-3" data-count="0">
+                    <button class="btn btn-link text-white" id="notificationsBtn" aria-label="Notificaciones">
+                        <i class="bi bi-bell-fill"></i>
+                    </button>
+                </div>
+                <button class="btn btn-link text-white me-2" id="darkModeToggle" aria-label="Cambiar modo oscuro">
+                    <i class="bi bi-moon-fill"></i>
+                </button>
+                <button class="nav-link px-3 btn btn-link" id="logoutBtn" onclick="cerrarSesion()">
+                    <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                </button>
             </div>
         </div>
     </header>
 
     <div class="container-fluid">
         <div class="row">
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse" aria-label="Menú principal">
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#" onclick="showSection('datos')">Datos</a>
+                            <a class="nav-link active" href="#" onclick="showSection('datos')" aria-current="page">
+                                <i class="bi bi-house-door"></i> Datos
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="showSection('ordenes')">Órdenes</a>
+                            <a class="nav-link" href="#" onclick="showSection('ordenes')">
+                                <i class="bi bi-list-check"></i> Órdenes
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="showSection('servicios')">Servicios</a>
+                            <a class="nav-link" href="#" onclick="showSection('servicios')">
+                                <i class="bi bi-gear"></i> Servicios
+                            </a>
+                        </li>
+                        <li class="nav-item">                     
+                            <a class="nav-link" href="#" onclick="showSection('facturas')">
+                                <i class="bi bi-receipt"></i> Facturas
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="showSection('facturas')">Facturas</a>
+                            <a class="nav-link" href="#" onclick="showSection('notificaciones')">
+                                <i class="bi bi-bell"></i> Notificaciones
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="showSection('notificaciones')">Notificaciones</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="showSection('perfil')">Perfil</a>
+                            <a class="nav-link" href="#" onclick="showSection('perfil')">
+                                <i class="bi bi-person"></i> Perfil
+                            </a>
                         </li>
                     </ul>
                 </div>
             </nav>
 
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div id="datos" class="section" style="display: none;">
-                    <h1 class="h2">Datos</h1>
-                    <div id="usuarios">
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" id="main-content" role="main">
+                <!-- Contenedor de mensajes de estado -->
+                <div id="statusMessages" aria-live="polite"></div>
+
+                <div id="datos" class="section" aria-labelledby="datosTitle">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2" id="datosTitle">Datos</h1>
+                    </div>
+                    <div id="usuarios" class="row">
                         <!-- Los datos de los usuarios se cargarán aquí -->
+                        <div class="loader" aria-label="Cargando datos"></div>
                     </div>
                 </div>
 
-                <div id="ordenes" class="section" style="display: none;">
-                    <h1 class="h2">Órdenes</h1>
-                    <form id="ordenesForm">
-                        <div id="serviciosDisponibles">
-                            <p>Cargando servicios...</p>
+                <div id="ordenes" class="section" aria-labelledby="ordenesTitle" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2" id="ordenesTitle">Órdenes</h1>
+                        <button class="btn btn-primary" onclick="nuevaOrden()">
+                            <i class="bi bi-plus-circle"></i> Nueva Orden
+                        </button>
+                    </div>
+                    <form id="ordenesForm" class="needs-validation" novalidate>
+                        <div id="serviciosDisponibles" class="row">
+                            <div class="loader" aria-label="Cargando servicios"></div>
                         </div>
                     </form>
                 </div>
 
-                <div id="servicios" class="section" style="display: none;">
-                    <h1 class="h2">Servicios</h1>
-                    <div id="serviciosDatos">
-                        <p>Cargando servicios...</p>
+                <div id="servicios" class="section" aria-labelledby="serviciosTitle" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2" id="serviciosTitle">Servicios</h1>
+                        <button class="btn btn-primary" onclick="nuevoServicio()">
+                            <i class="bi bi-plus-circle"></i> Nuevo Servicio
+                        </button>
+                    </div>
+                    <div id="serviciosDatos" class="row">
+                        <div class="loader" aria-label="Cargando servicios"></div>
                     </div>
                 </div>
 
-                <div id="facturas" class="section" style="display: none;">
-                    <h1 class="h2">Facturas</h1>
-                    <div id="facturasDatos">
-                        <!-- Contenido de facturas -->
+                <div id="facturas" class="section" aria-labelledby="facturasTitle" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2" id="facturasTitle">Facturas</h1>
+                    </div>
+                    <div id="facturasDatos" class="row">
+                        <div class="loader" aria-label="Cargando facturas"></div>
                     </div>
                 </div>
 
-                <div id="notificaciones" class="section" style="display: none;">
-                    <h1 class="h2">Notificaciones</h1>
-                    <div id="notificacionesDatos">
-                        <!-- Contenido de notificaciones -->
+                <div id="notificaciones" class="section" aria-labelledby="notificacionesTitle" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2" id="notificacionesTitle">Notificaciones</h1>
+                        <button class="btn btn-outline-primary" onclick="marcarTodasLeidas()">
+                            <i class="bi bi-check-all"></i> Marcar todas como leídas
+                        </button>
+                    </div>
+                    <div id="notificacionesDatos" class="row">
+                        <div class="loader" aria-label="Cargando notificaciones"></div>
                     </div>
                 </div>
 
-                <div id="perfil" class="section" style="display: none;">
-                    <h1 class="h2">Perfil</h1>
+                <div id="perfil" class="section" aria-labelledby="perfilTitle" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2" id="perfilTitle">Perfil</h1>
+                        <button class="btn btn-primary" onclick="editarPerfil()">
+                            <i class="bi bi-pencil"></i> Editar Perfil
+                        </button>
+                    </div>
                     <div id="perfilDatos" class="perfil-container">
-                        <p>Cargando datos del usuario...</p>
+                        <div class="loader" aria-label="Cargando datos del perfil"></div>
                     </div>
                 </div>
             </main>
         </div>
     </div>
 
-    <!-- Scripts en orden correcto -->
+    <!-- Modal para notificaciones -->
+    <div class="modal fade" id="notificationsModal" tabindex="-1" aria-labelledby="notificationsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notificationsModalLabel">Notificaciones</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body" id="notificationsModalBody">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="/css/bootstrap-5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+    <script src="/js/auth.js"></script>
     <script src="/js/dashboard.js"></script>
     <script src="/js/script.js"></script>
     <script src="/js/ordenes.js"></script>
     <script src="/js/facturas.js"></script>
+    <script src="/js/notificaciones.js"></script>
     <script>
+        // Verificar autenticación al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarAutenticacion();
+            showSection('datos');
+            
+            // Inicializar tooltips y popovers de Bootstrap
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Configurar modo oscuro
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            darkModeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                const icon = this.querySelector('i');
+                if (document.body.classList.contains('dark-mode')) {
+                    icon.classList.replace('bi-moon-fill', 'bi-sun-fill');
+                    localStorage.setItem('darkMode', 'enabled');
+                } else {
+                    icon.classList.replace('bi-sun-fill', 'bi-moon-fill');
+                    localStorage.setItem('darkMode', 'disabled');
+                }
+            });
+
+            // Restaurar preferencia de modo oscuro
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.querySelector('i').classList.replace('bi-moon-fill', 'bi-sun-fill');
+            }
+        });
+
         function showSection(sectionId) {
             const sections = document.querySelectorAll('.section');
             sections.forEach(section => {
                 section.style.display = 'none';
+                section.classList.remove('active');
             });
-            document.getElementById(sectionId).style.display = 'block';
 
-            if (sectionId === 'perfil') {
-                loadUserProfile();
-            }
-            if (sectionId === 'servicios') {
-                loadServices();
-            }
-            if (sectionId === 'ordenes') {
-                loadServicesForOrders();
+            const targetSection = document.getElementById(sectionId);
+            targetSection.style.display = 'block';
+            // Usar setTimeout para asegurar que la transición se active después de que el display cambie
+            setTimeout(() => {
+                targetSection.classList.add('active');
+            }, 10);
+
+            // Actualizar enlaces activos
+            const links = document.querySelectorAll('.nav-link');
+            links.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('onclick').includes(sectionId)) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Cargar datos específicos de la sección
+            switch(sectionId) {
+                case 'perfil':
+                    loadUserProfile();
+                    break;
+                case 'servicios':
+                    loadServices();
+                    break;
+                case 'ordenes':
+                    loadServicesForOrders();
+                    break;
+                case 'facturas':
+                    loadInvoices();
+                    break;
+                case 'notificaciones':
+                    loadNotifications();
+                    break;
             }
         }
 
-        function loadUserProfile() {
-            const userId = 1;
-            fetch(`http://localhost:3000/api/usuario/${userId}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Error al cargar los datos del usuario: ' + response.statusText);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const perfilDatos = document.getElementById('perfilDatos');
-                    perfilDatos.innerHTML = `
-                        <h2>${data.nombre}</h2>
-                        <p>Email: ${data.email}</p>
-                        <p>Teléfono: ${data.telefono}</p>
-                        <p>Dirección: ${data.direccion}</p>
-                    `;
-                })
-                .catch(error => {
-                    const perfilDatos = document.getElementById('perfilDatos');
-                    perfilDatos.innerHTML = `<p>Error: ${error.message}</p>`;
-                });
+        // Función para mostrar mensajes de estado
+        function showStatusMessage(message, type = 'success') {
+            const statusContainer = document.getElementById('statusMessages');
+            const messageElement = document.createElement('div');
+            messageElement.className = `status-message ${type}`;
+            messageElement.textContent = message;
+            
+            statusContainer.appendChild(messageElement);
+            setTimeout(() => {
+                messageElement.classList.add('show');
+            }, 10);
+
+            setTimeout(() => {
+                messageElement.classList.remove('show');
+                setTimeout(() => {
+                    statusContainer.removeChild(messageElement);
+                }, 300);
+            }, 3000);
         }
 
-        function loadServices() {
-            fetch('http://localhost:3000/api/servicios')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Error en la red: ' + response.statusText);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const serviciosDatos = document.getElementById('serviciosDatos');
-                    serviciosDatos.innerHTML = '';
-
-                    const serviciosContainer = document.createElement('div');
-                    serviciosContainer.className = 'list-group';
-
-                    data.forEach(servicio => {
-                        const servicioItem = document.createElement('div');
-                        servicioItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-
-                        const precioBase = parseFloat(servicio.precioBase) || 0;
-
-                        servicioItem.innerHTML = `
-                            <div>
-                                <h5>${servicio.nombre}</h5>
-                                <p>${servicio.descripcion}</p>
-                                <small>Precio: $${precioBase.toFixed(2)}</small><br>
-                                <small>Departamento: ${servicio.departamento || 'No especificado'}</small><br>
-                                <small>Tipo de Servicio: ${servicio.tipoServicio || 'No especificado'}</small>
-                            </div>
-                            <input class="form-check-input" type="checkbox" value="${servicio.idServicio}" id="servicio${servicio.idServicio}">
-                        `;
-
-                        serviciosContainer.appendChild(servicioItem);
-                    });
-
-                    serviciosDatos.appendChild(serviciosContainer);
-                })
-                .catch(error => {
-                    console.error('Error al cargar servicios:', error);
-                    const serviciosDatos = document.getElementById('serviciosDatos');
-                    serviciosDatos.innerHTML = '<p class="text-danger">Error al cargar los servicios.</p>';
-                });
+        // Función para cerrar sesión
+        function cerrarSesion() {
+            localStorage.removeItem('token');
+            window.location.href = '/login.html';
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
 </body>
 </html>

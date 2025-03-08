@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Servicios - EICMAPRI">
+    <meta name="theme-color" content="#218838">
+    <title>Servicios - EICMAPRI</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+
+    <!-- Bootstrap core CSS y Bootstrap Icons -->
+    <link href="/css/bootstrap-5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Servicios</h4>
+                        <button class="btn btn-primary btn-sm" onclick="mostrarFormularioServicio()">
+                            <i class="bi bi-plus-circle"></i> Nuevo Servicio
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <!-- Formulario de servicio -->
+                        <form id="servicioForm" class="needs-validation mb-4" novalidate style="display: none;">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nombre" class="form-label">Nombre del servicio</label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingrese el nombre del servicio
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="precioBase" class="form-label">Precio base</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="precioBase" name="precioBase" step="0.01" min="0" required>
+                                        <div class="invalid-feedback">
+                                            Por favor ingrese un precio válido
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="descripcion" class="form-label">Descripción</label>
+                                <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required></textarea>
+                                <div class="invalid-feedback">
+                                    Por favor ingrese una descripción
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="departamento" class="form-label">Departamento</label>
+                                    <select class="form-select" id="departamento" name="departamento" required>
+                                        <option value="">Seleccione un departamento</option>
+                                        <option value="Mantenimiento">Mantenimiento</option>
+                                        <option value="Reparación">Reparación</option>
+                                        <option value="Instalación">Instalación</option>
+                                        <option value="Consultoría">Consultoría</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Por favor seleccione un departamento
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="tipoServicio" class="form-label">Tipo de servicio</label>
+                                    <select class="form-select" id="tipoServicio" name="tipoServicio" required>
+                                        <option value="">Seleccione un tipo</option>
+                                        <option value="Básico">Básico</option>
+                                        <option value="Estándar">Estándar</option>
+                                        <option value="Premium">Premium</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Por favor seleccione un tipo de servicio
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="button" class="btn btn-secondary" onclick="cancelarFormularioServicio()">
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    Guardar servicio
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Lista de servicios -->
+                        <div id="serviciosList" class="row">
+                            <div class="loader" aria-label="Cargando servicios"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="/" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver al Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación de eliminación -->
+    <div class="modal fade" id="eliminarServicioModal" tabindex="-1" aria-labelledby="eliminarServicioModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eliminarServicioModalLabel">Confirmar eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Está seguro que desea eliminar este servicio? Esta acción no se puede deshacer.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmarEliminar">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/css/bootstrap-5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        let servicioIdSeleccionado = null;
+        const eliminarModal = new bootstrap.Modal(document.getElementById('eliminarServicioModal'));
+
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarAutenticacion();
+            cargarServicios();
+
+            // Configurar el formulario
+            document.getElementById('servicioForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                guardarServicio();
+            });
+
+            // Configurar el botón de confirmación de eliminación
+            document.getElementById('confirmarEliminar').addEventListener('click', function() {
+                if (servicioIdSeleccionado) {
+                    eliminarServicio(servicioIdSeleccionado);
+                }
+            });
+        });
+
+        function cargarServicios() {
+            const serviciosList = document.getElementById('serviciosList');
+            serviciosList.innerHTML = '<div class="loader" aria-label="Cargando servicios"></div>';
+
+            fetch('/api/servicios', {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Error al cargar los servicios');
+                return response.json();
+            })
+            .then(servicios => {
+                serviciosList.innerHTML = '';
+                servicios.forEach(servicio => {
+                    const card = document.createElement('div');
+                    card.className = 'col-md-6 col-lg-4 mb-4';
+                    card.innerHTML = `
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">${servicio.nombre}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">$${parseFloat(servicio.precioBase).toFixed(2)}</h6>
+                                <p class="card-text">${servicio.descripcion}</p>
+                                <div class="mb-2">
+                                    <span class="badge bg-primary">${servicio.departamento}</span>
+                                    <span class="badge bg-secondary">${servicio.tipoServicio}</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent border-top-0">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="editarServicio(${servicio.id})">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="confirmarEliminar(${servicio.id})">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    serviciosList.appendChild(card);
+                });
+
+                if (servicios.length === 0) {
+                    serviciosList.innerHTML = `
+                        <div class="col-12">
+                            <div class="alert alert-info" role="alert">
+                                No hay servicios registrados. ¡Crea el primero!
+                            </div>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                serviciosList.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-triangle"></i> ${error.message}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function mostrarFormularioServicio() {
+            document.getElementById('servicioForm').reset();
+            document.getElementById('servicioForm').style.display = 'block';
+            document.getElementById('nombre').focus();
+        }
+
+        function cancelarFormularioServicio() {
+            document.getElementById('servicioForm').style.display = 'none';
+            document.getElementById('servicioForm').reset();
+        }
+
+        function guardarServicio() {
+            const form = document.getElementById('servicioForm');
+            
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return;
+            }
+
+            const formData = {
+                nombre: document.getElementById('nombre').value,
+                descripcion: document.getElementById('descripcion').value,
+                precioBase: parseFloat(document.getElementById('precioBase').value),
+                departamento: document.getElementById('departamento').value,
+                tipoServicio: document.getElementById('tipoServicio').value
+            };
+
+            fetch('/api/servicios', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Error al guardar el servicio');
+                return response.json();
+            })
+            .then(() => {
+                showStatusMessage('Servicio guardado exitosamente');
+                cancelarFormularioServicio();
+                cargarServicios();
+            })
+            .catch(error => {
+                showStatusMessage(error.message, 'error');
+            });
+        }
+
+        function editarServicio(id) {
+            fetch(`/api/servicios/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Error al cargar el servicio');
+                return response.json();
+            })
+            .then(servicio => {
+                document.getElementById('nombre').value = servicio.nombre;
+                document.getElementById('descripcion').value = servicio.descripcion;
+                document.getElementById('precioBase').value = servicio.precioBase;
+                document.getElementById('departamento').value = servicio.departamento;
+                document.getElementById('tipoServicio').value = servicio.tipoServicio;
+                
+                document.getElementById('servicioForm').style.display = 'block';
+                document.getElementById('nombre').focus();
+            })
+            .catch(error => {
+                showStatusMessage(error.message, 'error');
+            });
+        }
+
+        function confirmarEliminar(id) {
+            servicioIdSeleccionado = id;
+            eliminarModal.show();
+        }
+
+        function eliminarServicio(id) {
+            fetch(`/api/servicios/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Error al eliminar el servicio');
+                return response.json();
+            })
+            .then(() => {
+                eliminarModal.hide();
+                showStatusMessage('Servicio eliminado exitosamente');
+                cargarServicios();
+            })
+            .catch(error => {
+                eliminarModal.hide();
+                showStatusMessage(error.message, 'error');
+            });
+        }
+
+        function showStatusMessage(message, type = 'success') {
+            const statusContainer = document.createElement('div');
+            statusContainer.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+            statusContainer.style.zIndex = '1050';
+            statusContainer.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            document.body.appendChild(statusContainer);
+
+            setTimeout(() => {
+                statusContainer.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
