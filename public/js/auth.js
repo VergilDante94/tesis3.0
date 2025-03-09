@@ -52,13 +52,27 @@ const auth = {
 auth.token = localStorage.getItem('token');
 auth.usuario = JSON.parse(localStorage.getItem('usuario'));
 
+// Función para verificar si estamos en la página de login
+function isLoginPage() {
+    return window.location.pathname.includes('login.html');
+}
+
+// Función para verificar autenticación
 function verificarAutenticacion() {
     const token = localStorage.getItem('token');
-    if (!token) {
+    const esLoginPage = window.location.pathname.includes('login.html');
+
+    if (!token && !esLoginPage) {
         window.location.href = '/login.html';
-        return;
+        return false;
     }
-    // Aquí puedes agregar la lógica para verificar el token con el backend
+
+    if (token && esLoginPage) {
+        window.location.href = '/index.html';
+        return false;
+    }
+
+    return true;
 }
 
 function cerrarSesion() {
@@ -107,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
-                login(email, password);
+                login(e);
             });
         }
         return; // Salimos de la función para evitar otras verificaciones
@@ -133,8 +147,66 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-async function login(email, password) {
+// Función para cargar la información del usuario
+async function cargarInformacionUsuario() {
+    // Solo cargar información si no estamos en la página de login
+    if (isLoginPage()) {
+        return;
+    }
+
     try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            return;
+        }
+
+        const response = await fetch('/api/usuarios/me', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al obtener información del usuario');
+        }
+
+        const usuario = await response.json();
+        
+        // Actualizar elementos solo si existen
+        const nombreElement = document.getElementById('usuario-actual');
+        const tipoElement = document.getElementById('tipo-usuario-actual');
+        
+        if (nombreElement) nombreElement.textContent = usuario.nombre;
+        if (tipoElement) tipoElement.textContent = usuario.tipo;
+
+        // Manejar elementos admin-only
+        if (usuario.tipo !== 'ADMIN') {
+            document.querySelectorAll('.admin-only').forEach(element => {
+                element.style.display = 'none';
+            });
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        // No redirigir automáticamente en caso de error
+    }
+}
+
+// Event listener para cuando el documento está listo
+document.addEventListener('DOMContentLoaded', () => {
+    verificarAutenticacion();
+});
+
+// Función de login
+async function login(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    try {
+        console.log('Intentando login con:', { email }); // Debug
+
         const response = await fetch('/api/usuarios/login', {
             method: 'POST',
             headers: {
@@ -143,19 +215,57 @@ async function login(email, password) {
             body: JSON.stringify({ email, password })
         });
 
+        console.log('Respuesta del servidor:', response.status); // Debug
+
         if (!response.ok) {
-            throw new Error('Error en el inicio de sesión');
+            if (response.status === 401) {
+                throw new Error('Credenciales inválidas');
+            }
+            throw new Error('Error en el servidor');
         }
 
         const data = await response.json();
-        localStorage.setItem('token', data.token);
-        window.location.href = '/';
+        console.log('Login exitoso:', data); // Debug
+
+        if (data.token) {
+            localStorage.setItem('token', data.token);
+            window.location.href = '/index.html';
+        } else {
+            throw new Error('No se recibió el token');
+        }
+
     } catch (error) {
-        console.error('Error:', error);
-        mostrarAlerta('Error en el inicio de sesión', 'error');
+        console.error('Error en login:', error);
+        // Mostrar mensaje de error al usuario de forma más amigable
+        let mensajeError = 'Error al iniciar sesión';
+        if (error.message === 'Credenciales inválidas') {
+            mensajeError = 'El correo o la contraseña son incorrectos';
+        }
+        mostrarError(mensajeError);
     }
 }
 
+// Función para mostrar errores de forma más visible
+function mostrarError(mensaje) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+    alertDiv.role = 'alert';
+    alertDiv.innerHTML = `
+        <strong>Error:</strong> ${mensaje}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+
+    // Insertar el mensaje al principio del formulario
+    const form = document.querySelector('.login-form');
+    form.insertBefore(alertDiv, form.firstChild);
+
+    // Remover el mensaje después de 5 segundos
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+
+// Función de logout
 function logout() {
     localStorage.removeItem('token');
     window.location.href = '/login.html';
@@ -179,3 +289,22 @@ function mostrarAlerta(mensaje, tipo) {
         alertaDiv.remove();
     }, 3000);
 }
+
+// Función para decodificar el token JWT
+function parseJwt(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        console.error('Error al parsear token:', e);
+        return null;
+    }
+}
+
+// Exportar funciones necesarias
+window.login = login;
+window.logout = logout;

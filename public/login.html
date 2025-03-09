@@ -1,77 +1,52 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login - EICMAPRI</title>
-    <link href="/css/bootstrap-5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/styles.css" rel="stylesheet">
-    <style>
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto;
-            padding: 20px;
-        }
-        .error-message {
-            display: none;
-            color: #dc3545;
-            margin-top: 10px;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Gestión</title>
+    <link rel="stylesheet" href="/css/bootstrap-5.0.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
-<body class="bg-light">
+<body class="login-page">
     <div class="container">
-        <div class="login-container">
-            <div class="card shadow">
-                <div class="card-body">
-                    <h2 class="text-center mb-4">EICMAPRI</h2>
-                    <form id="loginForm" onsubmit="return handleLogin(event)">
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" required>
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="login-form-container">
+                    <form class="login-form" onsubmit="login(event)">
+                        <h1 class="h3 mb-4 fw-normal text-center">Iniciar Sesión</h1>
+                        
+                        <!-- Los mensajes de error aparecerán aquí -->
+                        
+                        <div class="form-group mb-3">
+                            <label for="email" class="form-label">Correo electrónico</label>
+                            <input type="email" 
+                                   class="form-control" 
+                                   id="email" 
+                                   name="email"
+                                   required
+                                   autocomplete="email">
                         </div>
-                        <div class="mb-3">
+                        
+                        <div class="form-group mb-4">
                             <label for="password" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="password" required>
+                            <input type="password" 
+                                   class="form-control" 
+                                   id="password" 
+                                   name="password"
+                                   required
+                                   autocomplete="current-password">
                         </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-                            <a href="/registro.html" class="btn btn-outline-secondary">Registrarse</a>
-                        </div>
-                        <div id="errorMessage" class="error-message text-center"></div>
+                        
+                        <button class="w-100 btn btn-primary" type="submit">
+                            Iniciar Sesión
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="/css/bootstrap-5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/auth.js"></script>
-    <script>
-        // Verificar si ya hay una sesión activa
-        if (auth.isAuthenticated()) {
-            window.location.href = '/';
-        }
-
-        async function handleLogin(event) {
-            event.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const errorMessage = document.getElementById('errorMessage');
-
-            try {
-                const success = await auth.login(email, password);
-                if (success) {
-                    window.location.href = '/';
-                } else {
-                    errorMessage.textContent = 'Email o contraseña incorrectos';
-                    errorMessage.style.display = 'block';
-                }
-            } catch (error) {
-                errorMessage.textContent = 'Error al iniciar sesión';
-                errorMessage.style.display = 'block';
-            }
-            return false;
-        }
-    </script>
 </body>
 </html>

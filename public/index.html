@@ -48,10 +48,10 @@
             </button>
 
             <!-- Info usuario -->
-            <span class="nav-link px-3 d-flex align-items-center">
+            <span class="nav-link px-3 d-flex align-items-center active">
                 <i class="fas fa-user me-2"></i>
-                <span id="usuario-actual"></span>
-                (<span id="tipo-usuario-actual"></span>)
+                <span id="usuario-actual">Cargando...</span>
+                (<span id="tipo-usuario-actual" class="text-light">...</span>)
             </span>
 
             <!-- Botón salir -->
@@ -117,13 +117,80 @@
                 <!-- Contenedor de mensajes de estado -->
                 <div id="statusMessages" aria-live="polite"></div>
 
-                <div id="datos" class="content-section">
+                <!-- Sección Datos -->
+                <div id="datos" class="content-section" style="display: none;">
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                         <h1 class="h2" id="datosTitle">Datos</h1>
                     </div>
-                    <div id="usuarios" class="row">
-                        <!-- Los datos de los usuarios se cargarán aquí -->
-                        <div class="loader" aria-label="Cargando datos"></div>
+                    <!-- Contenido de datos -->
+                </div>
+
+                <!-- Sección Usuarios (mover fuera de datos) -->
+                <div id="usuarios" class="content-section" style="display: none;">
+                    <div class="container-fluid mt-4">
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <h2>Lista de usuarios</h2>
+                            </div>
+                            <div class="col-6 text-end">
+                                <button class="btn btn-info" id="btnCrearUsuario">
+                                    Crear usuario
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Correo</th>
+                                        <th>Rol</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaUsuarios">
+                                    <!-- Los usuarios se cargarán aquí -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Modal para crear/editar usuario -->
+                    <div class="modal fade" id="modalUsuario" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Crear Usuario</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="formUsuario">
+                                        <div class="mb-3">
+                                            <label for="nombre" class="form-label">Nombre</label>
+                                            <input type="text" class="form-control" id="nombre" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label">Correo</label>
+                                            <input type="email" class="form-control" id="email" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="tipo" class="form-label">Rol</label>
+                                            <select class="form-select" id="tipo" required>
+                                                <option value="ADMIN">Administrador</option>
+                                                <option value="CLIENTE">Cliente</option>
+                                                <option value="TRABAJADOR">Trabajador</option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="button" class="btn btn-primary" id="btnGuardarUsuario">Guardar</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -194,71 +261,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Dentro del contenedor principal, actualiza la sección de usuarios -->
-                <div id="usuarios" class="content-section" style="display: none;">
-                    <div class="container-fluid">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h2>Lista de usuarios</h2>
-                            <button class="btn btn-info text-white" onclick="showCreateModal()">
-                                Crear usuario
-                            </button>
-                        </div>
-                        
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead class="bg-primary text-white">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Nombre</th>
-                                        <th>Correo</th>
-                                        <th>Rol</th>
-                                        <th>Acciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="usersList">
-                                    <!-- Aquí se cargarán los usuarios dinámicamente -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Modal para crear/editar usuario -->
-                    <div class="modal fade" id="userModal" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="userModalLabel">Crear Usuario</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form id="userForm">
-                                        <div class="mb-3">
-                                            <label for="userName" class="form-label">Nombre</label>
-                                            <input type="text" class="form-control" id="userName" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="userEmail" class="form-label">Correo</label>
-                                            <input type="email" class="form-control" id="userEmail" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="userType" class="form-label">Rol</label>
-                                            <select class="form-select" id="userType" required>
-                                                <option value="ADMIN">Administrador</option>
-                                                <option value="CLIENTE">Cliente</option>
-                                                <option value="TRABAJADOR">Trabajador</option>
-                                            </select>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                    <button type="button" class="btn btn-primary" onclick="saveUser()">Guardar</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </main>
         </div>
     </div>
@@ -283,13 +285,11 @@
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="/js/auth.js"></script>
     <script src="/js/script.js"></script>
-    <script src="/js/dashboard.js"></script>
+    <script src="/js/usuarios.js"></script>
+    <script src="/js/servicios.js"></script>
     <script src="/js/ordenes.js"></script>
     <script src="/js/facturas.js"></script>
     <script src="/js/notificaciones.js"></script>
-    <script src="/js/servicios.js"></script>
-    <script src="/js/perfil.js"></script>
-    <script src="/js/usuarios.js"></script>
     <script>
         // Verificar autenticación al cargar la página
         document.addEventListener('DOMContentLoaded', function() {
@@ -329,49 +329,67 @@
 
             // Agregar evento click
             darkModeToggle.addEventListener('click', toggleDarkMode);
+
+            // Agregar manejadores de eventos para los enlaces de navegación
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = link.getAttribute('data-section');
+                    showSection(section);
+                });
+            });
+
+            // Mostrar la sección inicial
+            showSection('datos');
         });
 
         function showSection(sectionId) {
-            const sections = document.querySelectorAll('.content-section');
-            sections.forEach(section => {
+            console.log('Mostrando sección:', sectionId);
+            
+            // Ocultar todas las secciones
+            document.querySelectorAll('.content-section').forEach(section => {
                 section.style.display = 'none';
                 section.classList.remove('active');
             });
 
+            // Mostrar la sección seleccionada
             const targetSection = document.getElementById(sectionId);
-            targetSection.style.display = 'block';
-            // Usar setTimeout para asegurar que la transición se active después de que el display cambie
-            setTimeout(() => {
+            if (targetSection) {
+                targetSection.style.display = 'block';
                 targetSection.classList.add('active');
-            }, 10);
+                
+                // Cargar datos específicos de la sección
+                switch(sectionId) {
+                    case 'usuarios':
+                        if (typeof loadUsers === 'function') {
+                            loadUsers();
+                        }
+                        break;
+                    case 'perfil':
+                        loadUserProfile();
+                        break;
+                    case 'servicios':
+                        loadServices();
+                        break;
+                    case 'ordenes':
+                        loadServicesForOrders();
+                        break;
+                    case 'facturas':
+                        loadInvoices();
+                        break;
+                    case 'notificaciones':
+                        loadNotifications();
+                        break;
+                }
+            }
 
             // Actualizar enlaces activos
-            const links = document.querySelectorAll('.nav-link');
-            links.forEach(link => {
+            document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('active');
                 if (link.getAttribute('data-section') === sectionId) {
                     link.classList.add('active');
                 }
             });
-
-            // Cargar datos específicos de la sección
-            switch(sectionId) {
-                case 'perfil':
-                    loadUserProfile();
-                    break;
-                case 'servicios':
-                    loadServices();
-                    break;
-                case 'ordenes':
-                    loadServicesForOrders();
-                    break;
-                case 'facturas':
-                    loadInvoices();
-                    break;
-                case 'notificaciones':
-                    loadNotifications();
-                    break;
-            }
         }
 
         // Función para mostrar mensajes de estado

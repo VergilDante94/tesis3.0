@@ -53,55 +53,34 @@ function setupNavigation() {
 
     // Función para mostrar una sección
     function showSection(sectionId) {
+        console.log('Mostrando sección:', sectionId);
+        
         // Ocultar todas las secciones
         document.querySelectorAll('.content-section').forEach(section => {
             section.style.display = 'none';
-        });
-
-        // Remover la clase active de todos los enlaces
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
         });
 
         // Mostrar la sección seleccionada
         const selectedSection = document.getElementById(sectionId);
         if (selectedSection) {
             selectedSection.style.display = 'block';
+            selectedSection.style.visibility = 'visible';
+            selectedSection.style.opacity = '1';
+            console.log('Sección mostrada:', sectionId);
+            
             if (sectionId === 'usuarios') {
-                loadUsers(); // Cargar usuarios cuando se muestre la sección
+                console.log('Cargando usuarios...');
+                loadUsers();
             }
         }
 
-        // Activar el enlace correspondiente
-        const activeLink = document.querySelector(`[data-section="${sectionId}"]`);
-        if (activeLink) {
-            activeLink.classList.add('active');
-        }
-
-        // Cargar contenido específico según la sección
-        switch(sectionId) {
-            case 'usuarios':
-                loadUsers();
-                break;
-            case 'servicios':
-                loadServices();
-                break;
-            case 'ordenes':
-                loadOrders();
-                break;
-            case 'facturas':
-                loadInvoices();
-                break;
-            case 'notificaciones':
-                loadNotifications();
-                break;
-            case 'perfil':
-                loadProfile();
-                break;
-            case 'datos':
-                loadData();
-                break;
-        }
+        // Actualizar enlace activo
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('data-section') === sectionId) {
+                link.classList.add('active');
+            }
+        });
     }
 
     // Configurar event listeners para los enlaces del sidebar
@@ -271,3 +250,27 @@ const styles = `
 const styleSheet = document.createElement("style");
 styleSheet.innerText = styles;
 document.head.appendChild(styleSheet);
+
+// Función para alternar el tema oscuro/claro
+function toggleDarkMode() {
+    const html = document.documentElement;
+    const themeIcon = document.querySelector('#themeToggle i');
+    
+    if (html.getAttribute('data-bs-theme') === 'dark') {
+        html.setAttribute('data-bs-theme', 'light');
+        themeIcon.className = ''; // Limpiamos la clase primero
+        themeIcon.classList.add('fas', 'fa-moon');
+    } else {
+        html.setAttribute('data-bs-theme', 'dark');
+        themeIcon.className = ''; // Limpiamos la clase primero
+        themeIcon.classList.add('fas', 'fa-sun');
+    }
+}
+
+// Event listener para el botón de tema
+document.addEventListener('DOMContentLoaded', () => {
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleDarkMode);
+    }
+});
