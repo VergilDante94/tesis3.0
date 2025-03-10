@@ -207,7 +207,7 @@ async function login(event) {
     try {
         console.log('Intentando login con:', { email }); // Debug
 
-        const response = await fetch('/api/usuarios/login', {
+        const response = await fetch('/api/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -218,10 +218,7 @@ async function login(event) {
         console.log('Respuesta del servidor:', response.status); // Debug
 
         if (!response.ok) {
-            if (response.status === 401) {
-                throw new Error('Credenciales inválidas');
-            }
-            throw new Error('Error en el servidor');
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
 
         const data = await response.json();
@@ -236,12 +233,7 @@ async function login(event) {
 
     } catch (error) {
         console.error('Error en login:', error);
-        // Mostrar mensaje de error al usuario de forma más amigable
-        let mensajeError = 'Error al iniciar sesión';
-        if (error.message === 'Credenciales inválidas') {
-            mensajeError = 'El correo o la contraseña son incorrectos';
-        }
-        mostrarError(mensajeError);
+        mostrarError('Error al iniciar sesión. Por favor, verifica tus credenciales.');
     }
 }
 
