@@ -1,33 +1,24 @@
 {
   "name": "tesis2.0",
   "version": "1.0.0",
-  "description": "Sistema de Gestión de Servicios",
-  "main": "backend/server.js",
+  "description": "Sistema de gestión de servicios",
+  "main": "src/app.js",
   "scripts": {
-    "start": "node backend/server.js",
-    "dev": "nodemon backend/server.js",
-    "test": "jest --detectOpenHandles --forceExit",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "jest tests/"
   },
   "dependencies": {
-    "@prisma/client": "^6.4.1",
+    "@prisma/client": "^5.10.2",
     "bcrypt": "^5.1.1",
-    "body-parser": "^1.20.2",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
     "express": "^4.18.2",
-    "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.6.0",
-    "node-fetch": "^3.3.2",
-    "pdfkit": "^0.16.0"
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.14",
+    "dotenv": "^16.4.7",
     "jest": "^29.7.0",
-    "nodemon": "^3.0.1",
-    "prisma": "^6.4.1",
-    "supertest": "^7.0.0"
+    "nodemon": "^3.1.0",
+    "prisma": "^5.10.2"
   },
   "author": "BRYAN",
   "license": "ISC",

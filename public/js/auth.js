@@ -1,165 +1,69 @@
+// Variables globales para el estado de autenticación
 const auth = {
     token: null,
     usuario: null,
-
-    async login(email, contrasena) {
-        try {
-            const response = await fetch('/api/usuarios/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email, contrasena })
-            });
-
-            const data = await response.json();
-            if (response.ok) {
-                this.token = data.token;
-                this.usuario = data.usuario;
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('usuario', JSON.stringify(data.usuario));
-                actualizarInfoUsuario();
-                return true;
-            }
-            return false;
-        } catch (error) {
-            console.error('Error en login:', error);
-            return false;
-        }
-    },
-
-    logout() {
-        this.token = null;
-        this.usuario = null;
-        localStorage.removeItem('token');
-        localStorage.removeItem('usuario');
-        window.location.href = '/login.html';
-    },
-
-    isAuthenticated() {
-        return !!this.token;
-    },
-
+    initialized: false,
+    
+    // Método para obtener los encabezados de autenticación
     getHeaders() {
         return {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this.token}`
+            'Authorization': `Bearer ${this.token || localStorage.getItem('token')}`
         };
     }
 };
 
-// Cargar token si existe
-auth.token = localStorage.getItem('token');
-auth.usuario = JSON.parse(localStorage.getItem('usuario'));
+// Función para inicializar la autenticación
+function initAuth() {
+    if (auth.initialized) return;
+    
+    auth.token = localStorage.getItem('token');
+    try {
+        auth.usuario = JSON.parse(localStorage.getItem('usuario'));
+    } catch (e) {
+        auth.usuario = null;
+    }
+    auth.initialized = true;
+}
 
 // Función para verificar si estamos en la página de login
 function isLoginPage() {
-    return window.location.pathname.includes('login.html');
+    return window.location.pathname.endsWith('login.html');
+}
+
+// Función para decodificar el token de manera segura
+function decodeToken(token) {
+    try {
+        // Usar atob para decodificar base64 en el navegador
+        const decodedString = atob(token);
+        const payload = JSON.parse(decodedString);
+        console.log('Token decodificado exitosamente:', payload);
+        return payload;
+    } catch (error) {
+        console.error('Error al decodificar token:', error);
+        return null;
+    }
 }
 
 // Función para verificar autenticación
-function verificarAutenticacion() {
+async function verificarAutenticacion() {
+    console.log('Verificando autenticación en:', window.location.pathname);
+    
+    // Inicializar estado de autenticación
+    initAuth();
+
     const token = localStorage.getItem('token');
-    const esLoginPage = window.location.pathname.includes('login.html');
-
-    if (!token && !esLoginPage) {
-        window.location.href = '/login.html';
-        return false;
-    }
-
-    if (token && esLoginPage) {
-        window.location.href = '/index.html';
-        return false;
-    }
-
-    return true;
-}
-
-function cerrarSesion() {
-    localStorage.removeItem('token');
-    window.location.href = '/login.html';
-}
-
-function actualizarInfoUsuario() {
-    const token = localStorage.getItem('token');
-    if (token) {
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            console.log('Token payload:', payload); // Para depuración
-            
-            const usuarioActual = document.getElementById('usuario-actual');
-            const tipoUsuarioActual = document.getElementById('tipo-usuario-actual');
-            
-            if (usuarioActual && tipoUsuarioActual) {
-                usuarioActual.textContent = payload.nombre || 'Usuario';
-                tipoUsuarioActual.textContent = payload.tipo || 'Sin tipo';
-            } else {
-                console.error('Elementos de usuario no encontrados en el DOM');
-            }
-        } catch (error) {
-            console.error('Error al decodificar el token:', error);
-            // Si hay error, redirigir al login
+    if (!token) {
+        console.log('No hay token disponible');
+        if (!isLoginPage()) {
+            console.log('Redirigiendo a login por falta de token');
             window.location.href = '/login.html';
         }
-    } else {
-        console.log('No hay token almacenado');
-        // Si no hay token, redirigir al login
-        window.location.href = '/login.html';
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Obtener la página actual
-    const currentPage = window.location.pathname;
-    
-    // Si estamos en la página de login, no verificamos el token
-    if (currentPage === '/login.html') {
-        // Solo configuramos el evento de login
-        const loginForm = document.getElementById('loginForm');
-        if (loginForm) {
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                login(e);
-            });
-        }
-        return; // Salimos de la función para evitar otras verificaciones
-    }
-
-    // Para otras páginas, verificamos el token
-    const token = localStorage.getItem('token');
-    if (!token && currentPage !== '/login.html') {
-        window.location.href = '/login.html';
-        return;
-    }
-
-    // Actualizar información del usuario si no estamos en login
-    actualizarInfoUsuario();
-
-    // Configurar el botón de logout
-    const btnLogout = document.getElementById('btn-logout');
-    if (btnLogout) {
-        btnLogout.addEventListener('click', function(e) {
-            e.preventDefault();
-            logout();
-        });
-    }
-});
-
-// Función para cargar la información del usuario
-async function cargarInformacionUsuario() {
-    // Solo cargar información si no estamos en la página de login
-    if (isLoginPage()) {
-        return;
+        return false;
     }
 
     try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            return;
-        }
-
+        // Verificar el token con el servidor
         const response = await fetch('/api/usuarios/me', {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -167,35 +71,86 @@ async function cargarInformacionUsuario() {
         });
 
         if (!response.ok) {
-            throw new Error('Error al obtener información del usuario');
+            throw new Error('Token inválido');
         }
 
-        const usuario = await response.json();
-        
-        // Actualizar elementos solo si existen
-        const nombreElement = document.getElementById('usuario-actual');
-        const tipoElement = document.getElementById('tipo-usuario-actual');
-        
-        if (nombreElement) nombreElement.textContent = usuario.nombre;
-        if (tipoElement) tipoElement.textContent = usuario.tipo;
+        const userData = await response.json();
+        console.log('Datos de usuario verificados:', userData);
 
-        // Manejar elementos admin-only
-        if (usuario.tipo !== 'ADMIN') {
-            document.querySelectorAll('.admin-only').forEach(element => {
-                element.style.display = 'none';
-            });
+        // Si estamos en la página de login y el token es válido, redirigir al dashboard
+        if (isLoginPage()) {
+            console.log('Token válido en página de login, redirigiendo a dashboard');
+            window.location.href = '/index.html';
+            return true;
         }
 
+        // Actualizar la UI con la información del usuario
+        actualizarInfoUsuario(userData);
+        
+        console.log('Verificación de autenticación exitosa');
+        return true;
     } catch (error) {
-        console.error('Error:', error);
-        // No redirigir automáticamente en caso de error
+        console.error('Error en verificación de autenticación:', error);
+        if (!isLoginPage()) {
+            logout();
+        }
+        return false;
     }
 }
 
-// Event listener para cuando el documento está listo
-document.addEventListener('DOMContentLoaded', () => {
-    verificarAutenticacion();
-});
+// Función para actualizar la UI con la información del usuario
+function actualizarInfoUsuario(userData) {
+    console.log('Actualizando UI con datos de usuario:', userData);
+    
+    const usuarioActual = document.getElementById('usuario-actual');
+    const tipoUsuario = document.getElementById('tipo-usuario-actual');
+    
+    if (usuarioActual) {
+        usuarioActual.textContent = userData.nombre || userData.email;
+    }
+    if (tipoUsuario) {
+        tipoUsuario.textContent = formatearRol(userData.tipo);
+    }
+
+    // Manejar elementos específicos de administrador
+    const adminElements = document.querySelectorAll('.admin-only');
+    console.log('Elementos admin encontrados:', adminElements.length);
+    console.log('Tipo de usuario:', userData.tipo);
+    
+    adminElements.forEach(element => {
+        if (userData.tipo === 'ADMIN') {
+            console.log('Mostrando elemento admin:', element);
+            element.style.display = 'block';
+            element.classList.remove('d-none');
+            
+            // Si es un elemento del menú lateral, asegurarse de que sea visible
+            if (element.closest('.sidebar')) {
+                element.style.display = 'list-item';
+            }
+        } else {
+            console.log('Ocultando elemento admin:', element);
+            element.style.display = 'none';
+            element.classList.add('d-none');
+        }
+    });
+
+    // Actualizar el estado global
+    auth.usuario = userData;
+    auth.initialized = true;
+
+    // Guardar en localStorage para persistencia
+    localStorage.setItem('usuario', JSON.stringify(userData));
+}
+
+// Función para formatear el rol
+function formatearRol(tipo) {
+    const roles = {
+        'ADMIN': 'Administrador',
+        'CLIENTE': 'Cliente',
+        'TRABAJADOR': 'Trabajador'
+    };
+    return roles[tipo] || tipo;
+}
 
 // Función de login
 async function login(event) {
@@ -205,8 +160,6 @@ async function login(event) {
     const password = document.getElementById('password').value;
 
     try {
-        console.log('Intentando login con:', { email }); // Debug
-
         const response = await fetch('/api/auth/login', {
             method: 'POST',
             headers: {
@@ -215,88 +168,81 @@ async function login(event) {
             body: JSON.stringify({ email, password })
         });
 
-        console.log('Respuesta del servidor:', response.status); // Debug
+        const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(`Error ${response.status}: ${response.statusText}`);
+            throw new Error(data.message || 'Error en el inicio de sesión');
         }
 
-        const data = await response.json();
-        console.log('Login exitoso:', data); // Debug
+        console.log('Respuesta del servidor:', data); // Para debugging
 
-        if (data.token) {
-            localStorage.setItem('token', data.token);
+        // Verificar que el token sea válido antes de guardarlo
+        const decodedToken = decodeToken(data.token);
+        if (!decodedToken) {
+            throw new Error('Token inválido recibido del servidor');
+        }
+
+        // Guardar datos de autenticación
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('usuario', JSON.stringify(decodedToken));
+        
+        // Actualizar estado global
+        auth.token = data.token;
+        auth.usuario = decodedToken;
+        auth.initialized = true;
+
+        console.log('Login exitoso, datos guardados correctamente');
+        
+        // Redirigir al dashboard después de un breve delay
+        setTimeout(() => {
             window.location.href = '/index.html';
-        } else {
-            throw new Error('No se recibió el token');
-        }
+        }, 100);
 
     } catch (error) {
         console.error('Error en login:', error);
-        mostrarError('Error al iniciar sesión. Por favor, verifica tus credenciales.');
+        mostrarError(error.message || 'Error al iniciar sesión');
     }
-}
-
-// Función para mostrar errores de forma más visible
-function mostrarError(mensaje) {
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
-    alertDiv.role = 'alert';
-    alertDiv.innerHTML = `
-        <strong>Error:</strong> ${mensaje}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-
-    // Insertar el mensaje al principio del formulario
-    const form = document.querySelector('.login-form');
-    form.insertBefore(alertDiv, form.firstChild);
-
-    // Remover el mensaje después de 5 segundos
-    setTimeout(() => {
-        alertDiv.remove();
-    }, 5000);
 }
 
 // Función de logout
 function logout() {
+    // Limpiar estado global
+    auth.token = null;
+    auth.usuario = null;
+    auth.initialized = false;
+
+    // Limpiar localStorage
     localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+
+    // Redirigir al login
     window.location.href = '/login.html';
 }
 
-function mostrarAlerta(mensaje, tipo) {
-    const alertaDiv = document.createElement('div');
-    alertaDiv.className = `alert alert-${tipo} alert-dismissible fade show`;
-    alertaDiv.role = 'alert';
-    alertaDiv.innerHTML = `
-        ${mensaje}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-    
-    // Insertar la alerta al principio del contenedor principal
-    const container = document.querySelector('.container') || document.body;
-    container.insertBefore(alertaDiv, container.firstChild);
-
-    // Remover la alerta después de 3 segundos
-    setTimeout(() => {
-        alertaDiv.remove();
-    }, 3000);
-}
-
-// Función para decodificar el token JWT
-function parseJwt(token) {
-    try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload);
-    } catch (e) {
-        console.error('Error al parsear token:', e);
-        return null;
+// Función para mostrar errores
+function mostrarError(mensaje) {
+    const errorDiv = document.getElementById('error-message');
+    if (errorDiv) {
+        errorDiv.textContent = mensaje;
+        errorDiv.style.display = 'block';
     }
 }
+
+// Event listener para cuando el documento está listo
+document.addEventListener('DOMContentLoaded', function() {
+    // Solo verificar autenticación si no estamos en la página de login
+    if (!isLoginPage()) {
+        verificarAutenticacion();
+    }
+
+    // Configurar el botón de logout si existe
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', logout);
+    }
+});
 
 // Exportar funciones necesarias
 window.login = login;
 window.logout = logout;
+window.verificarAutenticacion = verificarAutenticacion;

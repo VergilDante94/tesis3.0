@@ -33,12 +33,31 @@ function setupEventListeners() {
 async function cargarPerfil() {
     try {
         const token = localStorage.getItem('token');
-        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (!token) {
+            throw new Error('No hay token disponible');
+        }
+
+        const decodedString = atob(token);
+        const payload = JSON.parse(decodedString);
+        console.log('Datos del perfil:', payload);
         
+        // Actualizar la información en la página
+        document.getElementById('perfil-nombre-display').textContent = payload.nombre || '';
         document.getElementById('perfil-email').textContent = payload.email || '';
-        document.getElementById('perfil-tipo').textContent = payload.tipo || '';
+        document.getElementById('perfil-tipo').textContent = formatearRol(payload.tipo) || '';
+        
+        // También actualizar el header
+        document.getElementById('usuario-actual').textContent = payload.nombre || '';
+        document.getElementById('tipo-usuario-actual').textContent = formatearRol(payload.tipo) || '';
+        
+        // Si hay un formulario de edición, actualizar sus campos
+        const nombreInput = document.getElementById('perfil-nombre');
+        if (nombreInput) {
+            nombreInput.value = payload.nombre || '';
+        }
     } catch (error) {
         console.error('Error al cargar perfil:', error);
+        mostrarAlerta('Error al cargar el perfil', 'danger');
     }
 }
 
@@ -173,11 +192,14 @@ async function eliminarUsuario(id) {
 function getUserType() {
     const token = localStorage.getItem('token');
     if (!token) return null;
+    
     try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
+        const decodedString = atob(token);
+        const payload = JSON.parse(decodedString);
+        console.log('Token decodificado en getUserType:', payload);
         return payload.tipo;
     } catch (error) {
-        console.error('Error al decodificar el token:', error);
+        console.error('Error al decodificar token en getUserType:', error);
         return null;
     }
 }
@@ -192,4 +214,122 @@ function getUserId() {
         console.error('Error al decodificar el token:', error);
         return null;
     }
-} 
+}
+
+// Función para cargar el perfil del usuario
+async function loadUserProfile() {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('/api/usuarios/me', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al cargar el perfil');
+        }
+
+        const usuario = await response.json();
+        displayUserProfile(usuario);
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarAlerta('Error al cargar el perfil', 'danger');
+    }
+}
+
+// Función para mostrar la información del perfil
+function displayUserProfile(usuario) {
+    document.getElementById('perfil-email').textContent = usuario.email;
+    document.getElementById('perfil-tipo').textContent = formatearRol(usuario.tipo);
+    
+    // Actualizar el formulario de edición si existe
+    const nombreInput = document.getElementById('perfil-nombre');
+    if (nombreInput) {
+        nombreInput.value = usuario.nombre;
+    }
+}
+
+// Función para formatear el rol del usuario
+function formatearRol(tipo) {
+    const roles = {
+        'ADMIN': 'Administrador',
+        'CLIENTE': 'Cliente',
+        'TRABAJADOR': 'Trabajador'
+    };
+    return roles[tipo] || tipo;
+}
+
+// Función para mostrar el modal de edición de perfil
+function showEditProfileModal() {
+    const modal = new bootstrap.Modal(document.getElementById('modalEditarPerfil'));
+    modal.show();
+}
+
+// Función para guardar cambios del perfil
+async function saveProfileChanges() {
+    try {
+        const token = localStorage.getItem('token');
+        const userData = {
+            nombre: document.getElementById('perfil-nombre').value,
+            password: document.getElementById('perfil-password').value
+        };
+
+        const response = await fetch('/api/usuarios/me', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(userData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al actualizar el perfil');
+        }
+
+        const usuario = await response.json();
+        displayUserProfile(usuario);
+        
+        // Cerrar modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarPerfil'));
+        modal.hide();
+        
+        mostrarAlerta('Perfil actualizado correctamente', 'success');
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarAlerta('Error al actualizar el perfil', 'danger');
+    }
+}
+
+// Función para mostrar alertas
+function mostrarAlerta(mensaje, tipo) {
+    const alertaDiv = document.createElement('div');
+    alertaDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+    alertaDiv.role = 'alert';
+    alertaDiv.innerHTML = `
+        ${mensaje}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    document.body.appendChild(alertaDiv);
+    
+    setTimeout(() => {
+        alertaDiv.remove();
+    }, 3000);
+}
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+    const btnEditarPerfil = document.getElementById('btn-editar-perfil');
+    if (btnEditarPerfil) {
+        btnEditarPerfil.addEventListener('click', showEditProfileModal);
+    }
+
+    const btnGuardarPerfil = document.getElementById('btn-guardar-perfil');
+    if (btnGuardarPerfil) {
+        btnGuardarPerfil.addEventListener('click', saveProfileChanges);
+    }
+});
+
+// Exportar funciones necesarias
+window.loadUserProfile = loadUserProfile; 

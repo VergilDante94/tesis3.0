@@ -1,3 +1,37 @@
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Verificando autenticación inicial...');
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login.html';
+            return;
+        }
+
+        const response = await fetch('/api/usuarios/me', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Token inválido');
+        }
+
+        const userData = await response.json();
+        console.log('Datos de usuario cargados:', userData);
+        
+        // Actualizar la UI con la información del usuario
+        actualizarInfoUsuario(userData);
+        
+        // Mostrar la sección inicial
+        showSection('inicio');
+    } catch (error) {
+        console.error('Error al verificar autenticación:', error);
+        localStorage.removeItem('token');
+        window.location.href = '/login.html';
+    }
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     // Referencias
     const darkModeToggle = document.getElementById('darkModeToggle');
@@ -58,23 +92,73 @@ function setupNavigation() {
         // Ocultar todas las secciones
         document.querySelectorAll('.content-section').forEach(section => {
             section.style.display = 'none';
+            section.classList.remove('active');
         });
 
         // Mostrar la sección seleccionada
-        const selectedSection = document.getElementById(sectionId);
-        if (selectedSection) {
-            selectedSection.style.display = 'block';
-            selectedSection.style.visibility = 'visible';
-            selectedSection.style.opacity = '1';
-            console.log('Sección mostrada:', sectionId);
+        const targetSection = document.getElementById(sectionId);
+        if (targetSection) {
+            targetSection.style.display = 'block';
+            targetSection.classList.add('active');
             
-            if (sectionId === 'usuarios') {
-                console.log('Cargando usuarios...');
-                loadUsers();
+            // Verificar permisos de administrador
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const userData = JSON.parse(atob(token));
+                    console.log('Verificando permisos para sección:', sectionId, 'Usuario:', userData);
+                    
+                    // Actualizar elementos de administrador en la sección actual
+                    if (userData.tipo === 'ADMIN') {
+                        targetSection.querySelectorAll('.admin-only').forEach(element => {
+                            element.style.display = 'block';
+                            element.classList.remove('d-none');
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error al verificar permisos:', error);
+                }
+            }
+
+            // Cargar datos específicos de la sección
+            switch(sectionId) {
+                case 'usuarios':
+                    if (typeof loadUsers === 'function') {
+                        loadUsers();
+                    }
+                    break;
+                case 'ordenes':
+                    console.log('Cargando sección de órdenes...');
+                    if (typeof loadServicesForOrders === 'function') {
+                        loadServicesForOrders();
+                    } else {
+                        console.error('La función loadServicesForOrders no está definida');
+                    }
+                    break;
+                case 'servicios':
+                    if (typeof loadServices === 'function') {
+                        loadServices();
+                    }
+                    break;
+                case 'facturas':
+                    if (typeof loadInvoices === 'function') {
+                        loadInvoices();
+                    }
+                    break;
+                case 'notificaciones':
+                    if (typeof loadNotifications === 'function') {
+                        loadNotifications();
+                    }
+                    break;
+                case 'perfil':
+                    if (typeof loadUserProfile === 'function') {
+                        loadUserProfile();
+                    }
+                    break;
             }
         }
 
-        // Actualizar enlace activo
+        // Actualizar enlaces activos
         document.querySelectorAll('.nav-link').forEach(link => {
             link.classList.remove('active');
             if (link.getAttribute('data-section') === sectionId) {

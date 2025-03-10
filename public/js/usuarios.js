@@ -56,17 +56,9 @@ let modalUsuario = null;
 // Función para cargar usuarios
 async function loadUsers() {
     try {
-        console.log('Iniciando carga de usuarios...'); // Debug
-        const token = localStorage.getItem('token');
-        
-        if (!token) {
-            console.error('No hay token disponible');
-            return;
-        }
-
         const response = await fetch('/api/usuarios', {
             headers: {
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         });
 
@@ -75,19 +67,10 @@ async function loadUsers() {
         }
 
         const usuarios = await response.json();
-        console.log('Datos de usuarios recibidos:', usuarios); // Debug
-
-        // Verificar si la sección está visible
-        const seccionUsuarios = document.getElementById('usuarios');
-        if (seccionUsuarios) {
-            console.log('Estado de visualización de la sección:', seccionUsuarios.style.display); // Debug
-            seccionUsuarios.style.display = 'block';
-        }
-
         mostrarUsuarios(usuarios);
     } catch (error) {
         console.error('Error al cargar usuarios:', error);
-        mostrarAlerta('Error al cargar usuarios', 'danger');
+        mostrarAlerta('Error al cargar usuarios', 'error');
     }
 }
 
