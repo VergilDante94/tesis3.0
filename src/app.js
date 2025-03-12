@@ -1,7 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const app = express();
 const prisma = new PrismaClient();
 
@@ -19,35 +21,37 @@ app.post('/api/auth/login', async (req, res) => {
         });
 
         if (!usuario) {
-            return res.status(401).json({ message: 'Credenciales inválidas' });
+            return res.status(401).json({ error: 'Credenciales inválidas' });
         }
 
-        const passwordValida = await bcrypt.compare(password, usuario.contrasena);
-        if (!passwordValida) {
-            return res.status(401).json({ message: 'Credenciales inválidas' });
+        const validPassword = await bcrypt.compare(password, usuario.contrasena);
+        if (!validPassword) {
+            return res.status(401).json({ error: 'Credenciales inválidas' });
         }
 
-        // Crear el objeto del token
-        const tokenData = {
-            id: usuario.id,
-            email: usuario.email,
-            tipo: usuario.tipo,
-            nombre: usuario.nombre
-        };
+        const token = jwt.sign(
+            { 
+                id: usuario.id,
+                email: usuario.email,
+                tipo: usuario.tipo,
+                nombre: usuario.nombre
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
 
-        console.log('Datos del token a enviar:', tokenData); // Para debugging
-
-        // Convertir a base64
-        const token = Buffer.from(JSON.stringify(tokenData)).toString('base64');
-
-        // Enviar respuesta
-        res.json({ 
+        res.json({
             token,
-            usuario: tokenData
+            usuario: {
+                id: usuario.id,
+                nombre: usuario.nombre,
+                email: usuario.email,
+                tipo: usuario.tipo
+            }
         });
     } catch (error) {
         console.error('Error en login:', error);
-        res.status(500).json({ message: 'Error en el servidor' });
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
 
@@ -60,10 +64,14 @@ app.get('/api/usuarios/me', async (req, res) => {
         }
 
         const token = authHeader.split(' ')[1];
-        const userData = JSON.parse(Buffer.from(token, 'base64').toString());
+        if (!token) {
+            return res.status(401).json({ message: 'Token no proporcionado' });
+        }
 
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
         const usuario = await prisma.usuario.findUnique({
-            where: { id: userData.id },
+            where: { id: decoded.id },
             select: {
                 id: true,
                 email: true,
@@ -79,6 +87,12 @@ app.get('/api/usuarios/me', async (req, res) => {
         res.json(usuario);
     } catch (error) {
         console.error('Error:', error);
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ message: 'Token inválido' });
+        }
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'Token expirado' });
+        }
         res.status(500).json({ message: 'Error en el servidor' });
     }
 });
@@ -108,10 +122,14 @@ app.get('/api/usuarios', async (req, res) => {
         }
 
         const token = authHeader.split(' ')[1];
-        const userData = JSON.parse(Buffer.from(token, 'base64').toString());
+        if (!token) {
+            return res.status(401).json({ message: 'Token no proporcionado' });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         // Solo los administradores pueden ver la lista de usuarios
-        if (userData.tipo !== 'ADMIN') {
+        if (decoded.tipo !== 'ADMIN') {
             return res.status(403).json({ message: 'Acceso denegado' });
         }
 
@@ -132,6 +150,12 @@ app.get('/api/usuarios', async (req, res) => {
         res.json(usuarios);
     } catch (error) {
         console.error('Error al obtener usuarios:', error);
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ message: 'Token inválido' });
+        }
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'Token expirado' });
+        }
         res.status(500).json({ message: 'Error al obtener usuarios' });
     }
 });
@@ -146,9 +170,13 @@ app.post('/api/usuarios', async (req, res) => {
         }
 
         const token = authHeader.split(' ')[1];
-        const userData = JSON.parse(Buffer.from(token, 'base64').toString());
+        if (!token) {
+            return res.status(401).json({ message: 'Token no proporcionado' });
+        }
 
-        if (userData.tipo !== 'ADMIN') {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        if (decoded.tipo !== 'ADMIN') {
             return res.status(403).json({ message: 'Acceso denegado' });
         }
 
@@ -187,6 +215,12 @@ app.post('/api/usuarios', async (req, res) => {
         res.status(201).json(usuario);
     } catch (error) {
         console.error('Error al crear usuario:', error);
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ message: 'Token inválido' });
+        }
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'Token expirado' });
+        }
         res.status(500).json({ message: 'Error al crear usuario' });
     }
 });
@@ -201,9 +235,13 @@ app.put('/api/usuarios/:id', async (req, res) => {
         }
 
         const token = authHeader.split(' ')[1];
-        const userData = JSON.parse(Buffer.from(token, 'base64').toString());
+        if (!token) {
+            return res.status(401).json({ message: 'Token no proporcionado' });
+        }
 
-        if (userData.tipo !== 'ADMIN') {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        if (decoded.tipo !== 'ADMIN') {
             return res.status(403).json({ message: 'Acceso denegado' });
         }
 
@@ -237,6 +275,12 @@ app.put('/api/usuarios/:id', async (req, res) => {
         res.json(usuario);
     } catch (error) {
         console.error('Error al actualizar usuario:', error);
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ message: 'Token inválido' });
+        }
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'Token expirado' });
+        }
         res.status(500).json({ message: 'Error al actualizar usuario' });
     }
 });
@@ -251,16 +295,20 @@ app.delete('/api/usuarios/:id', async (req, res) => {
         }
 
         const token = authHeader.split(' ')[1];
-        const userData = JSON.parse(Buffer.from(token, 'base64').toString());
+        if (!token) {
+            return res.status(401).json({ message: 'Token no proporcionado' });
+        }
 
-        if (userData.tipo !== 'ADMIN') {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        if (decoded.tipo !== 'ADMIN') {
             return res.status(403).json({ message: 'Acceso denegado' });
         }
 
         const { id } = req.params;
 
         // No permitir eliminar al propio usuario administrador
-        if (parseInt(id) === userData.id) {
+        if (parseInt(id) === decoded.id) {
             return res.status(400).json({ message: 'No puedes eliminar tu propio usuario' });
         }
 
@@ -271,6 +319,12 @@ app.delete('/api/usuarios/:id', async (req, res) => {
         res.json({ message: 'Usuario eliminado correctamente' });
     } catch (error) {
         console.error('Error al eliminar usuario:', error);
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ message: 'Token inválido' });
+        }
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'Token expirado' });
+        }
         res.status(500).json({ message: 'Error al eliminar usuario' });
     }
 });
@@ -284,7 +338,11 @@ app.put('/api/usuarios/me', async (req, res) => {
         }
 
         const token = authHeader.split(' ')[1];
-        const userData = JSON.parse(Buffer.from(token, 'base64').toString());
+        if (!token) {
+            return res.status(401).json({ message: 'Token no proporcionado' });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         const { nombre, password } = req.body;
         const updateData = { nombre };
@@ -295,7 +353,7 @@ app.put('/api/usuarios/me', async (req, res) => {
         }
 
         const usuario = await prisma.usuario.update({
-            where: { id: userData.id },
+            where: { id: decoded.id },
             data: updateData,
             select: {
                 id: true,
@@ -308,6 +366,12 @@ app.put('/api/usuarios/me', async (req, res) => {
         res.json(usuario);
     } catch (error) {
         console.error('Error:', error);
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ message: 'Token inválido' });
+        }
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'Token expirado' });
+        }
         res.status(500).json({ message: 'Error al actualizar el perfil' });
     }
 });

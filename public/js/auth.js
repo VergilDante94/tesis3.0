@@ -34,9 +34,14 @@ function isLoginPage() {
 // Función para decodificar el token de manera segura
 function decodeToken(token) {
     try {
-        // Usar atob para decodificar base64 en el navegador
-        const decodedString = atob(token);
-        const payload = JSON.parse(decodedString);
+        // Dividir el token JWT en sus partes
+        const parts = token.split('.');
+        if (parts.length !== 3) {
+            throw new Error('Token JWT inválido');
+        }
+        
+        // Decodificar la parte del payload (segunda parte)
+        const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
         console.log('Token decodificado exitosamente:', payload);
         return payload;
     } catch (error) {
@@ -171,24 +176,18 @@ async function login(event) {
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.message || 'Error en el inicio de sesión');
+            throw new Error(data.error || 'Error en el inicio de sesión');
         }
 
-        console.log('Respuesta del servidor:', data); // Para debugging
-
-        // Verificar que el token sea válido antes de guardarlo
-        const decodedToken = decodeToken(data.token);
-        if (!decodedToken) {
-            throw new Error('Token inválido recibido del servidor');
-        }
+        console.log('Respuesta del servidor:', data);
 
         // Guardar datos de autenticación
         localStorage.setItem('token', data.token);
-        localStorage.setItem('usuario', JSON.stringify(decodedToken));
+        localStorage.setItem('usuario', JSON.stringify(data.usuario));
         
         // Actualizar estado global
         auth.token = data.token;
-        auth.usuario = decodedToken;
+        auth.usuario = data.usuario;
         auth.initialized = true;
 
         console.log('Login exitoso, datos guardados correctamente');

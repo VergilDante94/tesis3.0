@@ -56,9 +56,24 @@ let modalUsuario = null;
 // Función para cargar usuarios
 async function loadUsers() {
     try {
+        const token = localStorage.getItem('token');
+        const userData = window.decodeJWT(token);
+        
+        if (!userData || userData.tipo !== 'ADMIN') {
+            console.error('Usuario no autorizado');
+            mostrarAlerta('No tienes permisos para ver usuarios', 'error');
+            return;
+        }
+
+        const tbody = document.getElementById('usuarios-table-body');
+        if (!tbody) {
+            console.log('La tabla de usuarios no está visible actualmente');
+            return;
+        }
+
         const response = await fetch('/api/usuarios', {
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                'Authorization': `Bearer ${token}`
             }
         });
 
@@ -74,33 +89,34 @@ async function loadUsers() {
     }
 }
 
-// Función para mostrar usuarios en la tabla
+// Función para mostrar usuarios
 function mostrarUsuarios(usuarios) {
-    const tbody = document.getElementById('tablaUsuarios');
-    if (!tbody) return;
+    const tbody = document.getElementById('usuarios-table-body');
+    if (!tbody) {
+        console.error('No se encontró la tabla de usuarios');
+        return;
+    }
 
-    tbody.innerHTML = '';
-    usuarios.forEach(usuario => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
+    tbody.innerHTML = usuarios.map(usuario => `
+        <tr>
             <td>${usuario.id}</td>
             <td>${usuario.nombre}</td>
             <td>${usuario.email}</td>
-            <td>${formatearRol(usuario.tipo)}</td>
+            <td>${formatearTipoUsuario(usuario.tipo)}</td>
             <td>
-                <a href="#" class="text-info" onclick="editarUsuario(${usuario.id}); return false;">Editar</a>
-                <a href="#" class="text-danger" onclick="eliminarUsuario(${usuario.id}); return false;">Eliminar</a>
+                <button class="btn btn-sm btn-primary" onclick="editarUsuario(${usuario.id})">
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="eliminarUsuario(${usuario.id})">
+                    <i class="fas fa-trash"></i> Eliminar
+                </button>
             </td>
-        `;
-        tbody.appendChild(tr);
-    });
+        </tr>
+    `).join('');
 }
 
-// Hacer la función loadUsers disponible globalmente
-window.loadUsers = loadUsers;
-
 // Función para formatear el tipo de usuario
-function formatUserType(tipo) {
+function formatearTipoUsuario(tipo) {
     const tipos = {
         'ADMIN': 'Administrador',
         'CLIENTE': 'Cliente',
@@ -109,149 +125,17 @@ function formatUserType(tipo) {
     return tipos[tipo] || tipo;
 }
 
-// Función para mostrar el modal de creación
-function showCreateModal() {
-    editingUserId = null;
-    const form = document.getElementById('userForm');
-    if (form) {
-        form.reset();
-    }
-    document.getElementById('userModalLabel').textContent = 'Crear Usuario';
-    const modal = new bootstrap.Modal(document.getElementById('userModal'));
-    modal.show();
-}
-
-// Función para editar usuario
-async function editUser(userId) {
-    try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/usuarios/${userId}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) throw new Error('Error al obtener usuario');
-
-        const user = await response.json();
-        editingUserId = user.id;
-        
-        document.getElementById('userName').value = user.nombre || '';
-        document.getElementById('userEmail').value = user.email || '';
-        document.getElementById('userType').value = user.tipo || 'CLIENTE';
-        
-        document.getElementById('userModalLabel').textContent = 'Editar Usuario';
-        const modal = new bootstrap.Modal(document.getElementById('userModal'));
-        modal.show();
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
-// Función para guardar usuario
-async function saveUser() {
-    const userData = {
-        nombre: document.getElementById('userName').value,
-        email: document.getElementById('userEmail').value,
-        tipo: document.getElementById('userType').value
-    };
-
-    try {
-        const token = localStorage.getItem('token');
-        const url = editingUserId ? `/api/usuarios/${editingUserId}` : '/api/usuarios';
-        const method = editingUserId ? 'PUT' : 'POST';
-
-        const response = await fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(userData)
-        });
-
-        if (!response.ok) throw new Error('Error al guardar usuario');
-
-        const modal = bootstrap.Modal.getInstance(document.getElementById('userModal'));
-        if (modal) {
-            modal.hide();
-        }
-        loadUsers();
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
-// Función para confirmar eliminación
-function confirmDelete(userId) {
-    if (confirm('¿Está seguro de que desea eliminar este usuario?')) {
-        deleteUser(userId);
-    }
-}
-
-// Función para eliminar usuario
-async function deleteUser(userId) {
-    try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/usuarios/${userId}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
-
-        if (!response.ok) throw new Error('Error al eliminar usuario');
-        
-        loadUsers();
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
-
-// Asegurarse de que la sección de usuarios sea visible
-function showUsersSection() {
-    const usuariosSection = document.getElementById('usuarios');
-    if (usuariosSection) {
-        // Ocultar otras secciones
-        document.querySelectorAll('.content-section').forEach(section => {
-            section.style.display = 'none';
-        });
-        // Mostrar sección de usuarios
-        usuariosSection.style.display = 'block';
-        // Cargar usuarios
-        loadUsers();
-    }
-}
-
-// Función para formatear el rol
-function formatearRol(tipo) {
-    const roles = {
-        'ADMIN': 'Administrador',
-        'CLIENTE': 'Cliente',
-        'TRABAJADOR': 'Trabajador'
-    };
-    return roles[tipo] || tipo;
-}
-
-// Función para mostrar el modal de crear
-function mostrarModalCrear() {
-    usuarioActual = null;
-    const form = document.getElementById('formUsuario');
-    if (form) {
-        form.reset();
-    }
-    const modalTitle = document.querySelector('#modalUsuario .modal-title');
-    if (modalTitle) {
-        modalTitle.textContent = 'Crear Usuario';
-    }
-    modalUsuario.show();
-}
-
 // Función para editar usuario
 async function editarUsuario(id) {
     try {
         const token = localStorage.getItem('token');
+        const userData = window.decodeJWT(token);
+        
+        if (!userData || userData.tipo !== 'ADMIN') {
+            mostrarAlerta('No tienes permisos para editar usuarios', 'error');
+            return;
+        }
+
         const response = await fetch(`/api/usuarios/${id}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -284,7 +168,14 @@ async function editarUsuario(id) {
 async function guardarUsuario() {
     try {
         const token = localStorage.getItem('token');
-        const userData = {
+        const userData = window.decodeJWT(token);
+        
+        if (!userData || userData.tipo !== 'ADMIN') {
+            mostrarAlerta('No tienes permisos para guardar usuarios', 'error');
+            return;
+        }
+
+        const formData = {
             nombre: document.getElementById('nombre').value,
             email: document.getElementById('email').value,
             tipo: document.getElementById('tipo').value
@@ -299,7 +190,7 @@ async function guardarUsuario() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify(userData)
+            body: JSON.stringify(formData)
         });
 
         if (!response.ok) {
@@ -317,12 +208,19 @@ async function guardarUsuario() {
 
 // Función para eliminar usuario
 async function eliminarUsuario(id) {
-    if (!confirm('¿Está seguro de eliminar este usuario?')) {
-        return;
-    }
-
     try {
         const token = localStorage.getItem('token');
+        const userData = window.decodeJWT(token);
+        
+        if (!userData || userData.tipo !== 'ADMIN') {
+            mostrarAlerta('No tienes permisos para eliminar usuarios', 'error');
+            return;
+        }
+
+        if (!confirm('¿Está seguro de eliminar este usuario?')) {
+            return;
+        }
+
         const response = await fetch(`/api/usuarios/${id}`, {
             method: 'DELETE',
             headers: {
@@ -344,61 +242,57 @@ async function eliminarUsuario(id) {
 
 // Función para mostrar alertas
 function mostrarAlerta(mensaje, tipo) {
-    // Remover alertas existentes
-    const alertasExistentes = document.querySelectorAll('.alert');
-    alertasExistentes.forEach(alerta => alerta.remove());
-
-    // Crear nueva alerta
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${tipo} alert-dismissible fade show`;
-    alertDiv.role = 'alert';
-    alertDiv.innerHTML = `
+    const alertaDiv = document.createElement('div');
+    alertaDiv.className = `alert alert-${tipo} alert-dismissible fade show`;
+    alertaDiv.innerHTML = `
         ${mensaje}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
-
-    // Agregar la alerta al body
-    document.body.appendChild(alertDiv);
-
-    // Remover la alerta después de 3 segundos
+    document.body.appendChild(alertaDiv);
+    
     setTimeout(() => {
-        if (alertDiv && document.body.contains(alertDiv)) {
-            const bsAlert = new bootstrap.Alert(alertDiv);
-            bsAlert.close();
-        }
+        alertaDiv.remove();
     }, 3000);
 }
 
-// Inicialización cuando el documento está listo
+// Inicialización cuando el DOM está listo
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Inicializando módulo de usuarios...'); // Debug
+    console.log('Inicializando módulo de usuarios...');
     
     // Inicializar el modal
-    const modalElement = document.getElementById('modalUsuario');
-    if (modalElement) {
-        modalUsuario = new bootstrap.Modal(modalElement);
-        console.log('Modal inicializado'); // Debug
+    modalUsuario = new bootstrap.Modal(document.getElementById('modalUsuario'));
+    console.log('Modal inicializado');
+    
+    // Configurar botón de crear usuario
+    const btnCrearUsuario = document.getElementById('btnCrearUsuario');
+    if (btnCrearUsuario) {
+        btnCrearUsuario.addEventListener('click', () => {
+            usuarioActual = null;
+            document.getElementById('nombre').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('tipo').value = 'CLIENTE';
+            document.querySelector('#modalUsuario .modal-title').textContent = 'Crear Usuario';
+            modalUsuario.show();
+        });
+        console.log('Botón crear usuario inicializado');
     }
     
-    // Event listeners
-    const btnCrear = document.getElementById('btnCrearUsuario');
-    if (btnCrear) {
-        btnCrear.addEventListener('click', mostrarModalCrear);
-        console.log('Botón crear usuario inicializado'); // Debug
+    // Configurar botón de guardar usuario
+    const btnGuardarUsuario = document.getElementById('btnGuardarUsuario');
+    if (btnGuardarUsuario) {
+        btnGuardarUsuario.addEventListener('click', guardarUsuario);
+        console.log('Botón guardar usuario inicializado');
     }
     
-    const btnGuardar = document.getElementById('btnGuardarUsuario');
-    if (btnGuardar) {
-        btnGuardar.addEventListener('click', guardarUsuario);
-        console.log('Botón guardar usuario inicializado'); // Debug
-    }
-    
-    // Cargar usuarios si la sección está visible
-    const seccionUsuarios = document.getElementById('usuarios');
-    if (seccionUsuarios && window.getComputedStyle(seccionUsuarios).display !== 'none') {
-        loadUsers();
-    }
+    // Cargar lista inicial de usuarios
+    loadUsers();
 });
+
+// Exportar funciones necesarias
+window.editarUsuario = editarUsuario;
+window.eliminarUsuario = eliminarUsuario;
+window.guardarUsuario = guardarUsuario;
+window.loadUsers = loadUsers;
 
 // Actualiza la función showSection en script.js
 function showSection(sectionId) {

@@ -292,10 +292,9 @@ function getUserType() {
     if (!token) return null;
     
     try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload.tipo;
+        return window.decodeJWT(token).tipo;
     } catch (error) {
-        console.error('Error al decodificar el token:', error);
+        console.error('Error al obtener tipo de usuario:', error);
         return null;
     }
 }
@@ -358,3 +357,28 @@ document.addEventListener('DOMContentLoaded', () => {
         themeToggle.addEventListener('click', toggleDarkMode);
     }
 });
+
+// Función para verificar permisos
+function verificarPermisos() {
+    try {
+        const userType = getUserType();
+        console.log('Tipo de usuario:', userType);
+        
+        // Mostrar/ocultar elementos según el tipo de usuario
+        const adminElements = document.querySelectorAll('.admin-only');
+        adminElements.forEach(element => {
+            if (userType === 'ADMIN') {
+                element.style.display = element.tagName.toLowerCase() === 'li' ? 'list-item' : 'block';
+                element.classList.remove('d-none');
+            } else {
+                element.style.display = 'none';
+                element.classList.add('d-none');
+            }
+        });
+
+        return true;
+    } catch (error) {
+        console.error('Error al verificar permisos:', error);
+        return false;
+    }
+}

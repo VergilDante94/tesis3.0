@@ -23,7 +23,7 @@ const authMiddleware = {
             return res.status(401).json({ error: 'Usuario no autenticado' });
         }
 
-        if (!roles.includes(req.usuario.tipoUsuario)) {
+        if (!roles.includes(req.usuario.tipo)) {
             return res.status(403).json({ error: 'No autorizado' });
         }
 

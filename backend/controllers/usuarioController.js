@@ -7,34 +7,23 @@ const usuarioController = {
     // Crear usuario (solo administradores)
     async crearUsuario(req, res) {
         try {
-            // Verificar si el usuario que hace la petición es administrador
-            const adminId = req.usuario.id;
-            const admin = await prisma.usuario.findUnique({
-                where: { id: adminId }
-            });
-
-            if (!admin || admin.tipo !== 'ADMIN') {
-                return res.status(403).json({ error: 'No tiene permisos para crear usuarios' });
-            }
-
-            const { nombre, email, contrasena, tipo, direccion, telefono, posicion, departamento } = req.body;
+            const { nombre, email, password, tipoUsuario, direccion, telefono, cargo, departamento } = req.body;
             
             // Encriptar contraseña
-            const hashedPassword = await bcrypt.hash(contrasena, 10);
+            const hashedPassword = await bcrypt.hash(password, 10);
             
             // Crear usuario base
             const usuario = await prisma.usuario.create({
                 data: {
                     nombre,
                     email,
-                    contrasena: hashedPassword,
-                    tipo,
-                    createdBy: adminId
+                    password: hashedPassword,
+                    tipoUsuario
                 }
             });
 
             // Si es cliente, crear perfil de cliente
-            if (tipo === 'CLIENTE') {
+            if (tipoUsuario === 'CLIENTE') {
                 await prisma.cliente.create({
                     data: {
                         usuarioId: usuario.id,
@@ -44,11 +33,11 @@ const usuarioController = {
                 });
             }
             // Si es trabajador, crear perfil de trabajador
-            else if (tipo === 'TRABAJADOR') {
+            else if (tipoUsuario === 'TRABAJADOR') {
                 await prisma.trabajador.create({
                     data: {
                         usuarioId: usuario.id,
-                        posicion,
+                        cargo,
                         departamento
                     }
                 });
@@ -220,16 +209,11 @@ const usuarioController = {
 
     async login(req, res) {
         try {
-            const { email, contrasena } = req.body;
+            const { email, password } = req.body;
             console.log('Intento de login para:', email);
-            console.log('JWT_SECRET:', process.env.JWT_SECRET);
 
             const usuario = await prisma.usuario.findUnique({
-                where: { email },
-                include: {
-                    cliente: true,
-                    trabajador: true
-                }
+                where: { email }
             });
 
             if (!usuario) {
@@ -238,7 +222,7 @@ const usuarioController = {
             }
 
             console.log('Usuario encontrado:', usuario.email);
-            const validPassword = await bcrypt.compare(contrasena, usuario.contrasena);
+            const validPassword = await bcrypt.compare(password, usuario.contrasena);
             
             if (!validPassword) {
                 console.log('Contraseña inválida para:', email);
@@ -246,125 +230,83 @@ const usuarioController = {
             }
 
             console.log('Contraseña válida para:', email);
-            console.log('Datos para el token:', {
-                id: usuario.id,
-                email: usuario.email,
-                tipo: usuario.tipo
+            const token = jwt.sign(
+                { 
+                    id: usuario.id,
+                    email: usuario.email,
+                    tipo: usuario.tipoUsuario,
+                    nombre: usuario.nombre
+                },
+                process.env.JWT_SECRET,
+                { expiresIn: '24h' }
+            );
+
+            res.json({
+                token,
+                usuario: {
+                    id: usuario.id,
+                    nombre: usuario.nombre,
+                    email: usuario.email,
+                    tipo: usuario.tipoUsuario
+                }
             });
-
-            try {
-                const token = jwt.sign(
-                    { 
-                        id: usuario.id, 
-                        email: usuario.email, 
-                        tipo: usuario.tipo 
-                    },
-                    process.env.JWT_SECRET,
-                    { expiresIn: '24h' }
-                );
-                console.log('Token generado para:', email);
-
-                res.json({
-                    token,
-                    usuario: {
-                        id: usuario.id,
-                        nombre: usuario.nombre,
-                        email: usuario.email,
-                        tipo: usuario.tipo,
-                        perfil: usuario.tipo === 'CLIENTE' ? usuario.cliente : usuario.trabajador
-                    }
-                });
-            } catch (jwtError) {
-                console.error('Error al generar el token:', jwtError);
-                res.status(500).json({ error: 'Error al generar el token' });
-            }
         } catch (error) {
-            console.error('Error en el proceso de login:', error);
-            res.status(500).json({ error: 'Error en el proceso de login' });
+            console.error('Error en login:', error);
+            res.status(500).json({ error: 'Error interno del servidor' });
         }
     },
 
     // Crear administrador inicial
     async crearAdminInicial(req, res) {
         try {
-            // Verificar si ya existe algún administrador
-            const adminExistente = await prisma.usuario.findFirst({
-                where: { tipo: 'ADMIN' }
+            const adminExists = await prisma.usuario.findFirst({
+                where: { tipoUsuario: 'ADMIN' }
             });
 
-            if (adminExistente) {
-                return res.status(400).json({ error: 'Ya existe un administrador en el sistema' });
+            if (adminExists) {
+                return res.status(400).json({ error: 'Ya existe un usuario administrador' });
             }
 
-            const { nombre, email, contrasena } = req.body;
-            
-            // Encriptar contraseña
-            const hashedPassword = await bcrypt.hash(contrasena, 10);
-            
-            // Crear administrador
+            const hashedPassword = await bcrypt.hash('admin123', 10);
             const admin = await prisma.usuario.create({
                 data: {
-                    nombre,
-                    email,
+                    nombre: 'Administrador',
+                    email: 'admin@example.com',
                     contrasena: hashedPassword,
-                    tipo: 'ADMIN'
+                    tipoUsuario: 'ADMIN'
                 }
             });
 
-            // Generar token
-            const token = jwt.sign(
-                { 
-                    id: admin.id, 
-                    email: admin.email, 
-                    tipo: admin.tipo 
-                },
-                process.env.JWT_SECRET,
-                { expiresIn: '24h' }
-            );
-
-            res.status(201).json({
-                message: 'Administrador inicial creado exitosamente',
-                token,
-                usuario: {
-                    id: admin.id,
-                    nombre: admin.nombre,
-                    email: admin.email,
-                    tipo: admin.tipo
-                }
-            });
+            res.status(201).json({ message: 'Administrador creado exitosamente', userId: admin.id });
         } catch (error) {
-            console.error('Error al crear administrador inicial:', error);
-            res.status(500).json({ error: 'Error al crear administrador inicial' });
+            console.error('Error al crear admin:', error);
+            res.status(500).json({ error: 'Error al crear administrador' });
         }
     }
 };
 
-const crearAdmin = async () => {
+// Crear admin al iniciar la aplicación
+(async () => {
     try {
-        const adminExists = await prisma.usuario.findUnique({
-            where: { email: 'admin@example.com' }
+        const adminExists = await prisma.usuario.findFirst({
+            where: { tipoUsuario: 'ADMIN' }
         });
 
         if (!adminExists) {
             const hashedPassword = await bcrypt.hash('admin123', 10);
             const admin = await prisma.usuario.create({
                 data: {
-                    nombre: 'Admin',
+                    nombre: 'Administrador',
                     email: 'admin@example.com',
                     contrasena: hashedPassword,
-                    tipo: 'ADMIN'
+                    tipoUsuario: 'ADMIN'
                 }
             });
-            console.log('Admin user created successfully:', admin);
-        } else {
-            console.log('Admin user already exists');
+            console.log('Usuario administrador creado exitosamente');
         }
     } catch (error) {
-        console.error('Error creating admin user:', error);
+        console.error('Error al crear usuario administrador:', error);
     }
-};
-
-// Create admin user on startup
-crearAdmin();
+})();
 
 module.exports = usuarioController;

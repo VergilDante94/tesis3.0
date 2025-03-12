@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
 async function loadServices() {
     try {
         const token = localStorage.getItem('token');
-        const userData = JSON.parse(atob(token));
-        const isAdmin = userData.tipo === 'ADMIN';
+        const userData = window.decodeJWT(token);
+        const isAdmin = userData && userData.tipo === 'ADMIN';
         
         console.log('Cargando servicios... Usuario es admin:', isAdmin);
 
@@ -100,18 +100,9 @@ function getUserType() {
     if (!token) return null;
     
     try {
-        // Si el token está en formato JWT (contiene puntos)
-        if (token.includes('.')) {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            return payload.tipo;
-        }
-        
-        // Si el token está en formato simple (solo base64)
-        const payload = JSON.parse(atob(token));
-        console.log('Payload del token:', payload); // Para debugging
-        return payload.tipo;
+        return window.decodeJWT(token).tipo;
     } catch (error) {
-        console.error('Error al decodificar el token:', error);
+        console.error('Error al obtener tipo de usuario:', error);
         return null;
     }
 }

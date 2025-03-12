@@ -19,6 +19,7 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // Rutas
+const authRoutes = require('./routes/authRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const servicioRoutes = require('./routes/servicioRoutes');
 const ordenRoutes = require('./routes/ordenRoutes');
@@ -27,7 +28,7 @@ const notificacionRoutes = require('./routes/notificacionRoutes');
 
 // Middleware de autenticación para rutas protegidas
 app.use((req, res, next) => {
-    const publicPaths = ['/login.html', '/registro.html', '/css', '/js/auth.js'];
+    const publicPaths = ['/login.html', '/registro.html', '/css', '/js', '/api/auth/login', '/api/auth/admin/inicial'];
     const isPublicPath = publicPaths.some(path => req.path.startsWith(path));
 
     if (!isPublicPath && !req.path.startsWith('/api/')) {
@@ -37,9 +38,11 @@ app.use((req, res, next) => {
             return res.redirect('/login.html');
         }
         try {
-            jwt.verify(token, process.env.JWT_SECRET);
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            req.user = decoded;
             next();
         } catch (error) {
+            console.error('Error al verificar token:', error);
             return res.redirect('/login.html');
         }
     } else {
@@ -47,6 +50,28 @@ app.use((req, res, next) => {
     }
 });
 
+// Middleware para proteger rutas API
+app.use('/api', (req, res, next) => {
+    if (req.path.startsWith('/auth/')) {
+        return next();
+    }
+
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: 'No autorizado' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (error) {
+        console.error('Error al verificar token API:', error);
+        return res.status(401).json({ message: 'Token inválido' });
+    }
+});
+
+app.use('/api/auth', authRoutes);
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/servicios', servicioRoutes);
 app.use('/api/ordenes', ordenRoutes);

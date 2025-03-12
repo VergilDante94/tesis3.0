@@ -32,28 +32,26 @@ function setupEventListeners() {
 
 async function cargarPerfil() {
     try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            throw new Error('No hay token disponible');
+        const userInfo = getUserInfo();
+        if (!userInfo) {
+            throw new Error('No hay información de usuario disponible');
         }
 
-        const decodedString = atob(token);
-        const payload = JSON.parse(decodedString);
-        console.log('Datos del perfil:', payload);
+        console.log('Datos del perfil:', userInfo);
         
         // Actualizar la información en la página
-        document.getElementById('perfil-nombre-display').textContent = payload.nombre || '';
-        document.getElementById('perfil-email').textContent = payload.email || '';
-        document.getElementById('perfil-tipo').textContent = formatearRol(payload.tipo) || '';
+        document.getElementById('perfil-nombre-display').textContent = userInfo.nombre || '';
+        document.getElementById('perfil-email').textContent = userInfo.email || '';
+        document.getElementById('perfil-tipo').textContent = formatearRol(userInfo.tipo) || '';
         
         // También actualizar el header
-        document.getElementById('usuario-actual').textContent = payload.nombre || '';
-        document.getElementById('tipo-usuario-actual').textContent = formatearRol(payload.tipo) || '';
+        document.getElementById('usuario-actual').textContent = userInfo.nombre || '';
+        document.getElementById('tipo-usuario-actual').textContent = formatearRol(userInfo.tipo) || '';
         
         // Si hay un formulario de edición, actualizar sus campos
         const nombreInput = document.getElementById('perfil-nombre');
         if (nombreInput) {
-            nombreInput.value = payload.nombre || '';
+            nombreInput.value = userInfo.nombre || '';
         }
     } catch (error) {
         console.error('Error al cargar perfil:', error);
@@ -194,26 +192,15 @@ function getUserType() {
     if (!token) return null;
     
     try {
-        const decodedString = atob(token);
-        const payload = JSON.parse(decodedString);
-        console.log('Token decodificado en getUserType:', payload);
-        return payload.tipo;
+        return window.decodeJWT(token).tipo;
     } catch (error) {
-        console.error('Error al decodificar token en getUserType:', error);
+        console.error('Error al obtener tipo de usuario:', error);
         return null;
     }
 }
 
 function getUserId() {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-    try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        return payload.id;
-    } catch (error) {
-        console.error('Error al decodificar el token:', error);
-        return null;
-    }
+    return window.getUserId();
 }
 
 // Función para cargar el perfil del usuario

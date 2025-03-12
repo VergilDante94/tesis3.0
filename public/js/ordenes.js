@@ -138,60 +138,80 @@ function mostrarFormularioOrden() {
 // Función para mostrar lista de órdenes
 async function mostrarListaOrdenes() {
     try {
-        const ordenes = await ordenesManager.listarOrdenes();
+        const response = await fetch('/api/ordenes', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+
+        if (response.status === 404) {
+            console.log('El endpoint de órdenes no está disponible');
+            const ordenesContainer = document.getElementById('listaOrdenes');
+            if (ordenesContainer) {
+                ordenesContainer.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        El servicio de órdenes no está disponible en este momento.
+                    </div>
+                `;
+            }
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error('Error al cargar órdenes');
+        }
+
+        const ordenes = await response.json();
         const ordenesContainer = document.getElementById('listaOrdenes');
         
+        if (!ordenesContainer) {
+            console.log('Contenedor de órdenes no encontrado');
+            return;
+        }
+
+        if (!Array.isArray(ordenes) || ordenes.length === 0) {
+            ordenesContainer.innerHTML = `
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    No hay órdenes disponibles.
+                </div>
+            `;
+            return;
+        }
+
         ordenesContainer.innerHTML = ordenes.map(orden => `
             <div class="card mb-3">
                 <div class="card-header">
                     Orden #${orden.id} - ${orden.estado}
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">Cliente: ${orden.cliente.usuario.nombre}</h5>
+                    <h5 class="card-title">Cliente: ${orden.cliente?.usuario?.nombre || 'N/A'}</h5>
                     <p class="card-text">Fecha: ${new Date(orden.fechaCreacion).toLocaleDateString()}</p>
                     <div class="servicios-lista">
                         <h6>Servicios:</h6>
                         <ul class="list-group">
-                            ${orden.servicios.map(s => `
+                            ${orden.servicios?.map(s => `
                                 <li class="list-group-item">
-                                    ${s.servicio.nombre} x ${s.cantidad}
+                                    ${s.servicio?.nombre || 'N/A'} x ${s.cantidad}
                                 </li>
-                            `).join('')}
+                            `).join('') || ''}
                         </ul>
                     </div>
-                    ${auth.usuario.tipoUsuario === 'TRABAJADOR' ? `
-                        <div class="mt-3">
-                            <select class="form-select estado-orden" data-orden-id="${orden.id}">
-                                <option value="SOLICITADA" ${orden.estado === 'SOLICITADA' ? 'selected' : ''}>Solicitada</option>
-                                <option value="PROGRAMADA" ${orden.estado === 'PROGRAMADA' ? 'selected' : ''}>Programada</option>
-                                <option value="EN_PROCESO" ${orden.estado === 'EN_PROCESO' ? 'selected' : ''}>En Proceso</option>
-                                <option value="COMPLETADA" ${orden.estado === 'COMPLETADA' ? 'selected' : ''}>Completada</option>
-                                <option value="CANCELADA" ${orden.estado === 'CANCELADA' ? 'selected' : ''}>Cancelada</option>
-                            </select>
-                        </div>
-                    ` : ''}
                 </div>
             </div>
         `).join('');
-
-        // Eventos para cambio de estado
-        if (auth.usuario.tipoUsuario === 'TRABAJADOR') {
-            document.querySelectorAll('.estado-orden').forEach(select => {
-                select.addEventListener('change', async (e) => {
-                    const ordenId = e.target.dataset.ordenId;
-                    const nuevoEstado = e.target.value;
-                    try {
-                        await ordenesManager.actualizarEstado(ordenId, nuevoEstado);
-                        mostrarListaOrdenes(); // Recargar lista
-                    } catch (error) {
-                        console.error('Error al actualizar estado:', error);
-                        alert('Error al actualizar el estado de la orden');
-                    }
-                });
-            });
-        }
     } catch (error) {
         console.error('Error al mostrar órdenes:', error);
+        const ordenesContainer = document.getElementById('listaOrdenes');
+        if (ordenesContainer) {
+            ordenesContainer.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i>
+                    Error al cargar las órdenes: ${error.message}
+                </div>
+            `;
+        }
     }
 }
 
@@ -200,8 +220,9 @@ async function loadServicesForOrders() {
     console.log('Iniciando carga de servicios para órdenes...');
     try {
         const token = localStorage.getItem('token');
-        if (!token) {
-            console.error('No hay token disponible');
+        const userData = window.decodeJWT(token);
+        if (!userData) {
+            console.error('No hay token válido disponible');
             mostrarAlerta('Error de autenticación', 'danger');
             return;
         }
