@@ -223,16 +223,31 @@ body {
 }
 
 .form-control-dark {
-    color: #fff;
-    background-color: rgba(255, 255, 255, .1);
-    border: none;
+    color: #212529;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
 }
 
 .form-control-dark:focus {
+    color: #212529;
+    background-color: #fff;
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+}
+
+/* Estilos para modo oscuro */
+[data-bs-theme="dark"] .form-control-dark {
     color: #fff;
-    background-color: rgba(255, 255, 255, .2);
-    border-color: transparent;
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+[data-bs-theme="dark"] .form-control-dark:focus {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25);
 }
 
 .navbar-right {
@@ -512,14 +527,16 @@ a:hover {
 
 /* Inputs */
 .form-control {
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    border-color: var(--border-color);
+    background-color: #fff;
+    color: #212529;
+    border-color: #ced4da;
 }
 
 .form-control:focus {
-    background-color: var(--card-bg);
-    color: var(--text-color);
+    background-color: #fff;
+    color: #212529;
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
 }
 
 /* Estilos para texto seleccionado en inputs */

@@ -241,7 +241,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Exportar funciones necesarias
-window.login = login;
-window.logout = logout;
-window.verificarAutenticacion = verificarAutenticacion;
+// Exponer funciones globalmente
+window.auth = auth;
+window.initAuth = initAuth;

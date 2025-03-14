@@ -1,15 +1,69 @@
+// Variables globales
+let modalServicio = null;
+let servicioIdAEliminar = null; // Variable para almacenar el ID del servicio a eliminar
+let modalConfirm;
+
+// Inicialización cuando el DOM está listo
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚨 Inicializando script de servicios...');
+    
+    // Inicializar el modal
+    const modalServicioEl = document.getElementById('modalServicio');
+    if (modalServicioEl) {
+        modalServicio = new bootstrap.Modal(modalServicioEl);
+        console.log('Modal servicio inicializado correctamente');
+    } else {
+        console.error('Elemento del modal servicio no encontrado');
+    }
+    
+    // Inicializar el modal de confirmación si existe
+    const modalEl = document.getElementById('modalConfirmacion');
+    if (modalEl) {
+        console.log('🚨 Elemento modal encontrado, inicializando...');
+        modalConfirm = new bootstrap.Modal(modalEl);
+        
+        // Asignar evento al botón confirmar del modal
+        const btnConfirmar = document.getElementById('btnConfirmarEliminar');
+        if (btnConfirmar) {
+            console.log('🚨 Botón confirmar encontrado, asignando evento...');
+            btnConfirmar.addEventListener('click', function() {
+                console.log('🚨 Botón confirmar clickeado, ID a eliminar:', servicioIdAEliminar);
+                if (servicioIdAEliminar) {
+                    // Ocultar el modal
+                    modalConfirm.hide();
+                    // Ejecutar la eliminación después de que se oculte el modal
+                    setTimeout(() => {
+                        eliminarServicioDirecto(servicioIdAEliminar);
+                    }, 300);
+                } else {
+                    console.error('🚨 No hay ID de servicio para eliminar');
+                }
+            });
+        } else {
+            console.error('🚨 No se encontró el botón confirmar eliminar');
+        }
+    } else {
+        console.error('🚨 No se encontró el elemento modal de confirmación');
+    }
+    
+    // Cargar servicios inicialmente
     loadServices();
+    
+    // Event listener para el cambio de tipo de servicio
+    const tipoSelect = document.getElementById('servicio-tipo');
+    if (tipoSelect) {
+        tipoSelect.addEventListener('change', actualizarEtiquetaPrecio);
+    } else {
+        console.warn('Elemento servicio-tipo no encontrado');
+    }
 });
 
+// Función para cargar servicios
 async function loadServices() {
     try {
+        console.log('Cargando servicios... Usuario es admin:', window.getUserInfo()?.tipo === 'ADMIN');
         const token = localStorage.getItem('token');
-        const userData = window.decodeJWT(token);
-        const isAdmin = userData && userData.tipo === 'ADMIN';
         
-        console.log('Cargando servicios... Usuario es admin:', isAdmin);
-
         const response = await fetch('/api/servicios', {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -21,141 +75,113 @@ async function loadServices() {
         }
 
         const servicios = await response.json();
-        const container = document.getElementById('servicios-container');
-        
-        // Mostrar botón de nuevo servicio si es admin
-        const btnNuevoServicio = document.querySelector('.btn-primary.admin-only');
-        if (btnNuevoServicio) {
-            btnNuevoServicio.style.display = isAdmin ? 'block' : 'none';
-        }
-
-        container.innerHTML = servicios.map(servicio => `
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">${servicio.nombre}</h5>
-                        <p class="card-text">${servicio.descripcion}</p>
-                        <p class="card-text"><strong>Precio Base:</strong> $${servicio.precioBase}</p>
-                        <p class="card-text"><strong>Duración:</strong> ${servicio.duracionHoras} horas</p>
-                        ${isAdmin ? `
-                            <div class="btn-group admin-only" style="display: block;">
-                                <button class="btn btn-sm btn-primary" onclick="editarServicio(${servicio.id})">
-                                    <i class="fas fa-edit"></i> Editar
-                                </button>
-                                <button class="btn btn-sm btn-danger" onclick="eliminarServicio(${servicio.id})">
-                                    <i class="fas fa-trash"></i> Eliminar
-                                </button>
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-            </div>
-        `).join('');
-
+        console.log('Servicios cargados:', servicios);
+        mostrarServicios(servicios, window.getUserInfo()?.tipo === 'ADMIN');
     } catch (error) {
-        console.error('Error al cargar servicios:', error);
-        mostrarAlerta('Error al cargar servicios', 'danger');
+        console.error('Error:', error);
+        mostrarAlerta(error.message, 'danger');
     }
 }
 
-function createServiceCard(servicio) {
-    const card = document.createElement('div');
-    card.className = 'col-md-4 mb-4';
-    card.innerHTML = `
-        <div class="card h-100 shadow-sm">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start">
-                    <h5 class="card-title">${servicio.nombre}</h5>
-                    <div class="admin-only" style="display: none;">
-                        <button class="btn btn-sm btn-outline-primary me-1" 
-                                onclick="editarServicio(${servicio.id})">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger" 
-                                onclick="eliminarServicio(${servicio.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
+// Función para mostrar los servicios en el contenedor
+function mostrarServicios(servicios, isAdmin) {
+    const container = document.getElementById('servicios-container');
+    
+    // Filtrar solo servicios activos
+    const serviciosActivos = servicios.filter(servicio => servicio.estado === 'ACTIVO');
+    
+    if (serviciosActivos.length === 0) {
+        container.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-info">
+                    No hay servicios disponibles en este momento.
                 </div>
-                <p class="card-text">${servicio.descripcion}</p>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="mb-0"><strong>Precio Base:</strong> $${servicio.precioBase.toFixed(2)}</p>
-                        <p class="mb-0"><strong>Duración:</strong> ${servicio.duracionHoras} horas</p>
+            </div>
+        `;
+        return;
+    }
+
+    console.log('Generando HTML para', serviciosActivos.length, 'servicios activos. isAdmin:', isAdmin);
+    
+    // Crear el HTML con formularios para la eliminación
+    container.innerHTML = serviciosActivos.map(servicio => `
+        <div class="col-md-4 mb-4 servicio-card" id="servicio-${servicio.id}">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">${servicio.nombre}</h5>
+                    <p class="card-text">${servicio.descripcion}</p>
+                    <div class="mb-2">
+                        <span class="badge bg-primary">${servicio.tipo === 'POR_HORA' ? 'Por Hora' : 'Por Cantidad'}</span>
                     </div>
-                    <button class="btn btn-primary solicitar-servicio" 
-                            data-servicio-id="${servicio.id}"
-                            onclick="solicitarServicio(${servicio.id})">
-                        Solicitar
-                    </button>
+                    <p class="card-text">
+                        <strong>Precio:</strong> $${servicio.precioBase.toFixed(2)}
+                        ${servicio.tipo === 'POR_HORA' ? '/hora' : '/unidad'}
+                    </p>
+                    ${isAdmin ? `
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-primary me-1 btn-editar" data-id="${servicio.id}">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="btn btn-sm btn-danger btn-eliminar" data-id="${servicio.id}" data-nombre="${servicio.nombre}">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    ` : ''}
                 </div>
             </div>
         </div>
-    `;
-    return card;
-}
-
-function getUserType() {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
+    `).join('');
     
-    try {
-        return window.decodeJWT(token).tipo;
-    } catch (error) {
-        console.error('Error al obtener tipo de usuario:', error);
-        return null;
+    // Configurar eventos
+    if (isAdmin) {
+        console.log('Configurando eventos para botones...');
+        
+        // Eventos para botones de editar
+        document.querySelectorAll('.btn-editar').forEach(btn => {
+            const id = btn.getAttribute('data-id');
+            btn.addEventListener('click', function() {
+                console.log('Botón editar clickeado para ID:', id);
+                editarServicio(parseInt(id));
+            });
+        });
+        
+        // Eventos para botones de eliminar, usando el modal de confirmación
+        document.querySelectorAll('.btn-eliminar').forEach(btn => {
+            const id = parseInt(btn.getAttribute('data-id'));
+            const nombre = btn.getAttribute('data-nombre');
+            
+            btn.addEventListener('click', function() {
+                console.log('🌟 Botón eliminar clickeado para ID:', id);
+                confirmarEliminarServicio(id, nombre);
+            });
+        });
     }
 }
 
-function solicitarServicio(servicioId) {
-    // Por ahora solo mostraremos un mensaje
-    console.log(`Solicitando servicio ${servicioId}`);
-    mostrarAlerta('Función de solicitud en desarrollo', 'info');
+// Función para actualizar la etiqueta de precio según el tipo de servicio
+function actualizarEtiquetaPrecio() {
+    const tipo = document.getElementById('servicio-tipo').value;
+    const label = document.getElementById('precio-unidad');
+    if (label) {
+        label.textContent = tipo === 'POR_HORA' ? '/hora' : '/unidad';
+    } else {
+        console.warn('Elemento con ID "precio-unidad" no encontrado');
+    }
 }
 
-function mostrarAlerta(mensaje, tipo) {
-    const alertaDiv = document.createElement('div');
-    alertaDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
-    alertaDiv.role = 'alert';
-    alertaDiv.innerHTML = `
-        ${mensaje}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-    document.body.appendChild(alertaDiv);
-    
-    setTimeout(() => {
-        alertaDiv.remove();
-    }, 3000);
-}
-
-// Función para crear un nuevo servicio (agregar esta función también)
+// Función para mostrar el modal de nuevo servicio
 function nuevoServicio() {
-    // Verificar si es administrador
-    const token = localStorage.getItem('token');
-    const userData = JSON.parse(atob(token));
-    if (userData.tipo !== 'ADMIN') {
-        mostrarAlerta('No tienes permisos para crear servicios', 'danger');
-        return;
-    }
-
-    // Mostrar modal de nuevo servicio
-    const modal = new bootstrap.Modal(document.getElementById('modalServicio'));
     document.getElementById('servicioForm').reset();
-    document.getElementById('modalTitle').textContent = 'Nuevo Servicio';
-    modal.show();
+    document.getElementById('servicio-id').value = '';
+    document.getElementById('modalServiceTitle').textContent = 'Nuevo Servicio';
+    actualizarEtiquetaPrecio();
+    modalServicio.show();
 }
 
-// Función para editar servicio
+// Función para editar un servicio existente
 async function editarServicio(id) {
-    // Verificar si es administrador
-    const token = localStorage.getItem('token');
-    const userData = JSON.parse(atob(token));
-    if (userData.tipo !== 'ADMIN') {
-        mostrarAlerta('No tienes permisos para editar servicios', 'danger');
-        return;
-    }
-
     try {
+        const token = localStorage.getItem('token');
         const response = await fetch(`/api/servicios/${id}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -165,96 +191,240 @@ async function editarServicio(id) {
         if (!response.ok) throw new Error('Error al cargar servicio');
         
         const servicio = await response.json();
-        const modal = new bootstrap.Modal(document.getElementById('modalServicio'));
         
         // Llenar formulario
-        document.getElementById('servicioId').value = servicio.id;
-        document.getElementById('nombre').value = servicio.nombre;
-        document.getElementById('descripcion').value = servicio.descripcion;
-        document.getElementById('precioBase').value = servicio.precioBase;
-        document.getElementById('duracionHoras').value = servicio.duracionHoras;
+        document.getElementById('servicio-id').value = servicio.id;
+        document.getElementById('servicio-nombre').value = servicio.nombre;
+        document.getElementById('servicio-descripcion').value = servicio.descripcion;
+        document.getElementById('servicio-tipo').value = servicio.tipo;
+        document.getElementById('servicio-precioBase').value = servicio.precioBase;
         
-        document.getElementById('modalTitle').textContent = 'Editar Servicio';
-        modal.show();
+        actualizarEtiquetaPrecio();
+        document.getElementById('modalServiceTitle').textContent = 'Editar Servicio';
+        modalServicio.show();
     } catch (error) {
         console.error('Error al cargar servicio:', error);
         mostrarAlerta('Error al cargar servicio', 'danger');
     }
 }
 
-// Función para eliminar servicio
-async function eliminarServicio(id) {
-    // Verificar si es administrador
-    const token = localStorage.getItem('token');
-    const userData = JSON.parse(atob(token));
-    if (userData.tipo !== 'ADMIN') {
-        mostrarAlerta('No tienes permisos para eliminar servicios', 'danger');
-        return;
-    }
-
-    if (!confirm('¿Estás seguro de que deseas eliminar este servicio?')) {
-        return;
-    }
-
+// Función para guardar un servicio (nuevo o existente)
+async function guardarServicio() {
     try {
-        const response = await fetch(`/api/servicios/${id}`, {
-            method: 'DELETE',
+        const token = localStorage.getItem('token');
+        const servicioId = document.getElementById('servicio-id').value;
+        
+        const servicio = {
+            nombre: document.getElementById('servicio-nombre').value,
+            descripcion: document.getElementById('servicio-descripcion').value,
+            tipo: document.getElementById('servicio-tipo').value,
+            precioBase: parseFloat(document.getElementById('servicio-precioBase').value),
+            estado: 'ACTIVO'
+        };
+
+        const url = servicioId ? `/api/servicios/${servicioId}` : '/api/servicios';
+        const method = servicioId ? 'PUT' : 'POST';
+
+        const response = await fetch(url, {
+            method: method,
             headers: {
+                'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
-            }
+            },
+            body: JSON.stringify(servicio)
         });
 
-        if (!response.ok) throw new Error('Error al eliminar servicio');
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Error al guardar servicio');
+        }
 
-        mostrarAlerta('Servicio eliminado correctamente', 'success');
-        loadServices(); // Recargar lista
+        modalServicio.hide();
+        mostrarAlerta('Servicio guardado correctamente', 'success');
+        loadServices();
     } catch (error) {
-        console.error('Error al eliminar servicio:', error);
-        mostrarAlerta('Error al eliminar servicio', 'danger');
+        console.error('Error al guardar servicio:', error);
+        mostrarAlerta(error.message, 'danger');
     }
 }
 
-function displayServices(servicios, isAdmin) {
-    const container = document.getElementById('servicios-container');
-    if (!container) {
-        console.error('No se encontró el contenedor de servicios');
-        return;
-    }
-
-    // Limpiar el contenedor
-    container.innerHTML = '';
-
-    // Mostrar/ocultar el botón de nuevo servicio según el rol
-    const btnNuevoServicio = document.querySelector('.admin-only[onclick="nuevoServicio()"]');
-    if (btnNuevoServicio) {
-        btnNuevoServicio.style.display = isAdmin ? '' : 'none';
-    }
-
-    if (servicios.length === 0) {
-        container.innerHTML = `
-            <div class="col-12 text-center">
-                <p class="text-muted">No hay servicios disponibles</p>
-            </div>
+// Función para mostrar el modal de confirmación
+function confirmarEliminarServicio(id, nombre) {
+    console.log('🚨 Mostrando modal de confirmación para eliminar servicio:', id, nombre);
+    
+    // Almacenar el ID para usarlo cuando se confirme
+    servicioIdAEliminar = id;
+    
+    // Actualizar el texto del modal con el nombre del servicio
+    const modalBody = document.getElementById('modalConfirmacion').querySelector('.modal-body');
+    if (modalBody) {
+        modalBody.innerHTML = `
+            <p>¿Está seguro de que desea eliminar el servicio <strong>"${nombre}"</strong>?</p>
+            <p class="text-danger"><small>Esta acción no se puede deshacer.</small></p>
         `;
+    }
+    
+    // Mostrar el modal
+    if (modalConfirm) {
+        modalConfirm.show();
+    } else {
+        // Fallback por si el modal no está disponible
+        if (confirm(`¿Está seguro de que desea eliminar el servicio "${nombre}"?`)) {
+            eliminarServicioDirecto(id);
+        }
+    }
+}
+
+// Función que realmente elimina el servicio (llamada desde el botón de confirmación)
+function eliminarServicioDirecto(id) {
+    console.log('🚨 Iniciando eliminación directa para ID:', id);
+    
+    // Obtener token
+    const token = localStorage.getItem('token');
+    if (!token) {
+        console.error('🚨 No hay token disponible');
+        mostrarAlertaMejorada('No hay token de autenticación', 'danger');
         return;
     }
-
-    // Crear y agregar las tarjetas de servicios
-    servicios.forEach(servicio => {
-        const card = createServiceCard(servicio);
-        container.appendChild(card);
-    });
-
-    // Mostrar/ocultar elementos administrativos
-    const adminElements = document.querySelectorAll('.admin-only');
-    adminElements.forEach(element => {
-        element.style.display = isAdmin ? '' : 'none';
+    
+    // Añadir efecto visual al elemento que se va a eliminar
+    const servicioCard = document.getElementById(`servicio-${id}`);
+    if (servicioCard) {
+        servicioCard.style.transition = 'all 0.5s ease';
+        servicioCard.style.opacity = '0.5';
+        servicioCard.style.transform = 'scale(0.95)';
+    }
+    
+    // Mostrar indicador de progreso
+    const alerta = mostrarAlertaMejorada('Eliminando servicio...', 'info', false);
+    
+    // Realizar solicitud DELETE
+    console.log('🚨 Enviando solicitud DELETE...');
+    
+    fetch(`/api/servicios/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(response => {
+        console.log('🚨 Respuesta recibida:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`Error del servidor: ${response.status}`);
+        }
+        
+        return response.json();
+    })
+    .then(data => {
+        console.log('🚨 Eliminación exitosa:', data);
+        
+        if (servicioCard) {
+            servicioCard.style.opacity = '0';
+            servicioCard.style.transform = 'scale(0.8)';
+        }
+        
+        // Cerrar la alerta de progreso si existe
+        if (alerta && document.body.contains(alerta)) {
+            document.body.removeChild(alerta);
+        }
+        
+        // Mostrar mensaje de éxito
+        mostrarAlertaMejorada('Servicio eliminado correctamente', 'success');
+        
+        // Recargar la lista después de un breve retraso
+        setTimeout(() => loadServices(), 500);
+    })
+    .catch(error => {
+        console.error('🚨 Error en la eliminación:', error);
+        
+        // Restaurar la apariencia del servicio
+        if (servicioCard) {
+            servicioCard.style.opacity = '1';
+            servicioCard.style.transform = 'scale(1)';
+        }
+        
+        // Cerrar la alerta de progreso
+        if (alerta && document.body.contains(alerta)) {
+            document.body.removeChild(alerta);
+        }
+        
+        mostrarAlertaMejorada('Error al eliminar: ' + error.message, 'danger');
     });
 }
 
-// Asegurarse de que estas funciones estén disponibles globalmente
+// Versión mejorada de mostrarAlerta
+function mostrarAlertaMejorada(mensaje, tipo, autoCerrar = true) {
+    const alertaDiv = document.createElement('div');
+    alertaDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+    alertaDiv.role = 'alert';
+    alertaDiv.style.zIndex = '9999';
+    alertaDiv.style.minWidth = '300px';
+    alertaDiv.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+    
+    // Agregar icono según el tipo
+    let icono = 'info-circle';
+    if (tipo === 'success') icono = 'check-circle';
+    if (tipo === 'danger') icono = 'exclamation-triangle';
+    if (tipo === 'warning') icono = 'exclamation-circle';
+    
+    alertaDiv.innerHTML = `
+        <div class="d-flex align-items-center">
+            <i class="fas fa-${icono} me-2"></i>
+            <div>${mensaje}</div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    
+    document.body.appendChild(alertaDiv);
+    
+    if (autoCerrar) {
+        setTimeout(() => {
+            if (document.body.contains(alertaDiv)) {
+                document.body.removeChild(alertaDiv);
+            }
+        }, 3000);
+    }
+    
+    return alertaDiv;
+}
+
+// Mantener función eliminarServicio por compatibilidad (redirige a la nueva implementación)
+function eliminarServicio(id) {
+    console.log('Función eliminarServicio llamada, redirigiendo a nueva implementación');
+    eliminarServicioDirecto(id);
+}
+
+// Exponer funciones necesarias globalmente
 window.nuevoServicio = nuevoServicio;
 window.editarServicio = editarServicio;
+window.guardarServicio = guardarServicio;
 window.eliminarServicio = eliminarServicio;
-window.solicitarServicio = solicitarServicio; 
-window.solicitarServicio = solicitarServicio; 
+
+// Verificar que las funciones están expuestas correctamente
+console.log('Verificando funciones globales:',
+    'nuevoServicio:', typeof window.nuevoServicio === 'function' ? 'OK' : 'NO',
+    'editarServicio:', typeof window.editarServicio === 'function' ? 'OK' : 'NO',
+    'guardarServicio:', typeof window.guardarServicio === 'function' ? 'OK' : 'NO',
+    'eliminarServicio:', typeof window.eliminarServicio === 'function' ? 'OK' : 'NO'
+);
+
+// Agregar estilos de animación
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes fadeInRight {
+        from {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .eliminar-animacion {
+        transition: all 0.5s ease-out;
+    }
+`;
+document.head.appendChild(style); 

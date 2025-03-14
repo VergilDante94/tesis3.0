@@ -13,6 +13,11 @@ enum TipoUsuario {
   TRABAJADOR
 }
 
+enum TipoServicio {
+  POR_HORA
+  POR_CANTIDAD
+}
+
 model Usuario {
   id            Int            @id @default(autoincrement())
   nombre        String
@@ -49,7 +54,7 @@ model Servicio {
   nombre        String
   descripcion   String
   precioBase    Float
-  duracionHoras Int
+  tipo          TipoServicio
   estado        String         @default("ACTIVO")
   ordenes       OrdenServicio[]
   createdAt     DateTime       @default(now())

@@ -6,10 +6,39 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const app = express();
 const prisma = new PrismaClient();
+const servicioRoutes = require('../backend/routes/servicioRoutes');
 
 // Middleware
 app.use(express.json());
 app.use(express.static('public'));
+
+// Middleware para verificar token
+const verificarToken = async (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).json({ message: 'No autorizado' });
+        }
+
+        const token = authHeader.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: 'Token no proporcionado' });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (error) {
+        console.error('Error al verificar token:', error);
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ message: 'Token inválido' });
+        }
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'Token expirado' });
+        }
+        res.status(500).json({ message: 'Error al verificar token' });
+    }
+};
 
 // Rutas de autenticación
 app.post('/api/auth/login', async (req, res) => {
@@ -98,17 +127,56 @@ app.get('/api/usuarios/me', async (req, res) => {
 });
 
 // Rutas de servicios
-app.get('/api/servicios', async (req, res) => {
+app.use('/api/servicios', servicioRoutes);
+
+// Añadir ruta GET para obtener usuario por ID
+app.get('/api/usuarios/:id', async (req, res) => {
     try {
-        const servicios = await prisma.servicio.findMany({
-            orderBy: {
-                nombre: 'asc'
+        // Verificar el token y el tipo de usuario
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).json({ message: 'No autorizado' });
+        }
+
+        const token = authHeader.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: 'Token no proporcionado' });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const { id } = req.params;
+        
+        // Verificar permisos - solo el propio usuario o un administrador puede ver detalles
+        if (decoded.id !== parseInt(id) && decoded.tipo !== 'ADMIN') {
+            return res.status(403).json({ message: 'No tiene permisos para ver este usuario' });
+        }
+
+        const usuario = await prisma.usuario.findUnique({
+            where: { id: parseInt(id) },
+            select: {
+                id: true,
+                nombre: true,
+                email: true,
+                tipo: true,
+                createdAt: true,
+                updatedAt: true
             }
         });
-        res.json(servicios);
+
+        if (!usuario) {
+            return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        res.json(usuario);
     } catch (error) {
-        console.error('Error al obtener servicios:', error);
-        res.status(500).json({ message: 'Error al obtener servicios' });
+        console.error('Error al obtener usuario:', error);
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ message: 'Token inválido' });
+        }
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'Token expirado' });
+        }
+        res.status(500).json({ message: 'Error al obtener usuario' });
     }
 });
 

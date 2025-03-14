@@ -53,11 +53,44 @@ async function cargarListaUsuarios() {
 let usuarioActual = null;
 let modalUsuario = null;
 
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Inicializando módulo de usuarios...');
+    
+    // Inicializar el modal
+    modalUsuario = new bootstrap.Modal(document.getElementById('modalUsuario'));
+    console.log('Modal inicializado');
+
+    // Configurar eventos
+    const btnCrearUsuario = document.getElementById('btnCrearUsuario');
+    if (btnCrearUsuario) {
+        btnCrearUsuario.addEventListener('click', () => {
+            usuarioActual = null;
+            document.getElementById('formUsuario').reset();
+            document.querySelector('#modalUsuario .modal-title').textContent = 'Crear Usuario';
+            modalUsuario.show();
+        });
+        console.log('Botón crear usuario inicializado');
+    }
+
+    const btnGuardarUsuario = document.getElementById('btnGuardarUsuario');
+    if (btnGuardarUsuario) {
+        btnGuardarUsuario.addEventListener('click', guardarUsuario);
+        console.log('Botón guardar usuario inicializado');
+    }
+
+    // Cargar usuarios si estamos en la sección correspondiente
+    if (document.getElementById('usuarios').style.display !== 'none') {
+        loadUsers();
+    } else {
+        console.log('La tabla de usuarios no está visible actualmente');
+    }
+});
+
 // Función para cargar usuarios
 async function loadUsers() {
     try {
         const token = localStorage.getItem('token');
-        const userData = window.decodeJWT(token);
+        const userData = window.getUserInfo();
         
         if (!userData || userData.tipo !== 'ADMIN') {
             console.error('Usuario no autorizado');
@@ -65,9 +98,9 @@ async function loadUsers() {
             return;
         }
 
-        const tbody = document.getElementById('usuarios-table-body');
+        const tbody = document.getElementById('tablaUsuarios');
         if (!tbody) {
-            console.log('La tabla de usuarios no está visible actualmente');
+            console.error('No se encontró la tabla de usuarios');
             return;
         }
 
@@ -91,7 +124,7 @@ async function loadUsers() {
 
 // Función para mostrar usuarios
 function mostrarUsuarios(usuarios) {
-    const tbody = document.getElementById('usuarios-table-body');
+    const tbody = document.getElementById('tablaUsuarios');
     if (!tbody) {
         console.error('No se encontró la tabla de usuarios');
         return;
@@ -129,7 +162,7 @@ function formatearTipoUsuario(tipo) {
 async function editarUsuario(id) {
     try {
         const token = localStorage.getItem('token');
-        const userData = window.decodeJWT(token);
+        const userData = window.getUserInfo();
         
         if (!userData || userData.tipo !== 'ADMIN') {
             mostrarAlerta('No tienes permisos para editar usuarios', 'error');
@@ -149,14 +182,12 @@ async function editarUsuario(id) {
         const usuario = await response.json();
         usuarioActual = usuario;
 
-        document.getElementById('nombre').value = usuario.nombre || '';
-        document.getElementById('email').value = usuario.email || '';
-        document.getElementById('tipo').value = usuario.tipo || 'CLIENTE';
+        document.getElementById('usuario-nombre').value = usuario.nombre || '';
+        document.getElementById('usuario-email').value = usuario.email || '';
+        document.getElementById('usuario-tipo').value = usuario.tipo || 'CLIENTE';
+        document.getElementById('usuario-password').value = '';
 
-        const modalTitle = document.querySelector('#modalUsuario .modal-title');
-        if (modalTitle) {
-            modalTitle.textContent = 'Editar Usuario';
-        }
+        document.querySelector('#modalUsuario .modal-title').textContent = 'Editar Usuario';
         modalUsuario.show();
     } catch (error) {
         console.error('Error:', error);
@@ -168,7 +199,7 @@ async function editarUsuario(id) {
 async function guardarUsuario() {
     try {
         const token = localStorage.getItem('token');
-        const userData = window.decodeJWT(token);
+        const userData = window.getUserInfo();
         
         if (!userData || userData.tipo !== 'ADMIN') {
             mostrarAlerta('No tienes permisos para guardar usuarios', 'error');
@@ -176,10 +207,15 @@ async function guardarUsuario() {
         }
 
         const formData = {
-            nombre: document.getElementById('nombre').value,
-            email: document.getElementById('email').value,
-            tipo: document.getElementById('tipo').value
+            nombre: document.getElementById('usuario-nombre').value,
+            email: document.getElementById('usuario-email').value,
+            tipo: document.getElementById('usuario-tipo').value
         };
+
+        const password = document.getElementById('usuario-password').value;
+        if (password) {
+            formData.password = password;
+        }
 
         const url = usuarioActual ? `/api/usuarios/${usuarioActual.id}` : '/api/usuarios';
         const method = usuarioActual ? 'PUT' : 'POST';
@@ -210,7 +246,7 @@ async function guardarUsuario() {
 async function eliminarUsuario(id) {
     try {
         const token = localStorage.getItem('token');
-        const userData = window.decodeJWT(token);
+        const userData = window.getUserInfo();
         
         if (!userData || userData.tipo !== 'ADMIN') {
             mostrarAlerta('No tienes permisos para eliminar usuarios', 'error');
@@ -243,7 +279,8 @@ async function eliminarUsuario(id) {
 // Función para mostrar alertas
 function mostrarAlerta(mensaje, tipo) {
     const alertaDiv = document.createElement('div');
-    alertaDiv.className = `alert alert-${tipo} alert-dismissible fade show`;
+    alertaDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+    alertaDiv.role = 'alert';
     alertaDiv.innerHTML = `
         ${mensaje}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -255,43 +292,9 @@ function mostrarAlerta(mensaje, tipo) {
     }, 3000);
 }
 
-// Inicialización cuando el DOM está listo
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('Inicializando módulo de usuarios...');
-    
-    // Inicializar el modal
-    modalUsuario = new bootstrap.Modal(document.getElementById('modalUsuario'));
-    console.log('Modal inicializado');
-    
-    // Configurar botón de crear usuario
-    const btnCrearUsuario = document.getElementById('btnCrearUsuario');
-    if (btnCrearUsuario) {
-        btnCrearUsuario.addEventListener('click', () => {
-            usuarioActual = null;
-            document.getElementById('nombre').value = '';
-            document.getElementById('email').value = '';
-            document.getElementById('tipo').value = 'CLIENTE';
-            document.querySelector('#modalUsuario .modal-title').textContent = 'Crear Usuario';
-            modalUsuario.show();
-        });
-        console.log('Botón crear usuario inicializado');
-    }
-    
-    // Configurar botón de guardar usuario
-    const btnGuardarUsuario = document.getElementById('btnGuardarUsuario');
-    if (btnGuardarUsuario) {
-        btnGuardarUsuario.addEventListener('click', guardarUsuario);
-        console.log('Botón guardar usuario inicializado');
-    }
-    
-    // Cargar lista inicial de usuarios
-    loadUsers();
-});
-
-// Exportar funciones necesarias
+// Exponer funciones necesarias globalmente
 window.editarUsuario = editarUsuario;
 window.eliminarUsuario = eliminarUsuario;
-window.guardarUsuario = guardarUsuario;
 window.loadUsers = loadUsers;
 
 // Actualiza la función showSection en script.js
