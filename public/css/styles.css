@@ -10,26 +10,11 @@
     --bg-sidebar: #f8f9fa;
     --text-main: #212529;
     --text-sidebar: #212529;
-    --text-selected: #198754;  /* Color para texto seleccionado en modo claro */
-    --bg-selected: #e9ecef;    /* Fondo para elementos seleccionados en modo claro */
+    --text-selected: #198754;  /* Color para texto seleccionado */
+    --bg-selected: #e9ecef;    /* Fondo para elementos seleccionados */
     --header-bg: #198754;
     --transition-speed: 0.2s;
     --light-green: rgba(25, 135, 84, 0.1);
-}
-
-[data-bs-theme="dark"] {
-    --bg-color: #212529;
-    --text-color: #f8f9fa;
-    --card-bg: #2c3034;
-    --border-color: #373b3e;
-    --bg-main: #212529;
-    --bg-sidebar: #343a40;
-    --text-main: #f8f9fa;
-    --text-sidebar: #f8f9fa;
-    --text-selected: #ffffff;  /* Color para texto seleccionado en modo oscuro */
-    --bg-selected: #495057;    /* Fondo para elementos seleccionados en modo oscuro */
-    --header-bg: #146c43;
-    --light-green: rgba(25, 135, 84, 0.05);
 }
 
 /* Eliminar la transición general y aplicarla específicamente */
@@ -81,18 +66,6 @@ h1, h2, h3, h4, h5, h6,
 .precio-base {
     color: var(--text-color);
     font-weight: bold;
-}
-
-/* Modo oscuro */
-[data-bs-theme="dark"] .card {
-    background-color: var(--card-bg);
-    border-color: var(--border-color);
-}
-
-[data-bs-theme="dark"] .card-title,
-[data-bs-theme="dark"] .card-text,
-[data-bs-theme="dark"] .precio-base {
-    color: var(--text-color);
 }
 
 /* Estilos generales */
@@ -222,14 +195,14 @@ body {
     padding: 0 1rem;
 }
 
-.form-control-dark {
+.form-control {
     color: #212529;
     background-color: #fff;
     border: 1px solid rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
 }
 
-.form-control-dark:focus {
+.form-control:focus {
     color: #212529;
     background-color: #fff;
     border-color: var(--primary-green);
@@ -383,7 +356,7 @@ body {
     text-decoration: none;
 }
 
-/* Ajustes para modo oscuro */
+/* Estilos para modo oscuro */
 [data-bs-theme="dark"] .table {
     background-color: var(--card-bg);
     border-color: var(--border-color);

@@ -1,7 +1,6 @@
 // Inicialización cuando el DOM está listo
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Iniciando aplicación...');
-    initializeTheme();
     await initializeAuth();
 });
 
@@ -40,31 +39,6 @@ async function initializeAuth() {
         localStorage.removeItem('token');
         window.location.href = '/login.html';
     }
-}
-
-// Inicialización del tema
-function initializeTheme() {
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    const htmlElement = document.documentElement;
-
-    function updateTheme(isDark) {
-        if (isDark) {
-            htmlElement.setAttribute('data-bs-theme', 'dark');
-            darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-        } else {
-            htmlElement.removeAttribute('data-bs-theme');
-            darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-        }
-    }
-
-    const savedTheme = localStorage.getItem('darkMode');
-    updateTheme(savedTheme === 'true');
-
-    darkModeToggle?.addEventListener('click', function() {
-        const isDark = htmlElement.getAttribute('data-bs-theme') === 'dark';
-        localStorage.setItem('darkMode', (!isDark).toString());
-        updateTheme(!isDark);
-    });
 }
 
 // Configuración de navegación

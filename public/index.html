@@ -16,6 +16,67 @@
     <!-- Font Awesome directamente desde CDN asegurándose de la version correcta -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="/css/styles.css" rel="stylesheet">
+    
+    <!-- Estilos críticos para arreglar campos de formulario -->
+    <style id="critical-form-styles">
+        /* ESTILOS BÁSICOS PARA INPUTS */
+        input, 
+        textarea, 
+        select, 
+        .form-control,
+        input.form-control, 
+        textarea.form-control, 
+        select.form-control,
+        input[type="text"], 
+        input[type="number"], 
+        input[type="email"], 
+        input[type="password"], 
+        input[type="date"], 
+        input[type="datetime-local"], 
+        input[type="search"], 
+        input[type="time"] {
+            background-color: #ffffff !important;
+            color: #212529 !important;
+            border: 1px solid #ced4da !important;
+        }
+        
+        input::placeholder, 
+        textarea::placeholder {
+            color: #6c757d !important;
+        }
+        
+        /* ESTILOS BÁSICOS PARA CARDS */
+        .card,
+        div.card,
+        .list-group-item,
+        div.list-group-item {
+            background-color: #ffffff !important;
+            color: #212529 !important;
+            border: 1px solid rgba(0, 0, 0, 0.125) !important;
+        }
+        
+        .card-header {
+            background-color: #f8f9fa !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.125) !important;
+            color: #212529 !important;
+        }
+        
+        .card-title {
+            color: #0d6efd !important;
+        }
+        
+        .card-text {
+            color: #212529 !important;
+        }
+        
+        /* Reglas para los textos dentro de las tarjetas */
+        .card p, 
+        .card h5, 
+        .card h6, 
+        .card span:not(.badge) {
+            color: #212529 !important;
+        }
+    </style>
 </head>
 <body>
     <!-- Skip link para accesibilidad -->
@@ -37,17 +98,12 @@
 
         <!-- Barra de búsqueda -->
         <div class="navbar-search-block flex-grow-1">
-            <input class="form-control form-control-dark w-100" 
+            <input class="form-control w-100" 
                    type="text" placeholder="Buscar" aria-label="Buscar">
         </div>
 
         <!-- Barra de navegación derecha -->
         <div class="navbar-nav navbar-right">
-            <!-- Botón modo oscuro -->
-            <button class="nav-link px-3" id="darkModeToggle">
-                <i class="fas fa-moon"></i>
-            </button>
-
             <!-- Info usuario -->
             <span class="nav-link px-3 d-flex align-items-center active">
                 <i class="fas fa-user me-2"></i>
@@ -481,29 +537,6 @@
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
 
-            // Configurar modo oscuro
-            const darkModeToggle = document.getElementById('darkModeToggle');
-            if (darkModeToggle) {
-                const icon = darkModeToggle.querySelector('i');
-
-                function toggleDarkMode() {
-                    document.body.classList.toggle('dark-mode');
-                    const isDarkMode = document.body.classList.contains('dark-mode');
-                    icon.classList.replace(
-                        isDarkMode ? 'fa-moon' : 'fa-sun',
-                        isDarkMode ? 'fa-sun' : 'fa-moon'
-                    );
-                    localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
-                }
-
-                if (localStorage.getItem('darkMode') === 'enabled') {
-                    document.body.classList.add('dark-mode');
-                    icon.classList.replace('fa-moon', 'fa-sun');
-                }
-
-                darkModeToggle.addEventListener('click', toggleDarkMode);
-            }
-
             // Configurar navegación
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('click', (e) => {
@@ -606,6 +639,90 @@
             localStorage.removeItem('token');
             window.location.href = '/login.html';
         }
+    </script>
+    
+    <!-- Script para forzar los estilos correctos en los campos de formulario -->
+    <script>
+        // Función para aplicar estilos directamente a todos los elementos
+        function fixFormFieldsGlobally() {
+            console.log('Aplicando estilos básicos a campos de formulario y cards...');
+            
+            // Seleccionar todos los elementos de formulario
+            const formElements = document.querySelectorAll('input, textarea, select, .form-control');
+            
+            formElements.forEach(el => {
+                // Aplicar estilos de modo claro siempre
+                el.setAttribute('style', 'background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important;');
+            });
+            
+            // Aplicar estilos a los elementos .card
+            const cardElements = document.querySelectorAll('.card, .list-group-item');
+            
+            cardElements.forEach(card => {
+                // Modo claro para cards
+                card.setAttribute('style', 'background-color: #ffffff !important; color: #212529 !important; border: 1px solid rgba(0, 0, 0, 0.125) !important;');
+                
+                // Aplicar estilos a elementos internos
+                const cardHeader = card.querySelector('.card-header');
+                if (cardHeader) {
+                    cardHeader.setAttribute('style', 'background-color: #f8f9fa !important; border-bottom: 1px solid rgba(0, 0, 0, 0.125) !important; color: #212529 !important;');
+                }
+                
+                // Títulos y textos
+                const cardTitle = card.querySelector('.card-title');
+                if (cardTitle) {
+                    cardTitle.setAttribute('style', 'color: #0d6efd !important;');
+                }
+                
+                const cardTexts = card.querySelectorAll('.card-text, p, h5, h6, span:not(.badge)');
+                cardTexts.forEach(text => {
+                    text.setAttribute('style', 'color: #212529 !important;');
+                });
+            });
+        }
+        
+        // Ejecutar inmediatamente cuando se cargue el DOM
+        document.addEventListener('DOMContentLoaded', function() {
+            fixFormFieldsGlobally();
+            
+            // También ejecutar después de un retraso para elementos dinámicos
+            setTimeout(fixFormFieldsGlobally, 500);
+            setTimeout(fixFormFieldsGlobally, 1000);
+        });
+        
+        // Configurar un MutationObserver para detectar cambios en el DOM y actualizar estilos
+        try {
+            const observer = new MutationObserver(function(mutations) {
+                let shouldUpdateStyles = false;
+                
+                mutations.forEach(function(mutation) {
+                    // Si se añaden nuevos nodos
+                    if (mutation.addedNodes.length) {
+                        shouldUpdateStyles = true;
+                    }
+                });
+                
+                if (shouldUpdateStyles) {
+                    fixFormFieldsGlobally();
+                }
+            });
+            
+            // Comenzar a observar el documento para cambios
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true,
+                attributes: false
+            });
+            
+            console.log('Observador de mutaciones configurado para estilos de formularios.');
+        } catch (e) {
+            console.error('Error al configurar observador de mutaciones:', e);
+            // Si falla, establecer un intervalo para verificar periódicamente
+            setInterval(fixFormFieldsGlobally, 2000);
+        }
+        
+        // Exponer la función globalmente
+        window.fixFormFieldsGlobally = fixFormFieldsGlobally;
     </script>
 </body>
 </html>

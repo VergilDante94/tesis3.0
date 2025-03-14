@@ -550,30 +550,42 @@ function nuevaOrden() {
 // Función para arreglar los campos de formulario
 function fixFormFields() {
     console.log('Aplicando estilos a campos de formulario...');
+    
+    // No añadir estilos duplicados, solo aplicar directamente a los elementos
     setTimeout(() => {
-        // Aplicar a elementos específicos
+        // Aplicar a elementos específicos con prioridad
         const fechaProgramada = document.getElementById('fechaProgramada');
         if (fechaProgramada) {
-            fechaProgramada.style.backgroundColor = '#ffffff';
-            fechaProgramada.style.color = '#212529';
+            fechaProgramada.setAttribute('style', 'background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important;');
             console.log('Estilos aplicados a fechaProgramada');
         }
         
         const descripcion = document.getElementById('descripcion');
         if (descripcion) {
-            descripcion.style.backgroundColor = '#ffffff';
-            descripcion.style.color = '#212529';
+            descripcion.setAttribute('style', 'background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important;');
             console.log('Estilos aplicados a descripcion');
         }
         
-        // Aplicar a todos los inputs dentro del formulario
+        // Aplicar a todos los inputs dentro del formulario de órdenes
         const ordenesForm = document.getElementById('ordenesForm');
         if (ordenesForm) {
             ordenesForm.querySelectorAll('input, textarea, select').forEach(el => {
-                el.style.backgroundColor = '#ffffff';
-                el.style.color = '#212529';
+                el.setAttribute('style', 'background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important;');
                 console.log('Estilos aplicados a elemento de formulario:', el.id || el.name || 'sin id');
             });
+        }
+        
+        // Buscar específicamente inputs de cantidad en tarjetas de servicios
+        document.querySelectorAll('.servicio-item input[type="number"]').forEach(el => {
+            el.setAttribute('style', 'background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important;');
+            console.log('Estilos aplicados a input de cantidad en tarjeta de servicio');
+        });
+        
+        // Aplicar al buscador de servicios
+        const buscarServicio = document.getElementById('buscarServicio');
+        if (buscarServicio) {
+            buscarServicio.setAttribute('style', 'background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important;');
+            console.log('Estilos aplicados al buscador de servicios');
         }
     }, 300);
 }
@@ -596,135 +608,148 @@ function mostrarAlerta(mensaje, tipo) {
 
 // Configurar el formulario de órdenes
 document.addEventListener('DOMContentLoaded', function() {
-    // Añadir estilos para mejorar la visualización en modo claro y modo oscuro
+    // Añadir estilos para mejorar la visualización en modo claro y oscuro
     const estilosPersonalizados = document.createElement('style');
     estilosPersonalizados.textContent = `
-        /* Mejoras para modo claro */
-        .card {
-            border: 1px solid rgba(0, 0, 0, 0.125) !important;
-        }
-        
-        .list-group-item {
-            border: 1px solid rgba(0, 0, 0, 0.125) !important;
-        }
-        
-        /* Corregir campos de formulario en modo claro */
-        input.form-control,
-        textarea.form-control,
-        select.form-control {
+        /* ESTILOS FORZADOS PARA MODO CLARO - Alta especificidad */
+        html body input,
+        html body textarea,
+        html body select,
+        html body .form-control,
+        html body input.form-control,
+        html body textarea.form-control,
+        html body select.form-control,
+        html body input[type="text"],
+        html body input[type="number"],
+        html body input[type="datetime-local"],
+        html body input[type="date"],
+        html body input[type="time"] {
             background-color: #ffffff !important;
             color: #212529 !important;
             border: 1px solid #ced4da !important;
         }
         
-        /* Forzar input date/time a modo claro */
+        /* ESTILOS BASE PARA APLICAR SIEMPRE */
+        .card {
+            background-color: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.125);
+            color: #212529;
+        }
+        
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+        }
+        
+        .card-title {
+            color: #0d6efd;
+        }
+        
+        .card-text,
+        p, 
+        h5, 
+        h6 {
+            color: #212529;
+        }
+        
+        .list-group-item {
+            background-color: #ffffff;
+            border: 1px solid rgba(0, 0, 0, 0.125);
+            color: #212529;
+        }
+        
+        /* Entradas de formulario */
+        input.form-control,
+        textarea.form-control,
+        select.form-control {
+            background-color: #ffffff !important;
+            color: #212529 !important;
+            border: 1px solid #ced4da;
+        }
+        
+        /* Estilos específicos para tipos de input especiales */
         input[type="datetime-local"],
         input[type="date"],
         input[type="time"],
         input[type="number"] {
             background-color: #ffffff !important;
             color: #212529 !important;
-            border: 1px solid #ced4da !important;
+            border: 1px solid #ced4da;
         }
         
-        /* Asegurar contraste adecuado */
-        .text-dark {
-            color: #343a40 !important;
-        }
-        
-        .badge {
-            font-weight: 500;
-        }
-        
-        /* Estilos para tarjetas de servicios */
+        /* ===================== ESTILOS COMPARTIDOS ===================== */
+        /* Estilos para tarjetas de servicios (animación hover) */
         .servicio-item .card:hover {
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
             transition: box-shadow 0.3s ease;
         }
         
-        /* Corregir contraste en resumen de orden */
-        #resumenOrden {
-            background-color: #ffffff !important;
-        }
-        
-        #serviciosSeleccionados .list-group-item {
-            background-color: #ffffff !important;
-            color: #212529 !important;
-        }
-        
-        /* Reglas para modo oscuro (activadas por preferencias del sistema) */
-        @media (prefers-color-scheme: dark) {
-            /* Fondos para tarjetas y contenedores en modo oscuro */
-            .card {
-                background-color: #343a40 !important;
-                border-color: #495057 !important;
-            }
-            
-            .card-header {
-                background-color: #212529 !important;
-                border-color: #495057 !important;
-                color: #f8f9fa !important;
-            }
-            
-            /* Hacer que los textos sean visibles en modo oscuro */
-            .card-text.text-dark,
-            p.card-text, 
-            .card-text {
-                color: #f8f9fa !important;
-            }
-            
-            /* Mejorar contraste en modo oscuro */
-            .text-dark {
-                color: #f8f9fa !important;
-            }
-            
-            /* Elementos de lista */
-            .list-group-item {
-                background-color: #343a40 !important;
-                border-color: #495057 !important;
-                color: #f8f9fa !important;
-            }
-            
-            /* Mejorar contraste para elementos de texto específicos */
-            .card-body p.text-dark,
-            .card-body h6.text-dark,
-            .card-body .mb-0.text-dark,
-            .card-body strong,
-            .card-title,
-            h5, h6, p, span:not(.badge) {
-                color: #f8f9fa !important;
-            }
-            
-            /* Mantener los colores de badges y botones */
-            .badge.bg-info {
-                color: #fff !important;
-            }
-            
-            /* Resumen de orden en modo oscuro */
-            #resumenOrden {
-                background-color: #343a40 !important;
-            }
-            
-            #resumenOrden .card-header {
-                color: #f8f9fa !important;
-            }
-            
-            #serviciosSeleccionados .list-group-item {
-                background-color: #343a40 !important;
-                color: #f8f9fa !important;
-            }
+        /* Badges y botones conservan sus estilos originales */
+        .badge {
+            font-weight: 500;
         }
     `;
     
     document.head.appendChild(estilosPersonalizados);
     
-    // Hacer visible todos los inputs correctamente después de que se cargue el DOM
-    setTimeout(() => {
-        document.querySelectorAll('input, textarea, select').forEach(el => {
-            el.style.backgroundColor = '#ffffff';
-            el.style.color = '#212529';
+    // Hacer visible todos los inputs y aplicar estilos inline
+    function aplicarEstilosFormularios() {
+        console.log('Aplicando estilos inline a todos los elementos de formulario...');
+        
+        // Identificar todos los inputs y aplicarles estilo directamente
+        document.querySelectorAll('input, textarea, select, .form-control').forEach(el => {
+            el.setAttribute('style', 'background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important;');
         });
-    }, 500);
+        
+        // Específicamente apuntar a los inputs en tarjetas de servicios
+        document.querySelectorAll('.servicio-item input[type="number"]').forEach(el => {
+            el.setAttribute('style', 'background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important; width: 80px;');
+        });
+        
+        // Aplicar al buscador de servicios
+        const buscarServicio = document.getElementById('buscarServicio');
+        if (buscarServicio) {
+            buscarServicio.setAttribute('style', 'background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important;');
+        }
+        
+        // Aplicar a los campos específicos del formulario de órdenes
+        const fechaProgramada = document.getElementById('fechaProgramada');
+        if (fechaProgramada) {
+            fechaProgramada.setAttribute('style', 'background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important;');
+        }
+        
+        const descripcion = document.getElementById('descripcion');
+        if (descripcion) {
+            descripcion.setAttribute('style', 'background-color: #ffffff !important; color: #212529 !important; border: 1px solid #ced4da !important;');
+        }
+    }
+    
+    // Ejecutar ahora
+    aplicarEstilosFormularios();
+    
+    // Y también después de un retraso
+    setTimeout(aplicarEstilosFormularios, 500);
+    setTimeout(aplicarEstilosFormularios, 1000);
+    
+    // Configurar un observador para ajustar estilos cuando cambie el DOM
+    try {
+        const observer = new MutationObserver(function() {
+            aplicarEstilosFormularios();
+        });
+        
+        observer.observe(document.body, { 
+            childList: true, 
+            subtree: true,
+            attributes: false,
+            characterData: false
+        });
+        
+        console.log('Observador de mutaciones configurado para aplicar estilos automáticamente');
+    } catch (e) {
+        console.error('Error al configurar observador:', e);
+        // Si falla el observador, aplicar estilos periódicamente
+        setInterval(aplicarEstilosFormularios, 2000);
+    }
     
     const ordenesForm = document.getElementById('ordenesForm');
     if (ordenesForm) {
