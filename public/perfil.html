@@ -1,238 +1,72 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Perfil de Usuario - EICMAPRI">
-    <meta name="theme-color" content="#218838">
-    <title>Perfil de Usuario - EICMAPRI</title>
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="/images/favicon.png">
-
-    <!-- Bootstrap core CSS y Bootstrap Icons -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - Sistema de Gestión</title>
     <link href="/css/bootstrap-5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <link href="/css/styles.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0">Perfil de Usuario</h4>
-                        <button class="btn btn-primary btn-sm" onclick="habilitarEdicion()">
-                            <i class="bi bi-pencil"></i> Editar Perfil
-                        </button>
+                    <div class="card-header">
+                        <h2 class="mb-0">Mi Perfil</h2>
                     </div>
                     <div class="card-body">
-                        <!-- Vista de perfil -->
-                        <div id="perfilView" class="perfil-container">
-                            <div class="loader" aria-label="Cargando datos del perfil"></div>
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Nombre:</div>
+                            <div class="col-md-8" id="nombre"></div>
                         </div>
-
-                        <!-- Formulario de edición -->
-                        <form id="perfilForm" class="needs-validation" novalidate style="display: none;">
-                            <div class="mb-3">
-                                <label for="nombre" class="form-label">Nombre completo</label>
-                                <input type="text" class="form-control" id="nombre" name="nombre" required>
-                                <div class="invalid-feedback">
-                                    Por favor ingrese su nombre completo
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Correo electrónico</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
-                                <div class="invalid-feedback">
-                                    Por favor ingrese un correo electrónico válido
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="telefono" class="form-label">Teléfono</label>
-                                <input type="tel" class="form-control" id="telefono" name="telefono" required>
-                                <div class="invalid-feedback">
-                                    Por favor ingrese un número de teléfono válido
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="direccion" class="form-label">Dirección</label>
-                                <textarea class="form-control" id="direccion" name="direccion" rows="3" required></textarea>
-                                <div class="invalid-feedback">
-                                    Por favor ingrese su dirección
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Nueva contraseña (opcional)</label>
-                                <input type="password" class="form-control" id="password" name="password">
-                                <div class="form-text">Dejar en blanco para mantener la contraseña actual</div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="confirmPassword" class="form-label">Confirmar nueva contraseña</label>
-                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
-                                <div class="invalid-feedback">
-                                    Las contraseñas no coinciden
-                                </div>
-                            </div>
-                            <div class="d-flex justify-content-end gap-2">
-                                <button type="button" class="btn btn-secondary" onclick="cancelarEdicion()">
-                                    Cancelar
-                                </button>
-                                <button type="submit" class="btn btn-primary">
-                                    Guardar cambios
-                                </button>
-                            </div>
-                        </form>
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Email:</div>
+                            <div class="col-md-8" id="email"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Rol:</div>
+                            <div class="col-md-8" id="rol"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Dirección:</div>
+                            <div class="col-md-8" id="direccion"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Teléfono:</div>
+                            <div class="col-md-8" id="telefono"></div>
+                        </div>
                     </div>
-                </div>
-                <div class="text-center mt-3">
-                    <a href="/" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left"></i> Volver al Dashboard
-                    </a>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="/css/bootstrap-5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/auth.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            verificarAutenticacion();
-            cargarPerfil();
-        });
-
-        function cargarPerfil() {
-            const perfilView = document.getElementById('perfilView');
-            const userId = localStorage.getItem('userId');
-
-            fetch(`/api/usuario/${userId}`, {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Error al cargar el perfil');
-                return response.json();
-            })
-            .then(data => {
-                perfilView.innerHTML = `
-                    <div class="text-center mb-4">
-                        <div class="avatar-placeholder mb-3">
-                            <i class="bi bi-person-circle" style="font-size: 4rem;"></i>
-                        </div>
-                        <h2 class="mb-0">${data.nombre}</h2>
-                        <p class="text-muted">${data.tipoUsuario}</p>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <h5><i class="bi bi-envelope"></i> Correo electrónico</h5>
-                            <p>${data.email}</p>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <h5><i class="bi bi-telephone"></i> Teléfono</h5>
-                            <p>${data.telefono || 'No especificado'}</p>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <h5><i class="bi bi-geo-alt"></i> Dirección</h5>
-                        <p>${data.direccion || 'No especificada'}</p>
-                    </div>
-                `;
-
-                // Llenar el formulario con los datos actuales
-                document.getElementById('nombre').value = data.nombre;
-                document.getElementById('email').value = data.email;
-                document.getElementById('telefono').value = data.telefono || '';
-                document.getElementById('direccion').value = data.direccion || '';
-            })
-            .catch(error => {
-                perfilView.innerHTML = `
-                    <div class="alert alert-danger" role="alert">
-                        <i class="bi bi-exclamation-triangle"></i> ${error.message}
-                    </div>
-                `;
-            });
-        }
-
-        function habilitarEdicion() {
-            document.getElementById('perfilView').style.display = 'none';
-            document.getElementById('perfilForm').style.display = 'block';
-        }
-
-        function cancelarEdicion() {
-            document.getElementById('perfilForm').style.display = 'none';
-            document.getElementById('perfilView').style.display = 'block';
-        }
-
-        document.getElementById('perfilForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const form = e.target;
-            
-            if (!form.checkValidity()) {
-                e.stopPropagation();
-                form.classList.add('was-validated');
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Verificar si el usuario está autenticado
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login.html';
                 return;
             }
 
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-
-            if (password && password !== confirmPassword) {
-                document.getElementById('confirmPassword').setCustomValidity('Las contraseñas no coinciden');
-                form.classList.add('was-validated');
-                return;
+            try {
+                // Obtener datos del usuario del localStorage
+                const usuario = JSON.parse(localStorage.getItem('usuario'));
+                
+                // Mostrar datos en el perfil
+                document.getElementById('nombre').textContent = usuario.nombre;
+                document.getElementById('email').textContent = usuario.email;
+                document.getElementById('rol').textContent = usuario.rol;
+                document.getElementById('direccion').textContent = usuario.direccion || 'No especificada';
+                document.getElementById('telefono').textContent = usuario.telefono || 'No especificado';
+            } catch (error) {
+                console.error('Error al cargar el perfil:', error);
+                window.location.href = '/login.html';
             }
-
-            const userId = localStorage.getItem('userId');
-            const formData = {
-                nombre: document.getElementById('nombre').value,
-                email: document.getElementById('email').value,
-                telefono: document.getElementById('telefono').value,
-                direccion: document.getElementById('direccion').value
-            };
-
-            if (password) {
-                formData.password = password;
-            }
-
-            fetch(`/api/usuario/${userId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Error al actualizar el perfil');
-                return response.json();
-            })
-            .then(() => {
-                showStatusMessage('Perfil actualizado exitosamente');
-                cancelarEdicion();
-                cargarPerfil();
-            })
-            .catch(error => {
-                showStatusMessage(error.message, 'error');
-            });
         });
-
-        function showStatusMessage(message, type = 'success') {
-            const statusContainer = document.createElement('div');
-            statusContainer.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
-            statusContainer.style.zIndex = '1050';
-            statusContainer.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            `;
-            document.body.appendChild(statusContainer);
-
-            setTimeout(() => {
-                statusContainer.remove();
-            }, 3000);
-        }
     </script>
 </body>
 </html>

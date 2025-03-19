@@ -247,7 +247,10 @@ const usuarioController = {
                     id: usuario.id,
                     nombre: usuario.nombre,
                     email: usuario.email,
-                    tipo: usuario.tipoUsuario
+                    tipo: usuario.tipoUsuario,
+                    direccion: usuario.direccion,
+                    telefono: usuario.telefono,
+                    rol: usuario.tipoUsuario
                 }
             });
         } catch (error) {

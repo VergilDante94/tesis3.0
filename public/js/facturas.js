@@ -210,76 +210,297 @@ const facturasManager = {
 // Función para mostrar lista de facturas
 async function mostrarListaFacturas() {
     try {
-        const clienteId = auth.usuario.perfil.id;
-        const facturas = await facturasManager.obtenerFacturasCliente(clienteId);
+        // Obtener el elemento contenedor
         const facturasContainer = document.getElementById('facturasDatos');
-
         facturasContainer.innerHTML = `
-            <div class="list-group">
-                ${facturas.map(factura => `
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">Factura #${factura.id}</h5>
-                            <small>${new Date(factura.fecha).toLocaleDateString()}</small>
-                        </div>
-                        <p class="mb-1">Orden #${factura.orden.id}</p>
-                        <div class="servicios-facturados">
-                            <h6>Servicios:</h6>
-                            <ul class="list-unstyled">
-                                ${factura.orden.servicios.map(s => `
-                                    <li>${s.servicio.nombre} x ${s.cantidad}</li>
-                                `).join('')}
-                            </ul>
-                        </div>
-                        <div class="totales mt-2">
-                            <p class="mb-0">Subtotal: $${factura.subtotal.toFixed(2)}</p>
-                            <p class="mb-0">Total: $${factura.total.toFixed(2)}</p>
-                        </div>
-                        <button class="btn btn-sm btn-primary mt-2" onclick="descargarFactura(${factura.id})">
-                            Descargar PDF
-                        </button>
-                    </div>
-                `).join('')}
+            <div class="col-12 text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando facturas...</span>
+                </div>
             </div>
         `;
+
+        // Obtener las facturas
+        let response;
+        try {
+            const usuarioInfo = window.getUserInfo();
+            if (usuarioInfo.tipo === 'CLIENTE') {
+                // Si es cliente, obtener solo sus facturas
+                response = await fetch(`/api/facturas/cliente/${usuarioInfo.perfilId}`, {
+                    headers: auth.getHeaders()
+                });
+            } else {
+                // Si es admin o trabajador, obtener todas
+                response = await fetch('/api/facturas', {
+                    headers: auth.getHeaders()
+                });
+            }
+            
+            if (!response.ok) {
+                throw new Error('Error al cargar facturas');
+            }
+        } catch (error) {
+            console.error('Error al solicitar facturas:', error);
+            facturasContainer.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i> No se pudieron cargar las facturas: ${error.message}
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        const facturas = await response.json();
+        
+        // Si no hay facturas
+        if (!facturas || facturas.length === 0) {
+            facturasContainer.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> No hay facturas disponibles.
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        // Mostrar las facturas en un diseño de tarjetas
+        const facturasHTML = facturas.map(factura => {
+            // Formatear fecha
+            const fecha = new Date(factura.fecha);
+            const fechaFormateada = fecha.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+            
+            // Calcular IVA (16%)
+            const iva = factura.subtotal * 0.16;
+            
+            // Construir el HTML para los servicios
+            const serviciosHTML = factura.orden.servicios.map(s => {
+                const servicio = s.servicio;
+                const cantidad = s.cantidad;
+                const precioUnitario = servicio.precioBase;
+                const total = precioUnitario * cantidad;
+                
+                return `
+                    <tr>
+                        <td>${servicio.nombre}</td>
+                        <td>${servicio.tipo === 'POR_HORA' ? 'Por hora' : 'Por cantidad'}</td>
+                        <td class="text-center">${cantidad}</td>
+                        <td class="text-end">$${precioUnitario.toLocaleString('es-CO')}</td>
+                        <td class="text-end">$${total.toLocaleString('es-CO')}</td>
+                    </tr>
+                `;
+            }).join('');
+            
+            // Datos del cliente
+            const cliente = factura.orden.cliente?.usuario?.nombre || 'Cliente no disponible';
+            
+            return `
+                <div class="col-md-12 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-file-invoice-dollar me-2"></i>
+                                Factura #${factura.id}
+                            </h5>
+                            <div class="badge bg-primary">
+                                <i class="fas fa-calendar-alt me-1"></i> ${fechaFormateada}
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <h6 class="card-subtitle mb-2 text-muted">Información del Cliente</h6>
+                                    <p class="mb-1"><strong>Cliente:</strong> ${cliente}</p>
+                                    <p class="mb-1"><strong>Orden:</strong> #${factura.orden.id}</p>
+                                    <p class="mb-0"><strong>Fecha de Orden:</strong> ${new Date(factura.orden.fechaCreacion).toLocaleDateString('es-ES')}</p>
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <h6 class="card-subtitle mb-2 text-muted">Información de la Factura</h6>
+                                    <p class="mb-1"><strong>Estado:</strong> <span class="badge bg-success">Pagada</span></p>
+                                    <p class="mb-1"><strong>Método de Pago:</strong> Pendiente</p>
+                                    <p class="mb-0"><strong>Fecha de Vencimiento:</strong> ${new Date(fecha.getTime() + 30*24*60*60*1000).toLocaleDateString('es-ES')}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-sm table-striped">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Servicio</th>
+                                            <th>Tipo</th>
+                                            <th class="text-center">Cantidad</th>
+                                            <th class="text-end">Precio Unitario</th>
+                                            <th class="text-end">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${serviciosHTML}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="4" class="text-end">Subtotal:</th>
+                                            <th class="text-end">$${factura.subtotal.toLocaleString('es-CO')}</th>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" class="text-end">IVA (16%):</td>
+                                            <td class="text-end">$${iva.toLocaleString('es-CO')}</td>
+                                        </tr>
+                                        <tr class="table-primary">
+                                            <th colspan="4" class="text-end">TOTAL:</th>
+                                            <th class="text-end">$${factura.total.toLocaleString('es-CO')}</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            
+                            <div class="mt-3 text-end">
+                                <button class="btn btn-primary" onclick="descargarFactura(${factura.id})">
+                                    <i class="fas fa-download me-1"></i> Descargar PDF
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <small>
+                                <i class="fas fa-info-circle me-1"></i>
+                                Esta factura fue generada automáticamente al crear la orden de trabajo.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        // Actualizar el contenedor
+        facturasContainer.innerHTML = `
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Las facturas se generan automáticamente al crear órdenes de trabajo. 
+                        Puede descargarlas en formato PDF haciendo clic en el botón correspondiente.
+                    </div>
+                </div>
+                ${facturasHTML}
+            </div>
+        `;
+        
     } catch (error) {
         console.error('Error al mostrar facturas:', error);
+        const facturasContainer = document.getElementById('facturasDatos');
+        facturasContainer.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i> Error al procesar las facturas: ${error.message}
+                </div>
+            </div>
+        `;
     }
 }
 
-// Función para descargar factura en PDF (implementar después)
+// Función para descargar factura en PDF
 async function descargarFactura(facturaId) {
+    // Mostrar indicador de carga
+    const btnDescargar = document.querySelector(`button[onclick="descargarFactura(${facturaId})"]`);
+    const btnTextoOriginal = btnDescargar.innerHTML;
+    
     try {
+        btnDescargar.disabled = true;
+        btnDescargar.innerHTML = `
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Generando PDF...
+        `;
+
         const response = await fetch(`/api/facturas/${facturaId}/pdf`, {
             headers: auth.getHeaders()
         });
 
         if (!response.ok) {
-            throw new Error('Error al descargar la factura');
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
 
-        // Crear blob del PDF
+        // Convertir la respuesta a blob
         const blob = await response.blob();
         
-        // Crear URL del blob
+        // Crear URL para el blob
         const url = window.URL.createObjectURL(blob);
         
-        // Crear elemento temporal para la descarga
+        // Crear elemento <a> temporal
         const a = document.createElement('a');
         a.href = url;
         a.download = `factura-${facturaId}.pdf`;
         
-        // Agregar al documento, hacer clic y remover
+        // Añadir al DOM, hacer clic y eliminar
         document.body.appendChild(a);
         a.click();
-        document.body.removeChild(a);
         
-        // Liberar la URL del blob
+        // Limpiar
         window.URL.revokeObjectURL(url);
+        
+        // Mostrar mensaje de éxito
+        mostrarAlerta('Factura descargada correctamente', 'success');
     } catch (error) {
         console.error('Error al descargar factura:', error);
-        alert('Error al descargar la factura');
+        mostrarAlerta(`Error al descargar la factura: ${error.message}`, 'danger');
+    } finally {
+        // Restaurar botón
+        btnDescargar.disabled = false;
+        btnDescargar.innerHTML = btnTextoOriginal;
     }
 }
 
-//BORRA ESTE COMENTARIO
+// Inicializar módulo de facturas
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar si existe la función showSection (definida en script.js)
+    if (typeof window.showSection === 'function') {
+        // Buscar todos los enlaces que llevan a la sección de facturas
+        document.querySelectorAll('a[data-section="facturas"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.showSection('facturas');
+                mostrarListaFacturas(); // Cargar las facturas
+            });
+        });
+    }
+    
+    // Exportar funciones al objeto global
+    window.mostrarListaFacturas = mostrarListaFacturas;
+    window.descargarFactura = descargarFactura;
+    
+    // Exponer el módulo de facturas
+    window.facturasManager = facturasManager;
+});
+
+// Función para mostrar alertas al usuario
+function mostrarAlerta(mensaje, tipo) {
+    // Verificar si ya existe una función global para mostrar alertas
+    if (typeof window.mostrarAlerta === 'function') {
+        window.mostrarAlerta(mensaje, tipo);
+        return;
+    }
+
+    // Si no existe, crear una propia
+    const alertaDiv = document.createElement('div');
+    alertaDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+    alertaDiv.role = 'alert';
+    alertaDiv.style.zIndex = '9999';
+    
+    alertaDiv.innerHTML = `
+        ${mensaje}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    
+    document.body.appendChild(alertaDiv);
+    
+    // Eliminar automáticamente después de 3 segundos
+    setTimeout(() => {
+        if (document.body.contains(alertaDiv)) {
+            alertaDiv.classList.remove('show');
+            setTimeout(() => alertaDiv.remove(), 300);
+        }
+    }, 3000);
+}

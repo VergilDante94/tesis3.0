@@ -24,6 +24,8 @@ model Usuario {
   email         String         @unique
   contrasena    String
   tipo          TipoUsuario
+  direccion     String?
+  telefono      String?
   cliente       Cliente?
   trabajador    Trabajador?
   notificaciones Notificacion[]

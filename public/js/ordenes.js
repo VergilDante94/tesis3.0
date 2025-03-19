@@ -307,42 +307,14 @@ function displayServicesForOrders(servicios) {
         return;
     }
 
-    // Añadir buscador de servicios
-    const buscadorHTML = `
-        <div class="col-12 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <div class="input-group">
-                                <span class="input-group-text bg-primary text-white">
-                                    <i class="fas fa-search"></i>
-                                </span>
-                                <input type="text" id="buscarServicio" class="form-control" 
-                                       placeholder="Buscar servicio por nombre o descripción..."
-                                       style="background-color: #ffffff; color: #212529;">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    console.log(`Mostrando ${servicios.length} servicios...`);
+    // Crear las tarjetas de servicios
     const serviciosHTML = servicios.map(servicio => {
-        if (!servicio.id || !servicio.nombre) {
-            console.error('Servicio inválido:', servicio);
-            return '';
-        }
-
-        // Determinar el texto del tipo de servicio
         const tipoServicio = servicio.tipo === 'POR_HORA' ? 'Por Hora' : 'Por Cantidad';
         const unidad = servicio.tipo === 'POR_HORA' ? '/hora' : '/unidad';
 
         return `
-            <div class="col-md-6 mb-4 servicio-item">
-                <div class="card h-100 shadow-sm" data-id="${servicio.id}" data-tipo="${servicio.tipo}">
+            <div class="col-md-6 mb-4 servicio-item" data-id="${servicio.id}" data-tipo="${servicio.tipo}">
+                <div class="card h-100 shadow-sm">
                     <div class="card-header bg-light">
                         <h5 class="card-title mb-0 text-primary">${servicio.nombre}</h5>
                     </div>
@@ -370,18 +342,28 @@ function displayServicesForOrders(servicios) {
         `;
     }).join('');
 
+    // Crear contenedor para los servicios
     container.innerHTML = `
         <div class="row">
-            ${buscadorHTML}
             <div id="listaServiciosDisponibles" class="row w-100">
                 ${serviciosHTML}
             </div>
         </div>
     `;
-
-    // Configurar buscador de servicios
-    const buscarServicioInput = document.getElementById('buscarServicio');
-    if (buscarServicioInput) {
+    
+    // Verificar si existe el módulo de filtros y utilizarlo
+    if (window.filtrosManager) {
+        window.filtrosManager.inicializarFiltro('#serviciosDisponibles', '.servicio-item');
+    } else {
+        console.warn('El módulo de filtros no está disponible. Asegúrate de incluir filtros.js en tu HTML.');
+        // Usar el filtro básico como respaldo
+        const buscarServicioInput = document.createElement('input');
+        buscarServicioInput.type = 'text';
+        buscarServicioInput.id = 'buscarServicio';
+        buscarServicioInput.className = 'form-control mb-3';
+        buscarServicioInput.placeholder = 'Buscar servicio...';
+        buscarServicioInput.style = 'background-color: #ffffff; color: #212529;';
+        
         buscarServicioInput.addEventListener('input', function() {
             const busqueda = this.value.toLowerCase().trim();
             const serviciosItems = document.querySelectorAll('.servicio-item');
@@ -397,9 +379,13 @@ function displayServicesForOrders(servicios) {
                 }
             });
         });
+        
+        // Insertar el input de búsqueda al principio del contenedor
+        const listaServicios = document.getElementById('listaServiciosDisponibles');
+        if (listaServicios) {
+            listaServicios.parentNode.insertBefore(buscarServicioInput, listaServicios);
+        }
     }
-    
-    console.log('Servicios mostrados correctamente');
 }
 
 // Función para seleccionar un servicio
@@ -777,6 +763,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
                     body: JSON.stringify({
+                        clienteId: JSON.parse(localStorage.getItem('usuario')).id,
                         servicios: ordenesState.serviciosSeleccionados.map(s => ({
                             servicioId: s.id,
                             cantidad: s.cantidad
@@ -791,7 +778,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 const orden = await response.json();
-                mostrarAlerta('Orden creada exitosamente', 'success');
+                
+                // Generar factura automáticamente
+                try {
+                    const facturaResponse = await fetch(`/api/facturas/orden/${orden.id}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+                    
+                    if (facturaResponse.ok) {
+                        const factura = await facturaResponse.json();
+                        console.log('Factura generada automáticamente:', factura);
+                        mostrarAlerta('Orden creada y factura generada exitosamente. Consulte la sección de Facturas.', 'success');
+                    } else {
+                        console.error('La factura no pudo ser generada automáticamente');
+                        mostrarAlerta('Orden creada exitosamente. Sin embargo, hubo un problema al generar la factura.', 'warning');
+                    }
+                } catch (facturaError) {
+                    console.error('Error al generar factura:', facturaError);
+                    mostrarAlerta('Orden creada exitosamente. Sin embargo, hubo un problema al generar la factura.', 'warning');
+                }
                 
                 // Limpiar el formulario y mostrar la lista de órdenes
                 ordenesState.serviciosSeleccionados = [];

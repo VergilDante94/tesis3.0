@@ -44,20 +44,26 @@ const verificarToken = async (req, res, next) => {
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
+        console.log('Intento de login para:', email);
         
         const usuario = await prisma.usuario.findUnique({
             where: { email }
         });
 
         if (!usuario) {
+            console.log('Usuario no encontrado:', email);
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
 
+        console.log('Usuario encontrado:', usuario.email);
         const validPassword = await bcrypt.compare(password, usuario.contrasena);
+        
         if (!validPassword) {
+            console.log('Contraseña inválida para:', email);
             return res.status(401).json({ error: 'Credenciales inválidas' });
         }
 
+        console.log('Contraseña válida para:', email);
         const token = jwt.sign(
             { 
                 id: usuario.id,
@@ -75,12 +81,77 @@ app.post('/api/auth/login', async (req, res) => {
                 id: usuario.id,
                 nombre: usuario.nombre,
                 email: usuario.email,
-                tipo: usuario.tipo
+                tipo: usuario.tipo,
+                direccion: usuario.direccion || '',
+                telefono: usuario.telefono || ''
             }
         });
     } catch (error) {
         console.error('Error en login:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+// Ruta para actualizar el perfil del usuario
+app.put('/api/usuarios/me', verificarToken, async (req, res) => {
+    try {
+        const { nombre, direccion, telefono, password } = req.body;
+        const userId = req.user.id;
+
+        // Log de la petición completa para depuración
+        console.log('Petición de actualización recibida:');
+        console.log('Headers:', req.headers);
+        console.log('Body completo:', req.body);
+        console.log('Usuario ID:', userId);
+
+        // Verificar que el usuario sea administrador
+        const user = await prisma.usuario.findUnique({
+            where: { id: userId }
+        });
+
+        if (!user || user.tipo !== 'ADMIN') {
+            return res.status(403).json({ error: 'Solo los administradores pueden modificar su perfil' });
+        }
+
+        // Validar los campos recibidos
+        if (nombre === undefined) {
+            return res.status(400).json({ error: 'El nombre es obligatorio' });
+        }
+
+        // Construir objeto de actualización - conversión explícita de tipos
+        const updateData = {
+            nombre: String(nombre || ''),
+            direccion: String(direccion || ''),
+            telefono: String(telefono || '')
+        };
+
+        // Si se proporciona una nueva contraseña, actualizarla
+        if (password) {
+            updateData.contrasena = await bcrypt.hash(password, 10);
+        }
+
+        console.log('Actualizando perfil con datos:', updateData);
+
+        // Actualizar el usuario
+        const updatedUser = await prisma.usuario.update({
+            where: { id: userId },
+            data: updateData,
+            select: {
+                id: true,
+                email: true,
+                nombre: true,
+                tipo: true,
+                direccion: true,
+                telefono: true
+            }
+        });
+
+        console.log('Perfil actualizado:', updatedUser);
+
+        res.json(updatedUser);
+    } catch (error) {
+        console.error('Error al actualizar perfil:', error);
+        res.status(500).json({ error: 'Error al actualizar el perfil', detalle: error.message });
     }
 });
 
@@ -105,7 +176,9 @@ app.get('/api/usuarios/me', async (req, res) => {
                 id: true,
                 email: true,
                 nombre: true,
-                tipo: true
+                tipo: true,
+                direccion: true,
+                telefono: true
             }
         });
 
@@ -128,6 +201,68 @@ app.get('/api/usuarios/me', async (req, res) => {
 
 // Rutas de servicios
 app.use('/api/servicios', servicioRoutes);
+
+// Rutas de órdenes
+app.post('/api/ordenes', async (req, res) => {
+  try {
+    const { clienteId, servicios } = req.body;
+    console.log('Creando orden:', { clienteId, servicios });
+
+    // Buscar el cliente asociado al usuario
+    const cliente = await prisma.cliente.findUnique({
+      where: { usuarioId: parseInt(clienteId) }
+    });
+
+    if (!cliente) {
+      return res.status(404).json({ error: 'Cliente no encontrado para este usuario' });
+    }
+
+    const orden = await prisma.orden.create({
+      data: {
+        clienteId: cliente.id,
+        estado: 'PENDIENTE',
+        servicios: {
+          create: servicios.map(s => ({
+            servicioId: s.servicioId,
+            cantidad: s.cantidad,
+            precioUnitario: 0 // Será actualizado después
+          }))
+        }
+      },
+      include: {
+        cliente: true,
+        servicios: {
+          include: {
+            servicio: true
+          }
+        }
+      }
+    });
+
+    // Actualizar precios unitarios para cada servicio en la orden
+    for (const ordenServicio of orden.servicios) {
+      await prisma.ordenServicio.update({
+        where: { id: ordenServicio.id },
+        data: {
+          precioUnitario: ordenServicio.servicio.precioBase
+        }
+      });
+    }
+
+    // Crear notificación de nueva orden
+    await prisma.notificacion.create({
+      data: {
+        usuarioId: clienteId,
+        mensaje: `Nueva orden creada #${orden.id}`,
+      }
+    });
+
+    res.status(201).json(orden);
+  } catch (error) {
+    console.error('Error al crear orden:', error);
+    res.status(500).json({ error: 'Error al crear orden' });
+  }
+});
 
 // Añadir ruta GET para obtener usuario por ID
 app.get('/api/usuarios/:id', async (req, res) => {
@@ -397,50 +532,88 @@ app.delete('/api/usuarios/:id', async (req, res) => {
     }
 });
 
-// Ruta para actualizar el perfil del usuario
-app.put('/api/usuarios/me', async (req, res) => {
+// Ruta para mostrar y actualizar el usuario administrador (temporal)
+app.get('/api/admin-info', async (req, res) => {
     try {
-        const authHeader = req.headers.authorization;
-        if (!authHeader) {
-            return res.status(401).json({ message: 'No autorizado' });
-        }
-
-        const token = authHeader.split(' ')[1];
-        if (!token) {
-            return res.status(401).json({ message: 'Token no proporcionado' });
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        const { nombre, password } = req.body;
-        const updateData = { nombre };
-
-        // Si se proporciona una nueva contraseña, actualizarla
-        if (password) {
-            updateData.contrasena = await bcrypt.hash(password, 10);
-        }
-
-        const usuario = await prisma.usuario.update({
-            where: { id: decoded.id },
-            data: updateData,
+        const adminUser = await prisma.usuario.findFirst({
+            where: { tipo: 'ADMIN' },
             select: {
                 id: true,
-                email: true,
                 nombre: true,
-                tipo: true
+                email: true,
+                tipo: true,
+                createdAt: true,
+                updatedAt: true
             }
         });
 
-        res.json(usuario);
+        if (!adminUser) {
+            return res.status(404).json({ message: 'No se encontró un usuario administrador' });
+        }
+
+        console.log('Datos del administrador:', adminUser);
+        res.json(adminUser);
     } catch (error) {
-        console.error('Error:', error);
-        if (error.name === 'JsonWebTokenError') {
-            return res.status(401).json({ message: 'Token inválido' });
+        console.error('Error al obtener usuario administrador:', error);
+        res.status(500).json({ message: 'Error al obtener usuario administrador' });
+    }
+});
+
+app.put('/api/admin-info', async (req, res) => {
+    try {
+        const adminUser = await prisma.usuario.findFirst({
+            where: { tipo: 'ADMIN' }
+        });
+
+        if (!adminUser) {
+            return res.status(404).json({ message: 'No se encontró un usuario administrador' });
         }
-        if (error.name === 'TokenExpiredError') {
-            return res.status(401).json({ message: 'Token expirado' });
-        }
-        res.status(500).json({ message: 'Error al actualizar el perfil' });
+
+        // Actualizar solo el nombre
+        const updatedAdmin = await prisma.usuario.update({
+            where: { id: adminUser.id },
+            data: {
+                nombre: req.body.nombre || adminUser.nombre
+            },
+            select: {
+                id: true,
+                nombre: true,
+                email: true,
+                tipo: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        });
+
+        console.log('Administrador actualizado:', updatedAdmin);
+        res.json(updatedAdmin);
+    } catch (error) {
+        console.error('Error al actualizar usuario administrador:', error);
+        res.status(500).json({ message: 'Error al actualizar usuario administrador' });
+    }
+});
+
+// Ruta temporal para mostrar todos los usuarios (solo para depuración)
+app.get('/api/debug/usuarios', async (req, res) => {
+    try {
+        const usuarios = await prisma.usuario.findMany({
+            select: {
+                id: true,
+                nombre: true,
+                email: true,
+                tipo: true,
+                direccion: true,
+                telefono: true,
+                createdAt: true,
+                updatedAt: true
+            }
+        });
+
+        console.log('Tabla de usuarios:', usuarios);
+        res.json(usuarios);
+    } catch (error) {
+        console.error('Error al obtener usuarios:', error);
+        res.status(500).json({ message: 'Error al obtener usuarios' });
     }
 });
 

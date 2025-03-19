@@ -5,18 +5,26 @@ const ordenController = {
     // Crear nueva orden
     async crear(req, res) {
         try {
-            const { clienteId, servicios, descripcion, fechaProgramada } = req.body;
+            const { clienteId: usuarioId, servicios } = req.body;
+
+            // Buscar el cliente asociado al usuario
+            const cliente = await prisma.cliente.findUnique({
+                where: { usuarioId: parseInt(usuarioId) }
+            });
+
+            if (!cliente) {
+                return res.status(404).json({ error: 'Cliente no encontrado para este usuario' });
+            }
 
             const orden = await prisma.orden.create({
                 data: {
-                    clienteId,
-                    descripcion,
-                    fechaProgramada,
+                    clienteId: cliente.id, // Usar el ID real del cliente
+                    estado: 'PENDIENTE', // Establecer estado inicial
                     servicios: {
                         create: servicios.map(s => ({
                             servicioId: s.servicioId,
                             cantidad: s.cantidad,
-                            observaciones: s.observaciones
+                            precioUnitario: 0 // Será actualizado después
                         }))
                     }
                 },
@@ -30,11 +38,20 @@ const ordenController = {
                 }
             });
 
+            // Actualizar precios unitarios para cada servicio en la orden
+            for (const ordenServicio of orden.servicios) {
+                await prisma.ordenServicio.update({
+                    where: { id: ordenServicio.id },
+                    data: {
+                        precioUnitario: ordenServicio.servicio.precioBase
+                    }
+                });
+            }
+
             // Crear notificación de nueva orden
             await prisma.notificacion.create({
                 data: {
-                    usuarioId: clienteId,
-                    tipo: 'ORDEN_CREADA',
+                    usuarioId: usuarioId,
                     mensaje: `Nueva orden creada #${orden.id}`,
                 }
             });
@@ -67,7 +84,6 @@ const ordenController = {
             await prisma.notificacion.create({
                 data: {
                     usuarioId: trabajadorId,
-                    tipo: 'ORDEN_ASIGNADA',
                     mensaje: `Se te ha asignado la orden #${ordenId}`
                 }
             });
@@ -98,7 +114,6 @@ const ordenController = {
             await prisma.notificacion.create({
                 data: {
                     usuarioId: orden.clienteId,
-                    tipo: 'ACTUALIZACION_ORDEN',
                     mensaje: `Tu orden #${ordenId} ha cambiado a estado: ${estado}`
                 }
             });

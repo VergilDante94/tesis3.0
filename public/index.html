@@ -367,15 +367,17 @@
                                     <p><strong>Nombre:</strong> <span id="perfil-nombre-display"></span></p>
                                     <p><strong>Email:</strong> <span id="perfil-email"></span></p>
                                     <p><strong>Rol:</strong> <span id="perfil-tipo"></span></p>
+                                    <p><strong>Dirección:</strong> <span id="perfil-direccion"></span></p>
+                                    <p><strong>Teléfono:</strong> <span id="perfil-telefono"></span></p>
                                 </div>
                             </div>
-                            <button id="btn-editar-perfil" class="btn btn-primary">
+                            <button id="btn-editar-perfil" class="btn btn-primary admin-only" style="display: none;">
                                 <i class="fas fa-edit"></i> Editar Perfil
                             </button>
                         </div>
                     </div>
                 </div>
-
+                
                 <!-- Modal para editar perfil -->
                 <div class="modal fade" id="modalEditarPerfil" tabindex="-1">
                     <div class="modal-dialog">
@@ -389,6 +391,14 @@
                                     <div class="mb-3">
                                         <label for="perfil-nombre" class="form-label">Nombre</label>
                                         <input type="text" class="form-control" id="perfil-nombre" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="perfil-direccion" class="form-label">Dirección</label>
+                                        <input type="text" class="form-control" id="perfil-direccion">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="perfil-telefono" class="form-label">Teléfono</label>
+                                        <input type="tel" class="form-control" id="perfil-telefono">
                                     </div>
                                     <div class="mb-3">
                                         <label for="perfil-password" class="form-label">Nueva Contraseña</label>
@@ -490,10 +500,13 @@
     <script src="/css/bootstrap-5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/jwt-utils.js"></script>
     <script src="/js/auth.js"></script>
+    <script src="/js/filtros.js"></script>
     <script src="/js/script.js"></script>
+    <script src="/js/clientes.js"></script>
     <script src="/js/servicios.js"></script>
     <script src="/js/ordenes.js"></script>
-    <script src="/js/facturas.js"></script>
+    <script src="/js/tecnicos.js"></script>
+    <script src="/js/reportes.js"></script>
     <script src="/js/usuarios.js"></script>
     <script src="/js/perfil.js"></script>
     <script src="/js/notificaciones.js"></script>
@@ -588,8 +601,12 @@
                         }
                         break;
                     case 'facturas':
-                        if (typeof loadInvoices === 'function') {
+                        if (typeof mostrarListaFacturas === 'function') {
+                            mostrarListaFacturas();
+                        } else if (typeof loadInvoices === 'function') {
                             loadInvoices();
+                        } else {
+                            console.error('No se encontró una función para cargar facturas');
                         }
                         break;
                     case 'notificaciones':
