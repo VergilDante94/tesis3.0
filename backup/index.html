@@ -379,15 +379,15 @@
                 </div>
 
                 <!-- Modal para editar perfil -->
-                <div class="modal fade" id="modalEditarPerfil" tabindex="-1">
+                <div class="modal fade" id="modalEditarPerfil" tabindex="-1" aria-labelledby="modalEditarPerfilLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Editar Perfil</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                <h5 class="modal-title" id="modalEditarPerfilLabel">Editar Perfil</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form id="formPerfil">
+                                <form id="perfil-form">
                                     <div class="mb-3">
                                         <label for="perfil-nombre" class="form-label">Nombre</label>
                                         <input type="text" class="form-control" id="perfil-nombre" required>
@@ -398,12 +398,11 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="perfil-telefono" class="form-label">Teléfono</label>
-                                        <input type="tel" class="form-control" id="perfil-telefono">
+                                        <input type="text" class="form-control" id="perfil-telefono">
                                     </div>
                                     <div class="mb-3">
-                                        <label for="perfil-password" class="form-label">Nueva Contraseña</label>
+                                        <label for="perfil-password" class="form-label">Nueva Contraseña (opcional)</label>
                                         <input type="password" class="form-control" id="perfil-password">
-                                        <small class="text-muted">Dejar en blanco para mantener la contraseña actual</small>
                                     </div>
                                 </form>
                             </div>

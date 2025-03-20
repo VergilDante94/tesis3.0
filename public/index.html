@@ -190,9 +190,17 @@
                                 <h2>Lista de usuarios</h2>
                             </div>
                             <div class="col-6 text-end">
-                                <button class="btn btn-primary" id="btnCrearUsuario">
-                                    <i class="fas fa-plus"></i> Crear usuario
-                                </button>
+                                <div class="d-flex justify-content-end align-items-center">
+                                    <div class="form-check me-3">
+                                        <input class="form-check-input" type="checkbox" id="mostrar-inactivos" onchange="loadUsers()">
+                                        <label class="form-check-label" for="mostrar-inactivos">
+                                            Mostrar inactivos
+                                        </label>
+                                    </div>
+                                    <button class="btn btn-primary" id="btnCrearUsuario">
+                                        <i class="fas fa-plus"></i> Crear usuario
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -204,6 +212,7 @@
                                         <th>Nombre</th>
                                         <th>Correo</th>
                                         <th>Rol</th>
+                                        <th>Estado</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>

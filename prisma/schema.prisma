@@ -32,6 +32,7 @@ model Usuario {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   createdBy     Int?
+  activo        Boolean        @default(true)
 }
 
 model Cliente {

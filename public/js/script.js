@@ -221,3 +221,24 @@ window.showSection = showSection;
 window.verificarAutenticacion = verificarAutenticacion;
 window.actualizarInfoUsuario = actualizarInfoUsuario;
 window.verificarPermisos = verificarPermisos;
+
+// Función para capturar errores del servidor en la consola
+(function() {
+    // Variable global para almacenar el último error del servidor
+    window.lastServerError = '';
+    
+    // Sobrescribir console.error para capturar errores relevantes
+    const originalConsoleError = console.error;
+    console.error = function(...args) {
+        // Llamar a la función original
+        originalConsoleError.apply(console, args);
+        
+        // Capturar mensajes de error relacionados con restricciones de clave foránea
+        const errorStr = args.join(' ');
+        if (errorStr.includes('Foreign key constraint') || 
+            errorStr.includes('P2003') || 
+            errorStr.includes('constraint violated')) {
+            window.lastServerError = errorStr;
+        }
+    };
+})();
