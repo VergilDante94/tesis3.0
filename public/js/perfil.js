@@ -750,12 +750,29 @@ async function guardarUsuario() {
             return;
         }
         
-        // Crear objeto con datos del formulario, usando valores seguros
+        // Determinar si estamos creando o editando
+        const esEdicion = !!idFinal;
+        console.log(`Operación detectada: ${esEdicion ? 'EDITAR USUARIO EXISTENTE' : 'CREAR NUEVO USUARIO'}`);
+        
+        // Datos básicos del usuario - siempre incluidos
         const formData = {
             nombre: nombreElement.value || '',
             email: emailElement.value || '',
             tipo: tipoElement.value || 'CLIENTE'
         };
+
+        // Validar datos obligatorios
+        if (!formData.nombre.trim()) {
+            mostrarAlerta('El nombre es obligatorio', 'warning');
+            nombreElement.focus();
+            return;
+        }
+
+        if (!formData.email.trim() || !formData.email.includes('@')) {
+            mostrarAlerta('Introduce un email válido', 'warning');
+            emailElement.focus();
+            return;
+        }
 
         // Campos adicionales según el tipo de usuario
         if (formData.tipo === 'CLIENTE') {
@@ -787,10 +804,19 @@ async function guardarUsuario() {
         }
 
         // IMPORTANTE: Para la contraseña, asegurarnos de que siempre enviamos un string
-        // y solo incluimos el campo si tiene un valor no vacío
+        // SOLO ES OBLIGATORIO para NUEVOS usuarios (no para edición)
         const password = passwordElement ? passwordElement.value.trim() : '';
+        
+        // Si es creación, la contraseña es OBLIGATORIA
+        if (!esEdicion && (!password || password === '')) {
+            mostrarAlerta('La contraseña es obligatoria para nuevos usuarios', 'warning');
+            passwordElement.focus();
+            return;
+        }
+        
+        // Agregar password solo cuando tiene valor o es un nuevo usuario
         if (password && password !== '') {
-            formData.password = password; // Usar "password" en lugar de "contrasena" según el error del servidor
+            formData.password = password;
             console.log('- Campo password añadido (valor no mostrado por seguridad)');
         } else {
             console.log('- Campo password NO añadido (campo vacío o no encontrado)');
@@ -801,8 +827,9 @@ async function guardarUsuario() {
         if (dataCopy.password) dataCopy.password = '[OCULTO]';
         console.log(JSON.stringify(dataCopy, null, 2));
 
-        const url = idFinal ? `/api/usuarios/${idFinal}` : '/api/usuarios';
-        const method = idFinal ? 'PUT' : 'POST';
+        // Determinar URL y método según si es edición o creación
+        const url = esEdicion ? `/api/usuarios/${idFinal}` : '/api/usuarios';
+        const method = esEdicion ? 'PUT' : 'POST';
         console.log(`Operación: ${method} a ${url}`);
 
         // Verificar token antes de enviar
@@ -813,6 +840,13 @@ async function guardarUsuario() {
             return;
         }
         console.log('Token encontrado en localStorage');
+
+        // Mostrar indicador de carga en el botón
+        const btnGuardar = document.getElementById('btnGuardarUsuario');
+        if (btnGuardar) {
+            btnGuardar.disabled = true;
+            btnGuardar.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...';
+        }
 
         console.log('=== ENVIANDO SOLICITUD AL SERVIDOR ===');
         const response = await fetch(url, {
@@ -841,7 +875,7 @@ async function guardarUsuario() {
             throw new Error('Error al guardar usuario: ' + (responseData.message || response.statusText));
         }
 
-        mostrarAlerta('Usuario guardado exitosamente', 'success');
+        mostrarAlerta(`Usuario ${esEdicion ? 'actualizado' : 'creado'} exitosamente`, 'success');
         
         // Limpiar variable global después de guardar exitosamente
         if (window.usuarioActual) {
@@ -877,6 +911,13 @@ async function guardarUsuario() {
     } catch (error) {
         console.error('Error al guardar usuario:', error);
         mostrarAlerta('Error al guardar usuario: ' + error.message, 'danger');
+    } finally {
+        // Restaurar botón
+        const btnGuardar = document.getElementById('btnGuardarUsuario');
+        if (btnGuardar) {
+            btnGuardar.disabled = false;
+            btnGuardar.textContent = 'Guardar Usuario';
+        }
     }
 }
 

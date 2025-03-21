@@ -136,9 +136,23 @@ function mostrarFormularioOrden() {
 }
 
 // Función para mostrar lista de órdenes
-async function mostrarListaOrdenes() {
+async function mostrarListaOrdenes(filtros = {}) {
     try {
-        const response = await fetch('/api/ordenes', {
+        // Construir URL con parámetros de filtrado
+        let url = '/api/ordenes';
+        const queryParams = new URLSearchParams();
+        
+        // Añadir filtros a los query params
+        Object.entries(filtros).forEach(([key, value]) => {
+            if (value) queryParams.append(key, value);
+        });
+        
+        // Añadir los query params a la URL si hay alguno
+        if (queryParams.toString()) {
+            url += `?${queryParams.toString()}`;
+        }
+        
+        const response = await fetch(url, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
@@ -174,7 +188,7 @@ async function mostrarListaOrdenes() {
             ordenesContainer.innerHTML = `
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle"></i>
-                    No hay órdenes disponibles.
+                    No hay órdenes disponibles con los filtros seleccionados.
                 </div>
             `;
             return;
@@ -182,27 +196,55 @@ async function mostrarListaOrdenes() {
 
         ordenesContainer.innerHTML = ordenes.map(orden => `
             <div class="card mb-3">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <strong>Orden #${orden.id}</strong>
-                    <span class="badge ${getEstadoBadgeClass(orden.estado)}">${orden.estado}</span>
+                <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                    <div>
+                        <span class="badge bg-primary me-2">ID: ${orden.id}</span>
+                        <span class="badge ${getEstadoBadgeClass(orden.estado)}">${orden.estado}</span>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary ver-detalle-orden" 
+                                data-orden-id="${orden.id}">Ver detalles</button>
+                    </div>
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">Cliente: ${orden.cliente?.usuario?.nombre || 'N/A'}</h5>
-                    <p class="card-text">Fecha: ${new Date(orden.fechaCreacion).toLocaleDateString()}</p>
+                    <p class="card-text">Email: ${orden.cliente?.usuario?.email || 'N/A'}</p>
+                    <p class="card-text">Fecha: ${orden.fechaFormateada || new Date(orden.fecha).toLocaleDateString()}</p>
+                    
                     <div class="servicios-lista">
                         <h6>Servicios:</h6>
                         <ul class="list-group">
                             ${orden.servicios?.map(s => `
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <span>${s.servicio?.nombre || 'N/A'}</span>
-                                    <span class="badge bg-secondary">x${s.cantidad}</span>
+                                    <span class="badge bg-secondary me-2">x${s.cantidad}</span>
+                                    <span class="precio">$${s.precioUnitario * s.cantidad}</span>
                                 </li>
                             `).join('') || ''}
                         </ul>
                     </div>
+                    
+                    <div class="mt-3 precios-resumen">
+                        <div class="d-flex justify-content-between">
+                            <span>Subtotal:</span>
+                            <strong>$${orden.precios?.subtotal.toFixed(2) || 'N/A'}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Total:</span>
+                            <strong class="text-primary">$${orden.precios?.total.toFixed(2) || 'N/A'}</strong>
+                        </div>
+                    </div>
                 </div>
             </div>
         `).join('');
+        
+        // Añadir eventos para ver detalles
+        document.querySelectorAll('.ver-detalle-orden').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const ordenId = e.target.dataset.ordenId;
+                mostrarDetalleOrden(ordenId);
+            });
+        });
     } catch (error) {
         console.error('Error al mostrar órdenes:', error);
         const ordenesContainer = document.getElementById('listaOrdenes');
@@ -214,6 +256,129 @@ async function mostrarListaOrdenes() {
                 </div>
             `;
         }
+    }
+}
+
+// Función para mostrar detalle de una orden específica
+async function mostrarDetalleOrden(ordenId) {
+    try {
+        const response = await fetch(`/api/ordenes/${ordenId}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al cargar los detalles de la orden');
+        }
+
+        const orden = await response.json();
+        
+        // Crear modal para mostrar detalles
+        const modalHtml = `
+            <div class="modal fade" id="detalleOrdenModal" tabindex="-1" aria-labelledby="detalleOrdenModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="detalleOrdenModalLabel">
+                                <span class="badge bg-primary me-2">Orden ID: ${orden.id}</span>
+                                <span class="badge ${getEstadoBadgeClass(orden.estado)}">${orden.estado}</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <p><strong>Cliente:</strong> ${orden.cliente?.usuario?.nombre || 'N/A'}</p>
+                                    <p><strong>Email:</strong> ${orden.cliente?.usuario?.email || 'N/A'}</p>
+                                    <p><strong>Dirección:</strong> ${orden.cliente?.direccion || 'N/A'}</p>
+                                    <p><strong>Teléfono:</strong> ${orden.cliente?.telefono || 'N/A'}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Fecha:</strong> ${orden.fechaFormateada || new Date(orden.fecha).toLocaleDateString()}</p>
+                                    <p><strong>Fecha de creación:</strong> ${new Date(orden.createdAt || orden.fecha).toLocaleString()}</p>
+                                </div>
+                            </div>
+                            
+                            <h6>Detalle de Servicios:</h6>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Servicio</th>
+                                        <th>Descripción</th>
+                                        <th>Cantidad</th>
+                                        <th>Precio Unit.</th>
+                                        <th>Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${orden.detallesServicios ? orden.detallesServicios.map(s => `
+                                        <tr>
+                                            <td>${s.nombre}</td>
+                                            <td>${s.descripcion}</td>
+                                            <td>${s.cantidad}</td>
+                                            <td>$${s.precioUnitario.toFixed(2)}</td>
+                                            <td>$${s.subtotal.toFixed(2)}</td>
+                                        </tr>
+                                    `).join('') : orden.servicios.map(s => `
+                                        <tr>
+                                            <td>${s.servicio.nombre}</td>
+                                            <td>${s.servicio.descripcion}</td>
+                                            <td>${s.cantidad}</td>
+                                            <td>$${s.precioUnitario.toFixed(2)}</td>
+                                            <td>$${(s.cantidad * s.precioUnitario).toFixed(2)}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4" class="text-end"><strong>Subtotal:</strong></td>
+                                        <td>$${orden.precios?.subtotal.toFixed(2) || 'N/A'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" class="text-end"><strong>Total:</strong></td>
+                                        <td class="text-primary"><strong>$${orden.precios?.total.toFixed(2) || 'N/A'}</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            ${orden.estado === 'PENDIENTE' ? 
+                                `<button type="button" class="btn btn-primary" id="btnImprimirFactura" data-orden-id="${orden.id}">
+                                    Generar Factura
+                                </button>` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Añadir modal al DOM
+        const modalContainer = document.createElement('div');
+        modalContainer.innerHTML = modalHtml;
+        document.body.appendChild(modalContainer);
+        
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('detalleOrdenModal'));
+        modal.show();
+        
+        // Evento para generar factura
+        const btnImprimirFactura = document.getElementById('btnImprimirFactura');
+        if (btnImprimirFactura) {
+            btnImprimirFactura.addEventListener('click', () => {
+                generarFactura(orden.id);
+            });
+        }
+        
+        // Limpiar DOM cuando se cierre el modal
+        document.getElementById('detalleOrdenModal').addEventListener('hidden.bs.modal', function () {
+            document.body.removeChild(modalContainer);
+        });
+        
+    } catch (error) {
+        console.error('Error al mostrar detalles de la orden:', error);
+        mostrarAlerta('Error al cargar los detalles de la orden', 'danger');
     }
 }
 
@@ -577,9 +742,11 @@ function fixFormFields() {
 }
 
 // Función para mostrar alertas
-function mostrarAlerta(mensaje, tipo) {
+function mostrarAlerta(mensaje, tipo, duracion = 5000) {
     const alertaDiv = document.createElement('div');
-    alertaDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+    alertaDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 end-0 m-3 shadow-lg`;
+    alertaDiv.style.zIndex = '9999';
+    alertaDiv.style.minWidth = '300px';
     alertaDiv.role = 'alert';
     alertaDiv.innerHTML = `
         ${mensaje}
@@ -587,9 +754,30 @@ function mostrarAlerta(mensaje, tipo) {
     `;
     document.body.appendChild(alertaDiv);
     
-    setTimeout(() => {
-        alertaDiv.remove();
-    }, 3000);
+    // Añadir animación de desaparición gradual
+    const timeoutId = setTimeout(() => {
+        alertaDiv.classList.add('fade-out');
+        setTimeout(() => {
+            alertaDiv.remove();
+        }, 300);
+    }, duracion);
+    
+    // Detener el temporizador si el usuario cierra manualmente
+    alertaDiv.querySelector('.btn-close').addEventListener('click', () => {
+        clearTimeout(timeoutId);
+    });
+    
+    // Añadir estilo para la animación de desaparición
+    const style = document.createElement('style');
+    style.textContent = `
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
+        }
+    `;
+    document.head.appendChild(style);
+    
+    return alertaDiv; // Retornar el elemento por si se necesita manipular posteriormente
 }
 
 // Configurar el formulario de órdenes
@@ -826,3 +1014,346 @@ window.eliminarServicio = eliminarServicio;
 window.nuevaOrden = nuevaOrden;
 window.mostrarAlerta = mostrarAlerta;
 window.fixFormFields = fixFormFields;
+
+// Función para cargar servicios en el filtro
+async function cargarServiciosParaFiltro() {
+    try {
+        // Añadir headers de autenticación
+        const response = await fetch('/api/servicios', {
+            headers: auth.getHeaders()
+        });
+        
+        if (!response.ok) {
+            throw new Error('Error al cargar servicios');
+        }
+        
+        const servicios = await response.json();
+        const filtroServicio = document.getElementById('filtroServicio');
+        
+        if (filtroServicio) {
+            // Mantener la primera opción "Todos los servicios"
+            const defaultOption = filtroServicio.querySelector('option');
+            filtroServicio.innerHTML = '';
+            if (defaultOption) {
+                filtroServicio.appendChild(defaultOption);
+            }
+            
+            // Añadir opciones de servicios
+            servicios.forEach(servicio => {
+                const option = document.createElement('option');
+                option.value = servicio.id;
+                option.textContent = servicio.nombre;
+                filtroServicio.appendChild(option);
+            });
+            
+            // Mensaje de éxito en consola para debugging
+            console.log(`Cargados ${servicios.length} servicios para el filtro`);
+        }
+    } catch (error) {
+        console.error('Error al cargar servicios para filtro:', error);
+        // Mostrar un alert más discreto para no interrumpir la experiencia del usuario
+        mostrarAlerta(`No se pudieron cargar los servicios para el filtro: ${error.message}`, 'warning', 3000);
+    }
+}
+
+// Función para aplicar filtros
+function aplicarFiltros() {
+    const filtros = {
+        estado: document.getElementById('filtroEstado')?.value,
+        fechaDesde: document.getElementById('filtroFechaDesde')?.value,
+        fechaHasta: document.getElementById('filtroFechaHasta')?.value,
+        precioMinimo: document.getElementById('filtroPrecioMin')?.value,
+        precioMaximo: document.getElementById('filtroPrecioMax')?.value,
+        servicioId: document.getElementById('filtroServicio')?.value,
+        ordenarPor: document.getElementById('filtroOrdenarPor')?.value,
+        ordenDireccion: document.getElementById('filtroOrdenDireccion')?.value
+    };
+    
+    // Eliminar campos vacíos para no enviarlos como parámetros
+    Object.keys(filtros).forEach(key => {
+        if (!filtros[key]) {
+            delete filtros[key];
+        }
+    });
+    
+    // Guardar filtros en sessionStorage para recordarlos
+    sessionStorage.setItem('ordenes_filtros', JSON.stringify(filtros));
+    
+    // Mostrar lista de órdenes filtradas
+    mostrarListaOrdenes(filtros);
+}
+
+// Función para limpiar filtros
+function limpiarFiltros() {
+    const formFiltros = document.getElementById('filtroOrdenesForm');
+    if (formFiltros) {
+        formFiltros.reset();
+        sessionStorage.removeItem('ordenes_filtros');
+        mostrarListaOrdenes();
+    }
+}
+
+// Función para inicializar los filtros
+function inicializarFiltros() {
+    // Cargar servicios para el filtro
+    cargarServiciosParaFiltro();
+    
+    // Restaurar filtros guardados (si existen)
+    const filtrosGuardados = sessionStorage.getItem('ordenes_filtros');
+    if (filtrosGuardados) {
+        const filtros = JSON.parse(filtrosGuardados);
+        
+        // Aplicar valores a los campos
+        if (filtros.estado) document.getElementById('filtroEstado').value = filtros.estado;
+        if (filtros.fechaDesde) document.getElementById('filtroFechaDesde').value = filtros.fechaDesde;
+        if (filtros.fechaHasta) document.getElementById('filtroFechaHasta').value = filtros.fechaHasta;
+        if (filtros.precioMinimo) document.getElementById('filtroPrecioMin').value = filtros.precioMinimo;
+        if (filtros.precioMaximo) document.getElementById('filtroPrecioMax').value = filtros.precioMaximo;
+        if (filtros.servicioId) {
+            // Es posible que primero necesitemos esperar a que los servicios carguen
+            const intervalId = setInterval(() => {
+                const select = document.getElementById('filtroServicio');
+                if (select && select.options.length > 1) {
+                    select.value = filtros.servicioId;
+                    clearInterval(intervalId);
+                }
+            }, 100);
+            // Establecer un tiempo máximo de espera
+            setTimeout(() => clearInterval(intervalId), 5000);
+        }
+        if (filtros.ordenarPor) document.getElementById('filtroOrdenarPor').value = filtros.ordenarPor;
+        if (filtros.ordenDireccion) document.getElementById('filtroOrdenDireccion').value = filtros.ordenDireccion;
+        
+        // Aplicar los filtros restaurados
+        mostrarListaOrdenes(filtros);
+    } else {
+        // Si no hay filtros guardados, mostrar todas las órdenes
+        mostrarListaOrdenes();
+    }
+    
+    // Asignar eventos a los botones
+    document.getElementById('aplicarFiltros')?.addEventListener('click', aplicarFiltros);
+    document.getElementById('limpiarFiltros')?.addEventListener('click', limpiarFiltros);
+}
+
+// Añadir inicialización de filtros al cargar el módulo de órdenes
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar si estamos en la página de órdenes
+    if (document.getElementById('ordenes')) {
+        // Inicializar filtros cuando se muestre la sección de órdenes
+        document.querySelectorAll('[data-section="ordenes"]').forEach(link => {
+            link.addEventListener('click', function() {
+                inicializarFiltros();
+            });
+        });
+        
+        // Comprobar si la sección de órdenes es visible (para manejar recarga de página)
+        if (document.getElementById('ordenes').style.display !== 'none') {
+            inicializarFiltros();
+        }
+    }
+});
+
+// Función para generar factura de una orden
+async function generarFactura(ordenId) {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            mostrarAlerta('Debes iniciar sesión para generar facturas', 'warning');
+            return;
+        }
+
+        // Mostrar indicador de carga
+        const btnFactura = document.getElementById('btnImprimirFactura');
+        if (btnFactura) {
+            btnFactura.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generando...';
+            btnFactura.disabled = true;
+        }
+
+        const response = await fetch(`/api/facturas/generar/${ordenId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        // Restaurar botón
+        if (btnFactura) {
+            btnFactura.innerHTML = 'Generar Factura';
+            btnFactura.disabled = false;
+        }
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Error al generar factura');
+        }
+
+        const factura = await response.json();
+        
+        // Cerrar modal actual si existe
+        const modalActual = document.getElementById('detalleOrdenModal');
+        if (modalActual) {
+            const instancia = bootstrap.Modal.getInstance(modalActual);
+            if (instancia) {
+                instancia.hide();
+            }
+        }
+        
+        // Mostrar mensaje de éxito
+        mostrarAlerta('Factura generada correctamente', 'success');
+        
+        // Opcional: Mostrar enlace para descargar la factura
+        if (factura.archivoPath) {
+            // Construir modal de confirmación
+            const modalHtml = `
+                <div class="modal fade" id="facturaGeneradaModal" tabindex="-1" aria-labelledby="facturaGeneradaLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="facturaGeneradaLabel">Factura Generada</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>La factura se ha generado correctamente.</p>
+                                <p>Número de factura: <strong>${factura.numeroFactura || 'No disponible'}</strong></p>
+                                <p>Fecha: <strong>${new Date(factura.fechaEmision).toLocaleDateString()}</strong></p>
+                                <p>Total: <strong>$${factura.total.toFixed(2)}</strong></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <a href="${factura.archivoPath}" class="btn btn-primary" target="_blank">
+                                    <i class="fas fa-download"></i> Descargar Factura
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Añadir modal al DOM
+            const modalContainer = document.createElement('div');
+            modalContainer.innerHTML = modalHtml;
+            document.body.appendChild(modalContainer);
+            
+            // Mostrar modal
+            const modal = new bootstrap.Modal(document.getElementById('facturaGeneradaModal'));
+            modal.show();
+            
+            // Limpiar DOM cuando se cierre el modal
+            document.getElementById('facturaGeneradaModal').addEventListener('hidden.bs.modal', function () {
+                document.body.removeChild(modalContainer);
+            });
+        }
+        
+        // Actualizar lista de órdenes para reflejar el cambio
+        mostrarListaOrdenes();
+        
+    } catch (error) {
+        console.error('Error al generar factura:', error);
+        mostrarAlerta(`Error al generar factura: ${error.message}`, 'danger');
+    }
+}
+
+// Función para limpiar el historial de órdenes
+async function limpiarHistorialOrdenes() {
+    if (confirm('¿Estás seguro de que deseas limpiar el historial de órdenes? Esta acción no eliminará las órdenes del servidor, solo limpiará la visualización actual.')) {
+        // Limpiar filtros
+        const formFiltros = document.getElementById('filtroOrdenesForm');
+        if (formFiltros) {
+            formFiltros.reset();
+        }
+        
+        // Limpiar sessionStorage
+        sessionStorage.removeItem('ordenes_filtros');
+        
+        // Vaciar el contenedor de órdenes y mostrar mensaje temporal
+        const ordenesContainer = document.getElementById('listaOrdenes');
+        if (ordenesContainer) {
+            ordenesContainer.innerHTML = `
+                <div id="mensaje-historial-limpiado" class="alert alert-info fade show">
+                    <i class="fas fa-info-circle"></i>
+                    Historial de órdenes limpiado. Puedes aplicar filtros para ver órdenes.
+                </div>
+            `;
+            
+            // Configurar el temporizador para ocultar el mensaje después de 5 segundos
+            setTimeout(() => {
+                const mensaje = document.getElementById('mensaje-historial-limpiado');
+                if (mensaje) {
+                    // Añadir clase para animación de desvanecimiento
+                    mensaje.classList.add('fade-out');
+                    
+                    // Después de la animación, reemplazar con un contenedor vacío
+                    setTimeout(() => {
+                        if (mensaje.parentNode) {
+                            ordenesContainer.innerHTML = `
+                                <div class="d-flex justify-content-center align-items-center p-5">
+                                    <button id="mostrar-ordenes-btn" class="btn btn-outline-primary">
+                                        <i class="fas fa-search"></i> Ver Órdenes
+                                    </button>
+                                </div>
+                            `;
+                            
+                            // Añadir evento al botón para mostrar órdenes
+                            const btnMostrarOrdenes = document.getElementById('mostrar-ordenes-btn');
+                            if (btnMostrarOrdenes) {
+                                btnMostrarOrdenes.addEventListener('click', () => {
+                                    mostrarListaOrdenes();
+                                });
+                            }
+                        }
+                    }, 300); // Tiempo para la animación de desvanecimiento
+                }
+            }, 5000); // 5 segundos antes de ocultar
+        }
+        
+        // Mostrar mensaje de éxito
+        mostrarAlerta('Historial de órdenes limpiado correctamente', 'success');
+    }
+}
+
+// Asegurar que el estilo para la animación de desvanecimiento esté disponible
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar si ya existe el estilo
+    if (!document.getElementById('fade-out-style')) {
+        const style = document.createElement('style');
+        style.id = 'fade-out-style';
+        style.textContent = `
+            .fade-out {
+                opacity: 0;
+                transition: opacity 0.3s ease-out;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+});
+
+// Añadir inicialización del botón de limpiar historial
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar si estamos en la página de órdenes
+    if (document.getElementById('ordenes')) {
+        // Inicializar filtros cuando se muestre la sección de órdenes
+        document.querySelectorAll('[data-section="ordenes"]').forEach(link => {
+            link.addEventListener('click', function() {
+                inicializarFiltros();
+                inicializarBotones();
+            });
+        });
+        
+        // Comprobar si la sección de órdenes es visible (para manejar recarga de página)
+        if (document.getElementById('ordenes').style.display !== 'none') {
+            inicializarFiltros();
+            inicializarBotones();
+        }
+    }
+});
+
+// Función para inicializar botones
+function inicializarBotones() {
+    // Botón para limpiar historial
+    const btnLimpiarHistorial = document.getElementById('limpiarHistorialOrdenes');
+    if (btnLimpiarHistorial) {
+        btnLimpiarHistorial.addEventListener('click', limpiarHistorialOrdenes);
+    }
+}

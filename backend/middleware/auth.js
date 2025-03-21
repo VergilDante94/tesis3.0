@@ -16,4 +16,19 @@ const verificarToken = (req, res, next) => {
     }
 };
 
-module.exports = verificarToken; 
+const esAdmin = (req, res, next) => {
+    if (!req.usuario) {
+        return res.status(401).json({ error: 'Usuario no autenticado' });
+    }
+
+    if (req.usuario.tipo !== 'ADMIN') {
+        return res.status(403).json({ error: 'Acceso denegado. Se requieren privilegios de administrador.' });
+    }
+
+    next();
+};
+
+module.exports = {
+    verificarToken,
+    esAdmin
+}; 

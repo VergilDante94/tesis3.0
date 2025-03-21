@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const app = express();
 const prisma = new PrismaClient();
 const servicioRoutes = require('../backend/routes/servicioRoutes');
+const facturaRoutes = require('../backend/routes/facturaRoutes');
 
 // Middleware
 app.use(express.json());
@@ -211,6 +212,9 @@ app.get('/api/usuarios/me', async (req, res) => {
 // Rutas de servicios
 app.use('/api/servicios', servicioRoutes);
 
+// Rutas de facturas
+app.use('/api/facturas', facturaRoutes);
+
 // Rutas de órdenes
 app.post('/api/ordenes', async (req, res) => {
   try {
@@ -270,6 +274,299 @@ app.post('/api/ordenes', async (req, res) => {
   } catch (error) {
     console.error('Error al crear orden:', error);
     res.status(500).json({ error: 'Error al crear orden' });
+  }
+});
+
+// Ruta para obtener órdenes
+app.get('/api/ordenes', async (req, res) => {
+  try {
+    // Verificar token
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).json({ message: 'No autorizado' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: 'Token no proporcionado' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const usuarioId = decoded.id;
+    const tipo = decoded.tipo;
+
+    // Parámetros de filtrado
+    const { 
+      estado, 
+      fechaDesde, 
+      fechaHasta, 
+      servicioId,
+      clienteId,
+      precioMinimo,
+      precioMaximo,
+      ordenarPor = 'fecha',
+      ordenDireccion = 'desc'
+    } = req.query;
+
+    // Construir condiciones de filtrado
+    let whereCondition = {};
+    
+    // Filtro por estado
+    if (estado) {
+      whereCondition.estado = estado;
+    }
+    
+    // Filtro por fecha
+    if (fechaDesde || fechaHasta) {
+      whereCondition.fecha = {};
+      if (fechaDesde) {
+        whereCondition.fecha.gte = new Date(fechaDesde);
+      }
+      if (fechaHasta) {
+        whereCondition.fecha.lte = new Date(fechaHasta);
+      }
+    }
+
+    // Configurar ordenamiento
+    let orderBy = {};
+    if (ordenarPor === 'precio') {
+      // Para ordenar por precio, necesitamos procesar después
+      orderBy.fecha = ordenDireccion;
+    } else {
+      orderBy[ordenarPor] = ordenDireccion;
+    }
+
+    // Si es ADMIN o TRABAJADOR, mostrar todas las órdenes (con filtros)
+    if (tipo === 'ADMIN' || tipo === 'TRABAJADOR') {
+      // Filtro adicional por cliente para admins/trabajadores
+      if (clienteId) {
+        whereCondition.clienteId = parseInt(clienteId);
+      }
+      
+      ordenes = await prisma.orden.findMany({
+        where: whereCondition,
+        include: {
+          cliente: {
+            include: {
+              usuario: true
+            }
+          },
+          servicios: {
+            include: {
+              servicio: true
+            }
+          }
+        },
+        orderBy
+      });
+    } 
+    // Si es CLIENTE, mostrar solo sus órdenes
+    else if (tipo === 'CLIENTE') {
+      // Buscar el cliente asociado al usuario
+      const cliente = await prisma.cliente.findUnique({
+        where: { usuarioId: parseInt(usuarioId) }
+      });
+
+      if (!cliente) {
+        return res.status(404).json({ error: 'Cliente no encontrado para este usuario' });
+      }
+
+      // Añadir clienteId a las condiciones de búsqueda
+      whereCondition.clienteId = cliente.id;
+
+      ordenes = await prisma.orden.findMany({
+        where: whereCondition,
+        include: {
+          cliente: {
+            include: {
+              usuario: true
+            }
+          },
+          servicios: {
+            include: {
+              servicio: true
+            }
+          }
+        },
+        orderBy
+      });
+    } else {
+      return res.status(403).json({ message: 'Tipo de usuario no autorizado' });
+    }
+
+    // Filtrado posterior a la consulta
+    let ordenesFiltradas = ordenes;
+    
+    // Filtrar por servicio específico si se solicita
+    if (servicioId) {
+      const servicioIdInt = parseInt(servicioId);
+      ordenesFiltradas = ordenesFiltradas.filter(orden => 
+        orden.servicios.some(s => s.servicioId === servicioIdInt)
+      );
+    }
+
+    // Calcular el precio total para cada orden
+    const ordenesConPrecios = ordenesFiltradas.map(orden => {
+      // Calcular subtotal
+      const subtotal = orden.servicios.reduce((sum, item) => 
+        sum + (item.cantidad * item.precioUnitario), 0);
+      
+      // Ya no calculamos impuestos
+      
+      // Calcular total (ahora igual al subtotal)
+      const total = subtotal;
+      
+      // Añadir información de precios a la orden
+      return {
+        ...orden,
+        precios: {
+          subtotal: subtotal,
+          total: total
+        },
+        // Formatear fecha para mejor visualización
+        fechaFormateada: new Date(orden.fecha).toLocaleDateString('es-ES', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        })
+      };
+    });
+
+    // Filtrar por rango de precios si se solicita
+    let resultadoFinal = ordenesConPrecios;
+    
+    if (precioMinimo || precioMaximo) {
+      resultadoFinal = ordenesConPrecios.filter(orden => {
+        if (precioMinimo && orden.precios.total < parseFloat(precioMinimo)) {
+          return false;
+        }
+        if (precioMaximo && orden.precios.total > parseFloat(precioMaximo)) {
+          return false;
+        }
+        return true;
+      });
+    }
+
+    // Ordenar por precio si se solicitó
+    if (ordenarPor === 'precio') {
+      resultadoFinal.sort((a, b) => {
+        return ordenDireccion === 'asc' 
+          ? a.precios.total - b.precios.total 
+          : b.precios.total - a.precios.total;
+      });
+    }
+
+    res.json(resultadoFinal);
+  } catch (error) {
+    console.error('Error al obtener órdenes:', error);
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: 'Token inválido' });
+    }
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token expirado' });
+    }
+    res.status(500).json({ error: 'Error al obtener órdenes' });
+  }
+});
+
+// Ruta para obtener una orden específica por ID
+app.get('/api/ordenes/:id', async (req, res) => {
+  try {
+    // Verificar token
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).json({ message: 'No autorizado' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: 'Token no proporcionado' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const usuarioId = decoded.id;
+    const tipo = decoded.tipo;
+    
+    const { id } = req.params;
+    const ordenId = parseInt(id);
+
+    // Buscar la orden
+    const orden = await prisma.orden.findUnique({
+      where: { id: ordenId },
+      include: {
+        cliente: {
+          include: {
+            usuario: true
+          }
+        },
+        servicios: {
+          include: {
+            servicio: true
+          }
+        }
+      }
+    });
+
+    if (!orden) {
+      return res.status(404).json({ error: 'Orden no encontrada' });
+    }
+
+    // Verificar permisos: solo el cliente propietario, el admin o un trabajador pueden ver la orden
+    if (tipo === 'CLIENTE') {
+      // Buscar el cliente asociado al usuario
+      const cliente = await prisma.cliente.findUnique({
+        where: { usuarioId: parseInt(usuarioId) }
+      });
+
+      if (!cliente || cliente.id !== orden.clienteId) {
+        return res.status(403).json({ error: 'No tienes permiso para ver esta orden' });
+      }
+    }
+    
+    // Calcular precios
+    const subtotal = orden.servicios.reduce((sum, item) => 
+      sum + (item.cantidad * item.precioUnitario), 0);
+    
+    // Ya no calculamos impuestos
+    
+    // Calcular total (ahora igual al subtotal)
+    const total = subtotal;
+    
+    // Añadir información de precios y formatear fecha
+    const ordenDetallada = {
+      ...orden,
+      precios: {
+        subtotal: subtotal,
+        total: total
+      },
+      fechaFormateada: new Date(orden.fecha).toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }),
+      // Detallar servicios de manera más clara
+      detallesServicios: orden.servicios.map(item => ({
+        id: item.servicio.id,
+        nombre: item.servicio.nombre,
+        descripcion: item.servicio.descripcion,
+        cantidad: item.cantidad,
+        precioUnitario: item.precioUnitario,
+        subtotal: item.cantidad * item.precioUnitario
+      }))
+    };
+    
+    res.json(ordenDetallada);
+  } catch (error) {
+    console.error('Error al obtener orden por ID:', error);
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: 'Token inválido' });
+    }
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token expirado' });
+    }
+    res.status(500).json({ error: 'Error al obtener orden' });
   }
 });
 

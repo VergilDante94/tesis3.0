@@ -95,7 +95,7 @@ function showSection(sectionId) {
     });
 }
 
-// Cargar datos específicos de cada sección
+// Función para cargar datos específicos de cada sección
 function cargarDatosSeccion(sectionId) {
     switch(sectionId) {
         case 'usuarios':
@@ -108,7 +108,11 @@ function cargarDatosSeccion(sectionId) {
             if (typeof loadServices === 'function') loadServices();
             break;
         case 'facturas':
-            if (typeof loadInvoices === 'function') loadInvoices();
+            if (typeof mostrarListaFacturas === 'function') {
+                mostrarListaFacturas();
+            } else {
+                console.error('No se encontró una función para cargar facturas');
+            }
             break;
         case 'notificaciones':
             if (typeof loadNotifications === 'function') loadNotifications();
@@ -221,6 +225,14 @@ window.showSection = showSection;
 window.verificarAutenticacion = verificarAutenticacion;
 window.actualizarInfoUsuario = actualizarInfoUsuario;
 window.verificarPermisos = verificarPermisos;
+// Alias para la función de facturas para mantener consistencia
+window.loadInvoices = function() {
+    if (typeof mostrarListaFacturas === 'function') {
+        mostrarListaFacturas();
+    } else {
+        console.error('No se encontró una función para cargar facturas');
+    }
+};
 
 // Función para capturar errores del servidor en la consola
 (function() {

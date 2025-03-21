@@ -1,0 +1,2935 @@
+[2025-03-21 02:05:50.839] [INFO] [API] Solicitud recibida: GET /css/style.css 
+Detalles: {
+  "method": "GET",
+  "url": "/css/style.css",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "text/css,*/*;q=0.1",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "style",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:05:50.860] [ERROR] [API] Respuesta enviada: GET /css/style.css - 404
+Detalles: {
+  "method": "GET",
+  "url": "/css/style.css",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:05:50.897] [INFO] [API] Solicitud recibida: GET /js/tecnicos.js 
+Detalles: {
+  "method": "GET",
+  "url": "/js/tecnicos.js",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "script",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:05:50.909] [ERROR] [API] Respuesta enviada: GET /js/tecnicos.js - 404
+Detalles: {
+  "method": "GET",
+  "url": "/js/tecnicos.js",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:05:50.940] [INFO] [API] Solicitud recibida: GET /js/clientes.js 
+Detalles: {
+  "method": "GET",
+  "url": "/js/clientes.js",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "script",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:05:50.950] [ERROR] [API] Respuesta enviada: GET /js/clientes.js - 404
+Detalles: {
+  "method": "GET",
+  "url": "/js/clientes.js",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:05:50.978] [INFO] [API] Solicitud recibida: GET /js/reportes.js 
+Detalles: {
+  "method": "GET",
+  "url": "/js/reportes.js",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "script",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:05:50.988] [ERROR] [API] Respuesta enviada: GET /js/reportes.js - 404
+Detalles: {
+  "method": "GET",
+  "url": "/js/reportes.js",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:05:54.009] [INFO] [API] Solicitud recibida: GET /api/usuarios/me 
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTQ4MDUxLCJleHAiOjE3NDI2MzQ0NTF9.OzF6XV3ZzyM0rF9llTf6EabgfNl6o7-LU-I172nBodg",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"7d-NcDewg8lS++v9y3eGd7sJSsYAzw\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:05:54.076] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTQ4MDUxLCJleHAiOjE3NDI2MzQ0NTF9.OzF6XV3ZzyM0rF9llTf6EabgfNl6o7-LU-I172nBodg",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:05:54.254] [INFO] [API] Respuesta enviada: GET /api/usuarios/me - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "statusCode": 200,
+  "responseData": "{\"id\":5,\"email\":\"cliente@example.com\",\"nombre\":\"Cliente\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion guane\",\"telefono\":\"762882\"}"
+}
+
+[2025-03-21 02:05:54.258] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:05:54.264] [INFO] [API] Solicitud recibida: GET /api/usuarios/me 
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTQ4MDUxLCJleHAiOjE3NDI2MzQ0NTF9.OzF6XV3ZzyM0rF9llTf6EabgfNl6o7-LU-I172nBodg",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"7d-NcDewg8lS++v9y3eGd7sJSsYAzw\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:05:54.271] [INFO] [API] Respuesta enviada: GET /api/usuarios/me - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "statusCode": 200,
+  "responseData": "{\"id\":5,\"email\":\"cliente@example.com\",\"nombre\":\"Cliente\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion guane\",\"telefono\":\"762882\"}"
+}
+
+[2025-03-21 02:05:57.669] [INFO] [API] Solicitud recibida: GET /favicon.ico 
+Detalles: {
+  "method": "GET",
+  "url": "/favicon.ico",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "image",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:05:57.673] [ERROR] [API] Respuesta enviada: GET /favicon.ico - 404
+Detalles: {
+  "method": "GET",
+  "url": "/favicon.ico",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:06:07.295] [INFO] [API] Solicitud recibida: POST /api/auth/login 
+Detalles: {
+  "method": "POST",
+  "url": "/api/auth/login",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "content-length": "51",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/login.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {
+    "email": "admin@example.com",
+    "password": "admin123"
+  }
+}
+
+[2025-03-21 02:06:07.392] [INFO] [API] Respuesta enviada: POST /api/auth/login - 200
+Detalles: {
+  "method": "POST",
+  "url": "/api/auth/login",
+  "statusCode": 200,
+  "responseData": "{\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTE1NjcsImV4cCI6MTc0MjYzNzk2N30.tMzxTXtbGYmk2o9nSA66v6aMVA-WUnTETX5ybbq0ebI\",\"usuario\":{\"id\":1,\"nombre\":\"Administrador\",\"email\":\"admin@example.com\",\"tipo\":\"ADMIN\",\"direccion\":\"Ave Borrego. Edif 94\",\"telefono\":\"55237964\"}}"
+}
+
+[2025-03-21 02:06:07.515] [INFO] [API] Solicitud recibida: GET /css/style.css 
+Detalles: {
+  "method": "GET",
+  "url": "/css/style.css",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "text/css,*/*;q=0.1",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "style",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:07.518] [ERROR] [API] Respuesta enviada: GET /css/style.css - 404
+Detalles: {
+  "method": "GET",
+  "url": "/css/style.css",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:06:07.537] [INFO] [API] Solicitud recibida: GET /js/clientes.js 
+Detalles: {
+  "method": "GET",
+  "url": "/js/clientes.js",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "script",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:07.543] [ERROR] [API] Respuesta enviada: GET /js/clientes.js - 404
+Detalles: {
+  "method": "GET",
+  "url": "/js/clientes.js",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:06:07.554] [INFO] [API] Solicitud recibida: GET /js/tecnicos.js 
+Detalles: {
+  "method": "GET",
+  "url": "/js/tecnicos.js",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "script",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:07.562] [ERROR] [API] Respuesta enviada: GET /js/tecnicos.js - 404
+Detalles: {
+  "method": "GET",
+  "url": "/js/tecnicos.js",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:06:07.578] [INFO] [API] Solicitud recibida: GET /js/reportes.js 
+Detalles: {
+  "method": "GET",
+  "url": "/js/reportes.js",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "script",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:07.585] [ERROR] [API] Respuesta enviada: GET /js/reportes.js - 404
+Detalles: {
+  "method": "GET",
+  "url": "/js/reportes.js",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:06:07.614] [INFO] [API] Solicitud recibida: GET /api/usuarios/me 
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTE1NjcsImV4cCI6MTc0MjYzNzk2N30.tMzxTXtbGYmk2o9nSA66v6aMVA-WUnTETX5ybbq0ebI",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"7d-NcDewg8lS++v9y3eGd7sJSsYAzw\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:07.630] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTE1NjcsImV4cCI6MTc0MjYzNzk2N30.tMzxTXtbGYmk2o9nSA66v6aMVA-WUnTETX5ybbq0ebI",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:07.639] [INFO] [API] Respuesta enviada: GET /api/usuarios/me - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "statusCode": 200,
+  "responseData": "{\"id\":1,\"email\":\"admin@example.com\",\"nombre\":\"Administrador\",\"tipo\":\"ADMIN\",\"direccion\":\"Ave Borrego. Edif 94\",\"telefono\":\"55237964\"}"
+}
+
+[2025-03-21 02:06:07.647] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:06:07.665] [INFO] [API] Solicitud recibida: GET /api/usuarios/me 
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTE1NjcsImV4cCI6MTc0MjYzNzk2N30.tMzxTXtbGYmk2o9nSA66v6aMVA-WUnTETX5ybbq0ebI",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"85-7nstz5wW+vam2DjLF4mMma/UgAw\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:07.681] [INFO] [API] Respuesta enviada: GET /api/usuarios/me - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "statusCode": 200,
+  "responseData": "{\"id\":1,\"email\":\"admin@example.com\",\"nombre\":\"Administrador\",\"tipo\":\"ADMIN\",\"direccion\":\"Ave Borrego. Edif 94\",\"telefono\":\"55237964\"}"
+}
+
+[2025-03-21 02:06:23.699] [INFO] [API] Solicitud recibida: GET /api/usuarios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTE1NjcsImV4cCI6MTc0MjYzNzk2N30.tMzxTXtbGYmk2o9nSA66v6aMVA-WUnTETX5ybbq0ebI",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"4fa-V6y21csbLwUr8OqX5ySa/JQCc44\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:23.719] [INFO] [API] Respuesta enviada: GET /api/usuarios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":1,\"nombre\":\"Administrador\",\"email\":\"admin@example.com\",\"tipo\":\"ADMIN\",\"direccion\":\"Ave Borrego. Edif 94\",\"telefono\":\"55237964\",\"createdAt\":\"2025-03-12T11:06:41.773Z\",\"updatedAt\":\"2025-03-20T09:43:50.215Z\",\"createdBy\":null,\"activo\":true,\"cliente\":null,\"trabajador\":null},{\"id\":5,\"nombre\":\"Cliente\",\"email\":\"cliente@example.com\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion guane\",\"telefono\":\"762882\",\"createdAt\":\"2025-03-20T10:08:19.827Z\",\"updatedAt\":\"2025-03-20T16:20:52.908Z\",\"createdBy\":null,\"activo\":true,\"cliente\":{\"id\":2,\"usuarioId\":5,\"direccion\":\"delegacion guane\",\"telefono\":\"762882\"},\"trabajador\":null},{\"id\":6,\"nombre\":\"Cliente 2\",\"email\":\"cliente2@example.com\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion\",\"telefono\":\"225223\",\"createdAt\":\"2025-03-20T11:14:54.852Z\",\"updatedAt\":\"2025-03-20T11:14:54.852Z\",\"createdBy\":1,\"activo\":true,\"cliente\":{\"id\":3,\"usuarioId\":6,\"direccion\":\"delegacion\",\"telefono\":\"225223\"},\"trabajador\":null},{\"id\":7,\"nombre\":\"Cliente 3\",\"email\":\"cliente3@example.com\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion sj\",\"telefono\":\"45488792\",\"createdAt\":\"2025-03-21T08:45:01.761Z\",\"updatedAt\":\"2025-03-21T08:45:17.349Z\",\"createdBy\":1,\"activo\":true,\"cliente\":{\"id\":4,\"usuarioId\":7,\"direccion\":\"delegacion sj\",\"telefono\":\"45488792\"},\"trabajador\":null}]"
+}
+
+[2025-03-21 02:06:23.737] [INFO] [API] Solicitud recibida: GET /api/usuarios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTE1NjcsImV4cCI6MTc0MjYzNzk2N30.tMzxTXtbGYmk2o9nSA66v6aMVA-WUnTETX5ybbq0ebI",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"4fa-V6y21csbLwUr8OqX5ySa/JQCc44\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:23.747] [INFO] [API] Respuesta enviada: GET /api/usuarios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":1,\"nombre\":\"Administrador\",\"email\":\"admin@example.com\",\"tipo\":\"ADMIN\",\"direccion\":\"Ave Borrego. Edif 94\",\"telefono\":\"55237964\",\"createdAt\":\"2025-03-12T11:06:41.773Z\",\"updatedAt\":\"2025-03-20T09:43:50.215Z\",\"createdBy\":null,\"activo\":true,\"cliente\":null,\"trabajador\":null},{\"id\":5,\"nombre\":\"Cliente\",\"email\":\"cliente@example.com\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion guane\",\"telefono\":\"762882\",\"createdAt\":\"2025-03-20T10:08:19.827Z\",\"updatedAt\":\"2025-03-20T16:20:52.908Z\",\"createdBy\":null,\"activo\":true,\"cliente\":{\"id\":2,\"usuarioId\":5,\"direccion\":\"delegacion guane\",\"telefono\":\"762882\"},\"trabajador\":null},{\"id\":6,\"nombre\":\"Cliente 2\",\"email\":\"cliente2@example.com\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion\",\"telefono\":\"225223\",\"createdAt\":\"2025-03-20T11:14:54.852Z\",\"updatedAt\":\"2025-03-20T11:14:54.852Z\",\"createdBy\":1,\"activo\":true,\"cliente\":{\"id\":3,\"usuarioId\":6,\"direccion\":\"delegacion\",\"telefono\":\"225223\"},\"trabajador\":null},{\"id\":7,\"nombre\":\"Cliente 3\",\"email\":\"cliente3@example.com\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion sj\",\"telefono\":\"45488792\",\"createdAt\":\"2025-03-21T08:45:01.761Z\",\"updatedAt\":\"2025-03-21T08:45:17.349Z\",\"createdBy\":1,\"activo\":true,\"cliente\":{\"id\":4,\"usuarioId\":7,\"direccion\":\"delegacion sj\",\"telefono\":\"45488792\"},\"trabajador\":null}]"
+}
+
+[2025-03-21 02:06:41.021] [INFO] [API] Solicitud recibida: POST /api/auth/login 
+Detalles: {
+  "method": "POST",
+  "url": "/api/auth/login",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "content-length": "56",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/login.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {
+    "email": "cliente@example.com",
+    "password": "cliente1234"
+  }
+}
+
+[2025-03-21 02:06:41.097] [ERROR] [API] Respuesta enviada: POST /api/auth/login - 401
+Detalles: {
+  "method": "POST",
+  "url": "/api/auth/login",
+  "statusCode": 401,
+  "responseData": "{\"error\":\"Credenciales inválidas\"}"
+}
+
+[2025-03-21 02:06:46.019] [INFO] [API] Solicitud recibida: POST /api/auth/login 
+Detalles: {
+  "method": "POST",
+  "url": "/api/auth/login",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "content-length": "55",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/login.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {
+    "email": "cliente@example.com",
+    "password": "cliente123"
+  }
+}
+
+[2025-03-21 02:06:46.099] [INFO] [API] Respuesta enviada: POST /api/auth/login - 200
+Detalles: {
+  "method": "POST",
+  "url": "/api/auth/login",
+  "statusCode": 200,
+  "responseData": "{\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y\",\"usuario\":{\"id\":5,\"nombre\":\"Cliente\",\"email\":\"cliente@example.com\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion guane\",\"telefono\":\"762882\"}}"
+}
+
+[2025-03-21 02:06:46.217] [INFO] [API] Solicitud recibida: GET /css/style.css 
+Detalles: {
+  "method": "GET",
+  "url": "/css/style.css",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "text/css,*/*;q=0.1",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "style",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:46.222] [ERROR] [API] Respuesta enviada: GET /css/style.css - 404
+Detalles: {
+  "method": "GET",
+  "url": "/css/style.css",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:06:46.238] [INFO] [API] Solicitud recibida: GET /js/clientes.js 
+Detalles: {
+  "method": "GET",
+  "url": "/js/clientes.js",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "script",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:46.240] [ERROR] [API] Respuesta enviada: GET /js/clientes.js - 404
+Detalles: {
+  "method": "GET",
+  "url": "/js/clientes.js",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:06:46.248] [INFO] [API] Solicitud recibida: GET /js/tecnicos.js 
+Detalles: {
+  "method": "GET",
+  "url": "/js/tecnicos.js",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "script",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:46.252] [ERROR] [API] Respuesta enviada: GET /js/tecnicos.js - 404
+Detalles: {
+  "method": "GET",
+  "url": "/js/tecnicos.js",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:06:46.257] [INFO] [API] Solicitud recibida: GET /js/reportes.js 
+Detalles: {
+  "method": "GET",
+  "url": "/js/reportes.js",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "script",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:46.264] [ERROR] [API] Respuesta enviada: GET /js/reportes.js - 404
+Detalles: {
+  "method": "GET",
+  "url": "/js/reportes.js",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:06:46.313] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:46.321] [INFO] [API] Solicitud recibida: GET /api/usuarios/me 
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"85-7nstz5wW+vam2DjLF4mMma/UgAw\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:46.329] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:06:46.333] [INFO] [API] Respuesta enviada: GET /api/usuarios/me - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "statusCode": 200,
+  "responseData": "{\"id\":5,\"email\":\"cliente@example.com\",\"nombre\":\"Cliente\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion guane\",\"telefono\":\"762882\"}"
+}
+
+[2025-03-21 02:06:46.365] [INFO] [API] Solicitud recibida: GET /api/usuarios/me 
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"7d-NcDewg8lS++v9y3eGd7sJSsYAzw\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:46.372] [INFO] [API] Respuesta enviada: GET /api/usuarios/me - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "statusCode": 200,
+  "responseData": "{\"id\":5,\"email\":\"cliente@example.com\",\"nombre\":\"Cliente\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion guane\",\"telefono\":\"762882\"}"
+}
+
+[2025-03-21 02:06:51.548] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:51.555] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:06:51.568] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:51.574] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:06:54.350] [INFO] [API] Solicitud recibida: GET /api/ordenes 
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:54.352] [ERROR] [API] Respuesta enviada: GET /api/ordenes - 404
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:06:54.371] [INFO] [API] Solicitud recibida: GET /api/ordenes 
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:54.374] [ERROR] [API] Respuesta enviada: GET /api/ordenes - 404
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:06:54.377] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:54.385] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:06:54.399] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:54.404] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:06:56.987] [INFO] [API] Solicitud recibida: GET /api/ordenes 
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:56.989] [ERROR] [API] Respuesta enviada: GET /api/ordenes - 404
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:06:57.008] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:06:57.015] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:07:04.730] [INFO] [API] Solicitud recibida: POST /api/ordenes 
+Detalles: {
+  "method": "POST",
+  "url": "/api/ordenes",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "content-length": "114",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {
+    "clienteId": 5,
+    "servicios": [
+      {
+        "servicioId": 19,
+        "cantidad": 1
+      }
+    ],
+    "fechaProgramada": "2025-03-25T02:07",
+    "descripcion": ""
+  }
+}
+
+[2025-03-21 02:07:04.828] [INFO] [API] Respuesta enviada: POST /api/ordenes - 201
+Detalles: {
+  "method": "POST",
+  "url": "/api/ordenes",
+  "statusCode": 201,
+  "responseData": "{\"id\":5,\"clienteId\":2,\"fecha\":\"2025-03-21T10:07:04.740Z\",\"estado\":\"PENDIENTE\",\"cliente\":{\"id\":2,\"usuarioId\":5,\"direccion\":\"delegacion guane\",\"telefono\":\"762882\"},\"servicios\":[{\"id\":7,\"ordenId\":5,\"servicioId\":19,\"cantidad\":1,\"precioUnitario\":0,\"servicio\":{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"}}]}"
+}
+
+[2025-03-21 02:07:04.863] [INFO] [API] Solicitud recibida: POST /api/facturas/orden/5 
+Detalles: {
+  "method": "POST",
+  "url": "/api/facturas/orden/5",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "content-length": "0",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:07:04.867] [INFO] [API] Solicitud recibida: POST /api/facturas/orden/5 Generando factura para una orden
+Detalles: {
+  "method": "POST",
+  "url": "/api/facturas/orden/5",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "content-length": "0",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {
+    "ordenId": "5"
+  },
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:07:04.869] [INFO] [FACTURA] Iniciando generación de factura para orden #5
+
+[2025-03-21 02:07:04.885] [INFO] [FACTURA] Orden #5 encontrada, calculando importes
+Detalles: {
+  "ordenId": 5,
+  "clienteId": 2,
+  "numServicios": 1
+}
+
+[2025-03-21 02:07:04.887] [INFO] [FACTURA] Importes calculados para orden #5
+Detalles: {
+  "subtotal": 150,
+  "iva": 24,
+  "total": 174
+}
+
+[2025-03-21 02:07:04.899] [INFO] [FACTURA] Factura #2 creada correctamente para orden #5
+
+[2025-03-21 02:07:04.900] [DEBUG] [NOTIFICACION] Intentando crear notificación para el cliente
+Detalles: {
+  "usuarioId": 5,
+  "ordenId": 5
+}
+
+[2025-03-21 02:07:04.908] [INFO] [NOTIFICACION] Notificación enviada al cliente sobre factura #2
+
+[2025-03-21 02:07:04.910] [INFO] [API] Respuesta enviada: POST /api/facturas/orden/5 - 201
+Detalles: {
+  "method": "POST",
+  "url": "/api/facturas/orden/5",
+  "statusCode": 201,
+  "responseData": {
+    "id": 2,
+    "mensaje": "Factura #2 generada correctamente",
+    "factura": {
+      "id": 2,
+      "ordenId": 5,
+      "fecha": "2025-03-21T10:07:04.890Z",
+      "subtotal": 150,
+      "total": 174,
+      "orden": {
+        "id": 5,
+        "clienteId": 2,
+        "fecha": "2025-03-21T10:07:04.740Z",
+        "estado": "PENDIENTE",
+        "cliente": {
+          "id": 2,
+          "usuarioId": 5,
+          "direccion": "delegacion guane",
+          "telefono": "762882"
+        },
+        "servicios": [
+          {
+            "id": 7,
+            "ordenId": 5,
+            "servicioId": 19,
+            "cantidad": 1,
+            "precioUnitario": 150,
+            "servicio": {
+              "id": 19,
+              "nombre": "Instalacion de equipos",
+              "descripcion": "Instalacion de Equipos 5514",
+              "precioBase": 150,
+              "tipo": "POR_CANTIDAD",
+              "estado": "ACTIVO",
+              "createdAt": "2025-03-13T16:01:57.709Z",
+              "updatedAt": "2025-03-20T16:21:42.017Z"
+            }
+          }
+        ]
+      }
+    },
+    "sensitiveFieldsRemoved": true
+  }
+}
+
+[2025-03-21 02:07:04.914] [INFO] [API] Respuesta enviada: POST /api/facturas/orden/5 - 201
+Detalles: {
+  "method": "POST",
+  "url": "/api/facturas/orden/5",
+  "statusCode": 201,
+  "responseData": "{\"id\":2,\"mensaje\":\"Factura #2 generada correctamente\",\"factura\":{\"id\":2,\"ordenId\":5,\"fecha\":\"2025-03-21T10:07:04.890Z\",\"subtotal\":150,\"total\":174,\"orden\":{\"id\":5,\"clienteId\":2,\"fecha\":\"2025-03-21T10:07:04.740Z\",\"estado\":\"PENDIENTE\",\"cliente\":{\"id\":2,\"usuarioId\":5,\"direccion\":\"delegacion guane\",\"telefono\":\"762882\"},\"servicios\":[{\"id\":7,\"ordenId\":5,\"servicioId\":19,\"cantidad\":1,\"precioUnitario\":150,\"servicio\":{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"}}]}}}"
+}
+
+[2025-03-21 02:07:04.935] [INFO] [API] Solicitud recibida: GET /api/ordenes 
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:07:04.937] [ERROR] [API] Respuesta enviada: GET /api/ordenes - 404
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:07:26.974] [INFO] [API] Solicitud recibida: GET /css/style.css 
+Detalles: {
+  "method": "GET",
+  "url": "/css/style.css",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "text/css,*/*;q=0.1",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "style",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:07:26.978] [ERROR] [API] Respuesta enviada: GET /css/style.css - 404
+Detalles: {
+  "method": "GET",
+  "url": "/css/style.css",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:08:13.852] [INFO] [API] Solicitud recibida: POST /api/auth/login 
+Detalles: {
+  "method": "POST",
+  "url": "/api/auth/login",
+  "ip": "::1",
+  "headers": {
+    "user-agent": "Mozilla/5.0 (Windows NT; Windows NT 10.0; es-MX) WindowsPowerShell/5.1.26100.2161",
+    "content-type": "application/json",
+    "host": "localhost:3000",
+    "content-length": "55",
+    "connection": "Keep-Alive"
+  },
+  "params": {},
+  "query": {},
+  "body": {
+    "email": "admin@example.com",
+    "password": "password123"
+  }
+}
+
+[2025-03-21 02:08:13.923] [ERROR] [API] Respuesta enviada: POST /api/auth/login - 401
+Detalles: {
+  "method": "POST",
+  "url": "/api/auth/login",
+  "statusCode": 401,
+  "responseData": "{\"error\":\"Credenciales inválidas\"}"
+}
+
+[2025-03-21 02:20:38.064] [INFO] [API] Solicitud recibida: GET /css/style.css 
+Detalles: {
+  "method": "GET",
+  "url": "/css/style.css",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "text/css,*/*;q=0.1",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "style",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:38.072] [ERROR] [API] Respuesta enviada: GET /css/style.css - 404
+Detalles: {
+  "method": "GET",
+  "url": "/css/style.css",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:20:38.087] [INFO] [API] Solicitud recibida: GET /js/clientes.js 
+Detalles: {
+  "method": "GET",
+  "url": "/js/clientes.js",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "script",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:38.088] [ERROR] [API] Respuesta enviada: GET /js/clientes.js - 404
+Detalles: {
+  "method": "GET",
+  "url": "/js/clientes.js",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:20:38.093] [INFO] [API] Solicitud recibida: GET /js/tecnicos.js 
+Detalles: {
+  "method": "GET",
+  "url": "/js/tecnicos.js",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "script",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:38.096] [ERROR] [API] Respuesta enviada: GET /js/tecnicos.js - 404
+Detalles: {
+  "method": "GET",
+  "url": "/js/tecnicos.js",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:20:38.101] [INFO] [API] Solicitud recibida: GET /js/reportes.js 
+Detalles: {
+  "method": "GET",
+  "url": "/js/reportes.js",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "script",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:38.102] [ERROR] [API] Respuesta enviada: GET /js/reportes.js - 404
+Detalles: {
+  "method": "GET",
+  "url": "/js/reportes.js",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:20:38.497] [INFO] [API] Solicitud recibida: GET /api/usuarios/me 
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"7d-NcDewg8lS++v9y3eGd7sJSsYAzw\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:38.503] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:38.522] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:20:38.524] [INFO] [API] Respuesta enviada: GET /api/usuarios/me - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "statusCode": 200,
+  "responseData": "{\"id\":5,\"email\":\"cliente@example.com\",\"nombre\":\"Cliente\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion guane\",\"telefono\":\"762882\"}"
+}
+
+[2025-03-21 02:20:38.538] [INFO] [API] Solicitud recibida: GET /api/usuarios/me 
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"7d-NcDewg8lS++v9y3eGd7sJSsYAzw\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:38.547] [INFO] [API] Respuesta enviada: GET /api/usuarios/me - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "statusCode": 200,
+  "responseData": "{\"id\":5,\"email\":\"cliente@example.com\",\"nombre\":\"Cliente\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion guane\",\"telefono\":\"762882\"}"
+}
+
+[2025-03-21 02:20:40.602] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:40.608] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:20:40.618] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:40.623] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:20:41.380] [INFO] [API] Solicitud recibida: GET /api/ordenes 
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:41.382] [ERROR] [API] Respuesta enviada: GET /api/ordenes - 404
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:20:41.390] [INFO] [API] Solicitud recibida: GET /api/ordenes 
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:41.393] [ERROR] [API] Respuesta enviada: GET /api/ordenes - 404
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:20:41.413] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:41.418] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:20:41.431] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:41.438] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:20:42.618] [INFO] [API] Solicitud recibida: GET /api/ordenes 
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:42.620] [ERROR] [API] Respuesta enviada: GET /api/ordenes - 404
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:20:42.649] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:42.657] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:20:50.044] [INFO] [API] Solicitud recibida: POST /api/ordenes 
+Detalles: {
+  "method": "POST",
+  "url": "/api/ordenes",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "content-length": "114",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {
+    "clienteId": 5,
+    "servicios": [
+      {
+        "servicioId": 19,
+        "cantidad": 1
+      }
+    ],
+    "fechaProgramada": "2025-03-24T02:20",
+    "descripcion": ""
+  }
+}
+
+[2025-03-21 02:20:50.073] [INFO] [API] Respuesta enviada: POST /api/ordenes - 201
+Detalles: {
+  "method": "POST",
+  "url": "/api/ordenes",
+  "statusCode": 201,
+  "responseData": "{\"id\":6,\"clienteId\":2,\"fecha\":\"2025-03-21T10:20:50.049Z\",\"estado\":\"PENDIENTE\",\"cliente\":{\"id\":2,\"usuarioId\":5,\"direccion\":\"delegacion guane\",\"telefono\":\"762882\"},\"servicios\":[{\"id\":8,\"ordenId\":6,\"servicioId\":19,\"cantidad\":1,\"precioUnitario\":0,\"servicio\":{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"}}]}"
+}
+
+[2025-03-21 02:20:50.104] [INFO] [API] Solicitud recibida: POST /api/facturas/orden/6 
+Detalles: {
+  "method": "POST",
+  "url": "/api/facturas/orden/6",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "content-length": "0",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:50.108] [INFO] [API] Solicitud recibida: POST /api/facturas/orden/6 Generando factura para una orden
+Detalles: {
+  "method": "POST",
+  "url": "/api/facturas/orden/6",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "content-length": "0",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {
+    "ordenId": "6"
+  },
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:50.114] [INFO] [FACTURA] Iniciando generación de factura para orden #6
+
+[2025-03-21 02:20:50.125] [INFO] [FACTURA] Orden #6 encontrada, calculando importes
+Detalles: {
+  "ordenId": 6,
+  "clienteId": 2,
+  "numServicios": 1
+}
+
+[2025-03-21 02:20:50.126] [INFO] [FACTURA] Importes calculados para orden #6
+Detalles: {
+  "subtotal": 150,
+  "iva": 24,
+  "total": 174
+}
+
+[2025-03-21 02:20:50.135] [INFO] [FACTURA] Factura #3 creada correctamente para orden #6
+
+[2025-03-21 02:20:50.136] [DEBUG] [NOTIFICACION] Intentando crear notificación para el cliente
+Detalles: {
+  "usuarioId": 5,
+  "ordenId": 6
+}
+
+[2025-03-21 02:20:50.142] [INFO] [NOTIFICACION] Notificación enviada al cliente sobre factura #3
+
+[2025-03-21 02:20:50.143] [INFO] [API] Respuesta enviada: POST /api/facturas/orden/6 - 201
+Detalles: {
+  "method": "POST",
+  "url": "/api/facturas/orden/6",
+  "statusCode": 201,
+  "responseData": {
+    "id": 3,
+    "mensaje": "Factura #3 generada correctamente",
+    "factura": {
+      "id": 3,
+      "ordenId": 6,
+      "fecha": "2025-03-21T10:20:50.129Z",
+      "subtotal": 150,
+      "total": 174,
+      "orden": {
+        "id": 6,
+        "clienteId": 2,
+        "fecha": "2025-03-21T10:20:50.049Z",
+        "estado": "PENDIENTE",
+        "cliente": {
+          "id": 2,
+          "usuarioId": 5,
+          "direccion": "delegacion guane",
+          "telefono": "762882"
+        },
+        "servicios": [
+          {
+            "id": 8,
+            "ordenId": 6,
+            "servicioId": 19,
+            "cantidad": 1,
+            "precioUnitario": 150,
+            "servicio": {
+              "id": 19,
+              "nombre": "Instalacion de equipos",
+              "descripcion": "Instalacion de Equipos 5514",
+              "precioBase": 150,
+              "tipo": "POR_CANTIDAD",
+              "estado": "ACTIVO",
+              "createdAt": "2025-03-13T16:01:57.709Z",
+              "updatedAt": "2025-03-20T16:21:42.017Z"
+            }
+          }
+        ]
+      }
+    },
+    "sensitiveFieldsRemoved": true
+  }
+}
+
+[2025-03-21 02:20:50.145] [INFO] [API] Respuesta enviada: POST /api/facturas/orden/6 - 201
+Detalles: {
+  "method": "POST",
+  "url": "/api/facturas/orden/6",
+  "statusCode": 201,
+  "responseData": "{\"id\":3,\"mensaje\":\"Factura #3 generada correctamente\",\"factura\":{\"id\":3,\"ordenId\":6,\"fecha\":\"2025-03-21T10:20:50.129Z\",\"subtotal\":150,\"total\":174,\"orden\":{\"id\":6,\"clienteId\":2,\"fecha\":\"2025-03-21T10:20:50.049Z\",\"estado\":\"PENDIENTE\",\"cliente\":{\"id\":2,\"usuarioId\":5,\"direccion\":\"delegacion guane\",\"telefono\":\"762882\"},\"servicios\":[{\"id\":8,\"ordenId\":6,\"servicioId\":19,\"cantidad\":1,\"precioUnitario\":150,\"servicio\":{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"}}]}}}"
+}
+
+[2025-03-21 02:20:50.169] [INFO] [API] Solicitud recibida: GET /api/ordenes 
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:50.173] [ERROR] [API] Respuesta enviada: GET /api/ordenes - 404
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:20:52.290] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:52.295] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:20:52.305] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJjbGllbnRlQGV4YW1wbGUuY29tIiwidGlwbyI6IkNMSUVOVEUiLCJub21icmUiOiJDbGllbnRlIiwiaWF0IjoxNzQyNTUxNjA2LCJleHAiOjE3NDI2MzgwMDZ9.vKlK6MwF7jdgFB59POr3K2qSPaT_exVJoR11IASbg7Y",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:20:52.312] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:21:16.434] [INFO] [API] Solicitud recibida: POST /api/auth/login 
+Detalles: {
+  "method": "POST",
+  "url": "/api/auth/login",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "content-length": "51",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "origin": "http://localhost:3000",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/login.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {
+    "email": "admin@example.com",
+    "password": "admin123"
+  }
+}
+
+[2025-03-21 02:21:16.498] [INFO] [API] Respuesta enviada: POST /api/auth/login - 200
+Detalles: {
+  "method": "POST",
+  "url": "/api/auth/login",
+  "statusCode": 200,
+  "responseData": "{\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTI0NzYsImV4cCI6MTc0MjYzODg3Nn0.rySeM1_dkvOZVDhEEnxaVRlQ-yfN4oeGBLpfnTgk3-k\",\"usuario\":{\"id\":1,\"nombre\":\"Administrador\",\"email\":\"admin@example.com\",\"tipo\":\"ADMIN\",\"direccion\":\"Ave Borrego. Edif 94\",\"telefono\":\"55237964\"}}"
+}
+
+[2025-03-21 02:21:16.616] [INFO] [API] Solicitud recibida: GET /css/style.css 
+Detalles: {
+  "method": "GET",
+  "url": "/css/style.css",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "text/css,*/*;q=0.1",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "style",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:21:16.617] [ERROR] [API] Respuesta enviada: GET /css/style.css - 404
+Detalles: {
+  "method": "GET",
+  "url": "/css/style.css",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:21:16.631] [INFO] [API] Solicitud recibida: GET /js/clientes.js 
+Detalles: {
+  "method": "GET",
+  "url": "/js/clientes.js",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "script",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:21:16.633] [ERROR] [API] Respuesta enviada: GET /js/clientes.js - 404
+Detalles: {
+  "method": "GET",
+  "url": "/js/clientes.js",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:21:16.638] [INFO] [API] Solicitud recibida: GET /js/reportes.js 
+Detalles: {
+  "method": "GET",
+  "url": "/js/reportes.js",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "script",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:21:16.641] [ERROR] [API] Respuesta enviada: GET /js/reportes.js - 404
+Detalles: {
+  "method": "GET",
+  "url": "/js/reportes.js",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:21:16.647] [INFO] [API] Solicitud recibida: GET /js/tecnicos.js 
+Detalles: {
+  "method": "GET",
+  "url": "/js/tecnicos.js",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "no-cors",
+    "sec-fetch-dest": "script",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:21:16.650] [ERROR] [API] Respuesta enviada: GET /js/tecnicos.js - 404
+Detalles: {
+  "method": "GET",
+  "url": "/js/tecnicos.js",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:21:16.697] [INFO] [API] Solicitud recibida: GET /api/usuarios/me 
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTI0NzYsImV4cCI6MTc0MjYzODg3Nn0.rySeM1_dkvOZVDhEEnxaVRlQ-yfN4oeGBLpfnTgk3-k",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"7d-NcDewg8lS++v9y3eGd7sJSsYAzw\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:21:16.702] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTI0NzYsImV4cCI6MTc0MjYzODg3Nn0.rySeM1_dkvOZVDhEEnxaVRlQ-yfN4oeGBLpfnTgk3-k",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:21:16.706] [INFO] [API] Respuesta enviada: GET /api/usuarios/me - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "statusCode": 200,
+  "responseData": "{\"id\":1,\"email\":\"admin@example.com\",\"nombre\":\"Administrador\",\"tipo\":\"ADMIN\",\"direccion\":\"Ave Borrego. Edif 94\",\"telefono\":\"55237964\"}"
+}
+
+[2025-03-21 02:21:16.708] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:21:16.724] [INFO] [API] Solicitud recibida: GET /api/usuarios/me 
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTI0NzYsImV4cCI6MTc0MjYzODg3Nn0.rySeM1_dkvOZVDhEEnxaVRlQ-yfN4oeGBLpfnTgk3-k",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"85-7nstz5wW+vam2DjLF4mMma/UgAw\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:21:16.733] [INFO] [API] Respuesta enviada: GET /api/usuarios/me - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios/me",
+  "statusCode": 200,
+  "responseData": "{\"id\":1,\"email\":\"admin@example.com\",\"nombre\":\"Administrador\",\"tipo\":\"ADMIN\",\"direccion\":\"Ave Borrego. Edif 94\",\"telefono\":\"55237964\"}"
+}
+
+[2025-03-21 02:21:25.364] [INFO] [API] Solicitud recibida: GET /api/usuarios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTI0NzYsImV4cCI6MTc0MjYzODg3Nn0.rySeM1_dkvOZVDhEEnxaVRlQ-yfN4oeGBLpfnTgk3-k",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"4fa-V6y21csbLwUr8OqX5ySa/JQCc44\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:21:25.374] [INFO] [API] Respuesta enviada: GET /api/usuarios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":1,\"nombre\":\"Administrador\",\"email\":\"admin@example.com\",\"tipo\":\"ADMIN\",\"direccion\":\"Ave Borrego. Edif 94\",\"telefono\":\"55237964\",\"createdAt\":\"2025-03-12T11:06:41.773Z\",\"updatedAt\":\"2025-03-20T09:43:50.215Z\",\"createdBy\":null,\"activo\":true,\"cliente\":null,\"trabajador\":null},{\"id\":5,\"nombre\":\"Cliente\",\"email\":\"cliente@example.com\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion guane\",\"telefono\":\"762882\",\"createdAt\":\"2025-03-20T10:08:19.827Z\",\"updatedAt\":\"2025-03-20T16:20:52.908Z\",\"createdBy\":null,\"activo\":true,\"cliente\":{\"id\":2,\"usuarioId\":5,\"direccion\":\"delegacion guane\",\"telefono\":\"762882\"},\"trabajador\":null},{\"id\":6,\"nombre\":\"Cliente 2\",\"email\":\"cliente2@example.com\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion\",\"telefono\":\"225223\",\"createdAt\":\"2025-03-20T11:14:54.852Z\",\"updatedAt\":\"2025-03-20T11:14:54.852Z\",\"createdBy\":1,\"activo\":true,\"cliente\":{\"id\":3,\"usuarioId\":6,\"direccion\":\"delegacion\",\"telefono\":\"225223\"},\"trabajador\":null},{\"id\":7,\"nombre\":\"Cliente 3\",\"email\":\"cliente3@example.com\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion sj\",\"telefono\":\"45488792\",\"createdAt\":\"2025-03-21T08:45:01.761Z\",\"updatedAt\":\"2025-03-21T08:45:17.349Z\",\"createdBy\":1,\"activo\":true,\"cliente\":{\"id\":4,\"usuarioId\":7,\"direccion\":\"delegacion sj\",\"telefono\":\"45488792\"},\"trabajador\":null}]"
+}
+
+[2025-03-21 02:21:25.384] [INFO] [API] Solicitud recibida: GET /api/usuarios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTI0NzYsImV4cCI6MTc0MjYzODg3Nn0.rySeM1_dkvOZVDhEEnxaVRlQ-yfN4oeGBLpfnTgk3-k",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"4fa-V6y21csbLwUr8OqX5ySa/JQCc44\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:21:25.389] [INFO] [API] Respuesta enviada: GET /api/usuarios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/usuarios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":1,\"nombre\":\"Administrador\",\"email\":\"admin@example.com\",\"tipo\":\"ADMIN\",\"direccion\":\"Ave Borrego. Edif 94\",\"telefono\":\"55237964\",\"createdAt\":\"2025-03-12T11:06:41.773Z\",\"updatedAt\":\"2025-03-20T09:43:50.215Z\",\"createdBy\":null,\"activo\":true,\"cliente\":null,\"trabajador\":null},{\"id\":5,\"nombre\":\"Cliente\",\"email\":\"cliente@example.com\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion guane\",\"telefono\":\"762882\",\"createdAt\":\"2025-03-20T10:08:19.827Z\",\"updatedAt\":\"2025-03-20T16:20:52.908Z\",\"createdBy\":null,\"activo\":true,\"cliente\":{\"id\":2,\"usuarioId\":5,\"direccion\":\"delegacion guane\",\"telefono\":\"762882\"},\"trabajador\":null},{\"id\":6,\"nombre\":\"Cliente 2\",\"email\":\"cliente2@example.com\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion\",\"telefono\":\"225223\",\"createdAt\":\"2025-03-20T11:14:54.852Z\",\"updatedAt\":\"2025-03-20T11:14:54.852Z\",\"createdBy\":1,\"activo\":true,\"cliente\":{\"id\":3,\"usuarioId\":6,\"direccion\":\"delegacion\",\"telefono\":\"225223\"},\"trabajador\":null},{\"id\":7,\"nombre\":\"Cliente 3\",\"email\":\"cliente3@example.com\",\"tipo\":\"CLIENTE\",\"direccion\":\"delegacion sj\",\"telefono\":\"45488792\",\"createdAt\":\"2025-03-21T08:45:01.761Z\",\"updatedAt\":\"2025-03-21T08:45:17.349Z\",\"createdBy\":1,\"activo\":true,\"cliente\":{\"id\":4,\"usuarioId\":7,\"direccion\":\"delegacion sj\",\"telefono\":\"45488792\"},\"trabajador\":null}]"
+}
+
+[2025-03-21 02:21:31.314] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTI0NzYsImV4cCI6MTc0MjYzODg3Nn0.rySeM1_dkvOZVDhEEnxaVRlQ-yfN4oeGBLpfnTgk3-k",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:21:31.319] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:21:31.329] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTI0NzYsImV4cCI6MTc0MjYzODg3Nn0.rySeM1_dkvOZVDhEEnxaVRlQ-yfN4oeGBLpfnTgk3-k",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:21:31.335] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:21:34.432] [INFO] [API] Solicitud recibida: GET /api/ordenes 
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTI0NzYsImV4cCI6MTc0MjYzODg3Nn0.rySeM1_dkvOZVDhEEnxaVRlQ-yfN4oeGBLpfnTgk3-k",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:21:34.435] [ERROR] [API] Respuesta enviada: GET /api/ordenes - 404
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:21:34.449] [INFO] [API] Solicitud recibida: GET /api/ordenes 
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTI0NzYsImV4cCI6MTc0MjYzODg3Nn0.rySeM1_dkvOZVDhEEnxaVRlQ-yfN4oeGBLpfnTgk3-k",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9"
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:21:34.451] [ERROR] [API] Respuesta enviada: GET /api/ordenes - 404
+Detalles: {
+  "method": "GET",
+  "url": "/api/ordenes",
+  "statusCode": 404,
+  "responseData": "{\"message\":\"Ruta no encontrada\"}"
+}
+
+[2025-03-21 02:21:34.458] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTI0NzYsImV4cCI6MTc0MjYzODg3Nn0.rySeM1_dkvOZVDhEEnxaVRlQ-yfN4oeGBLpfnTgk3-k",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:21:34.468] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:21:34.482] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTI0NzYsImV4cCI6MTc0MjYzODg3Nn0.rySeM1_dkvOZVDhEEnxaVRlQ-yfN4oeGBLpfnTgk3-k",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "content-type": "application/json",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:21:34.487] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:21:36.040] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTI0NzYsImV4cCI6MTc0MjYzODg3Nn0.rySeM1_dkvOZVDhEEnxaVRlQ-yfN4oeGBLpfnTgk3-k",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:21:36.046] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+
+[2025-03-21 02:21:36.055] [INFO] [API] Solicitud recibida: GET /api/servicios 
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "ip": "::1",
+  "headers": {
+    "host": "localhost:3000",
+    "connection": "keep-alive",
+    "sec-ch-ua-platform": "\"Windows\"",
+    "authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZG1pbkBleGFtcGxlLmNvbSIsInRpcG8iOiJBRE1JTiIsIm5vbWJyZSI6IkFkbWluaXN0cmFkb3IiLCJpYXQiOjE3NDI1NTI0NzYsImV4cCI6MTc0MjYzODg3Nn0.rySeM1_dkvOZVDhEEnxaVRlQ-yfN4oeGBLpfnTgk3-k",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+    "sec-ch-ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+    "sec-ch-ua-mobile": "?0",
+    "accept": "*/*",
+    "sec-fetch-site": "same-origin",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-dest": "empty",
+    "referer": "http://localhost:3000/index.html",
+    "accept-encoding": "gzip, deflate, br, zstd",
+    "accept-language": "es,es-419;q=0.9",
+    "if-none-match": "W/\"27b-zAd8wq+ueS1DWz6bzW2eYogs1+s\""
+  },
+  "params": {},
+  "query": {},
+  "body": {}
+}
+
+[2025-03-21 02:21:36.062] [INFO] [API] Respuesta enviada: GET /api/servicios - 200
+Detalles: {
+  "method": "GET",
+  "url": "/api/servicios",
+  "statusCode": 200,
+  "responseData": "[{\"id\":19,\"nombre\":\"Instalacion de equipos\",\"descripcion\":\"Instalacion de Equipos 5514\",\"precioBase\":150,\"tipo\":\"POR_CANTIDAD\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-13T16:01:57.709Z\",\"updatedAt\":\"2025-03-20T16:21:42.017Z\"},{\"id\":25,\"nombre\":\"Mantenimiento Preventivo\",\"descripcion\":\"Mantenimiento\",\"precioBase\":150,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-15T01:27:21.989Z\",\"updatedAt\":\"2025-03-15T01:27:21.989Z\"},{\"id\":24,\"nombre\":\"Videoconferencias\",\"descripcion\":\"Videoconferencias\",\"precioBase\":120,\"tipo\":\"POR_HORA\",\"estado\":\"ACTIVO\",\"createdAt\":\"2025-03-14T11:36:57.958Z\",\"updatedAt\":\"2025-03-14T11:36:57.958Z\"}]"
+}
+

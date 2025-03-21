@@ -298,37 +298,41 @@ async function mostrarListaFacturas() {
             
             // Datos del cliente
             const cliente = factura.orden.cliente?.usuario?.nombre || 'Cliente no disponible';
+            const direccion = factura.orden.cliente?.direccion || 'No especificada';
+            const telefono = factura.orden.cliente?.telefono || 'No especificado';
             
             return `
                 <div class="col-md-12 mb-4">
-                    <div class="card shadow-sm">
-                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">
                                 <i class="fas fa-file-invoice-dollar me-2"></i>
                                 Factura #${factura.id}
                             </h5>
-                            <div class="badge bg-primary">
+                            <div class="badge bg-light text-dark">
                                 <i class="fas fa-calendar-alt me-1"></i> ${fechaFormateada}
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="row mb-3">
+                            <div class="row mb-4">
                                 <div class="col-md-6">
-                                    <h6 class="card-subtitle mb-2 text-muted">Información del Cliente</h6>
+                                    <h6 class="fw-bold text-primary">Información del Cliente</h6>
                                     <p class="mb-1"><strong>Cliente:</strong> ${cliente}</p>
-                                    <p class="mb-1"><strong>Orden:</strong> #${factura.orden.id}</p>
-                                    <p class="mb-0"><strong>Fecha de Orden:</strong> ${new Date(factura.orden.fechaCreacion).toLocaleDateString('es-ES')}</p>
+                                    <p class="mb-1"><strong>Dirección:</strong> ${direccion}</p>
+                                    <p class="mb-1"><strong>Teléfono:</strong> ${telefono}</p>
+                                    <p class="mb-0"><strong>Orden:</strong> #${factura.orden.id}</p>
                                 </div>
                                 <div class="col-md-6 text-md-end">
-                                    <h6 class="card-subtitle mb-2 text-muted">Información de la Factura</h6>
+                                    <h6 class="fw-bold text-primary">Información de la Factura</h6>
                                     <p class="mb-1"><strong>Estado:</strong> <span class="badge bg-success">Pagada</span></p>
-                                    <p class="mb-1"><strong>Método de Pago:</strong> Pendiente</p>
+                                    <p class="mb-1"><strong>Fecha de Orden:</strong> ${new Date(factura.orden.fechaCreacion).toLocaleDateString('es-ES')}</p>
                                     <p class="mb-0"><strong>Fecha de Vencimiento:</strong> ${new Date(fecha.getTime() + 30*24*60*60*1000).toLocaleDateString('es-ES')}</p>
                                 </div>
                             </div>
                             
-                            <div class="table-responsive">
-                                <table class="table table-sm table-striped">
+                            <h6 class="fw-bold text-primary mb-3">Detalle de Servicios</h6>
+                            <div class="table-responsive mb-4">
+                                <table class="table table-sm table-striped table-hover">
                                     <thead class="table-light">
                                         <tr>
                                             <th>Servicio</th>
@@ -351,24 +355,50 @@ async function mostrarListaFacturas() {
                                             <td class="text-end">$${iva.toLocaleString('es-CO')}</td>
                                         </tr>
                                         <tr class="table-primary">
-                                            <th colspan="4" class="text-end">TOTAL:</th>
+                                            <th colspan="4" class="text-end fw-bold">TOTAL:</th>
                                             <th class="text-end">$${factura.total.toLocaleString('es-CO')}</th>
                                         </tr>
                                     </tfoot>
                                 </table>
                             </div>
                             
-                            <div class="mt-3 text-end">
+                            <!-- Sección de firmas -->
+                            <div class="row mt-5 mb-4">
+                                <div class="col-md-4 text-center">
+                                    <div class="border-bottom border-dark" style="height: 40px;"></div>
+                                    <p class="mt-2 mb-0">Firma Cliente</p>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <div class="border-bottom border-dark" style="height: 40px;"></div>
+                                    <p class="mt-2 mb-0">Firma Técnico</p>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <div class="border-bottom border-dark" style="height: 40px;"></div>
+                                    <p class="mt-2 mb-0">Sello Empresa</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 text-end">
+                                <button class="btn btn-secondary me-2" onclick="imprimirFactura(${factura.id})">
+                                    <i class="fas fa-print me-1"></i> Imprimir
+                                </button>
                                 <button class="btn btn-primary" onclick="descargarFactura(${factura.id})">
                                     <i class="fas fa-download me-1"></i> Descargar PDF
                                 </button>
                             </div>
                         </div>
                         <div class="card-footer text-muted">
-                            <small>
-                                <i class="fas fa-info-circle me-1"></i>
-                                Esta factura fue generada automáticamente al crear la orden de trabajo.
-                            </small>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small>
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Esta factura fue generada automáticamente al crear la orden de trabajo.
+                                    </small>
+                                </div>
+                                <div class="col-md-6 text-end">
+                                    <small>EICMAPRI - Servicios Tecnológicos</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -382,7 +412,7 @@ async function mostrarListaFacturas() {
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle me-2"></i>
                         Las facturas se generan automáticamente al crear órdenes de trabajo. 
-                        Puede descargarlas en formato PDF haciendo clic en el botón correspondiente.
+                        Puede descargarlas en formato PDF o imprimirlas haciendo clic en los botones correspondientes.
                     </div>
                 </div>
                 ${facturasHTML}
@@ -404,53 +434,148 @@ async function mostrarListaFacturas() {
 
 // Función para descargar factura en PDF
 async function descargarFactura(facturaId) {
-    // Mostrar indicador de carga
-    const btnDescargar = document.querySelector(`button[onclick="descargarFactura(${facturaId})"]`);
-    const btnTextoOriginal = btnDescargar.innerHTML;
-    
     try {
-        btnDescargar.disabled = true;
-        btnDescargar.innerHTML = `
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            Generando PDF...
-        `;
-
+        // Mostrar indicador de carga
+        mostrarAlerta('Generando PDF, por favor espere...', 'info');
+        
+        // Obtener el token de autenticación
+        const token = localStorage.getItem('token');
+        
+        // Solicitar el PDF al servidor
         const response = await fetch(`/api/facturas/${facturaId}/pdf`, {
-            headers: auth.getHeaders()
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
         });
-
+        
         if (!response.ok) {
-            throw new Error(`Error ${response.status}: ${response.statusText}`);
+            throw new Error(`Error al generar PDF: ${response.status}`);
         }
-
+        
         // Convertir la respuesta a blob
         const blob = await response.blob();
         
         // Crear URL para el blob
         const url = window.URL.createObjectURL(blob);
         
-        // Crear elemento <a> temporal
+        // Crear enlace de descarga
         const a = document.createElement('a');
+        a.style.display = 'none';
         a.href = url;
         a.download = `factura-${facturaId}.pdf`;
         
-        // Añadir al DOM, hacer clic y eliminar
+        // Añadir al documento y hacer clic
         document.body.appendChild(a);
         a.click();
         
         // Limpiar
         window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
         
-        // Mostrar mensaje de éxito
-        mostrarAlerta('Factura descargada correctamente', 'success');
+        mostrarAlerta('PDF descargado correctamente', 'success');
     } catch (error) {
         console.error('Error al descargar factura:', error);
-        mostrarAlerta(`Error al descargar la factura: ${error.message}`, 'danger');
-    } finally {
-        // Restaurar botón
-        btnDescargar.disabled = false;
-        btnDescargar.innerHTML = btnTextoOriginal;
+        mostrarAlerta(`Error al descargar factura: ${error.message}`, 'danger');
     }
+}
+
+// Función para imprimir la factura
+function imprimirFactura(facturaId) {
+    // Crear una ventana de impresión
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+        mostrarAlerta('Por favor, permite las ventanas emergentes para imprimir', 'warning');
+        return;
+    }
+    
+    // Obtener la factura del DOM
+    const facturaElement = document.querySelector(`.card:has(h5:contains("Factura #${facturaId}"))`);
+    if (!facturaElement) {
+        mostrarAlerta('No se pudo encontrar la factura para imprimir', 'danger');
+        printWindow.close();
+        return;
+    }
+    
+    // Clonar el contenido para no modificar el original
+    const facturaClone = facturaElement.cloneNode(true);
+    
+    // Preparar el contenido HTML para impresión
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Factura #${facturaId} - EICMAPRI</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    padding: 20px;
+                }
+                @media print {
+                    .no-print {
+                        display: none !important;
+                    }
+                }
+                .print-header {
+                    text-align: center;
+                    margin-bottom: 30px;
+                }
+                .print-footer {
+                    text-align: center;
+                    margin-top: 30px;
+                    font-size: 0.8rem;
+                    color: #6c757d;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="print-header">
+                <h2>EICMAPRI</h2>
+                <p>Servicios Tecnológicos</p>
+            </div>
+            <div class="container">
+                ${facturaClone.outerHTML}
+            </div>
+            <div class="print-footer">
+                <p>Este documento es una representación impresa de la factura electrónica.</p>
+                <p>Fecha de impresión: ${new Date().toLocaleString()}</p>
+            </div>
+            <script>
+                // Ocultar botones que no deben imprimirse
+                document.querySelectorAll('.btn').forEach(btn => {
+                    btn.classList.add('no-print');
+                });
+                
+                // Imprimir automáticamente
+                window.onload = function() {
+                    setTimeout(() => {
+                        window.print();
+                        setTimeout(() => window.close(), 500);
+                    }, 500);
+                };
+            </script>
+        </body>
+        </html>
+    `);
+}
+
+// Función para mostrar alertas
+function mostrarAlerta(mensaje, tipo) {
+    const alertaDiv = document.createElement('div');
+    alertaDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+    alertaDiv.style.zIndex = '9999';
+    alertaDiv.innerHTML = `
+        ${mensaje}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    document.body.appendChild(alertaDiv);
+    
+    setTimeout(() => {
+        alertaDiv.remove();
+    }, 3000);
 }
 
 // Inicializar módulo de facturas
@@ -470,37 +595,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Exportar funciones al objeto global
     window.mostrarListaFacturas = mostrarListaFacturas;
     window.descargarFactura = descargarFactura;
+    window.imprimirFactura = imprimirFactura;
     
     // Exponer el módulo de facturas
     window.facturasManager = facturasManager;
 });
-
-// Función para mostrar alertas al usuario
-function mostrarAlerta(mensaje, tipo) {
-    // Verificar si ya existe una función global para mostrar alertas
-    if (typeof window.mostrarAlerta === 'function') {
-        window.mostrarAlerta(mensaje, tipo);
-        return;
-    }
-
-    // Si no existe, crear una propia
-    const alertaDiv = document.createElement('div');
-    alertaDiv.className = `alert alert-${tipo} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
-    alertaDiv.role = 'alert';
-    alertaDiv.style.zIndex = '9999';
-    
-    alertaDiv.innerHTML = `
-        ${mensaje}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-    
-    document.body.appendChild(alertaDiv);
-    
-    // Eliminar automáticamente después de 3 segundos
-    setTimeout(() => {
-        if (document.body.contains(alertaDiv)) {
-            alertaDiv.classList.remove('show');
-            setTimeout(() => alertaDiv.remove(), 300);
-        }
-    }, 3000);
-}
