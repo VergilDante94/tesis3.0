@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registro - EICMAPRI</title>
+    <link href="/css/bootstrap-5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+    <style>
+        .registro-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .error-message {
+            display: none;
+            color: #dc3545;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container">
+        <div class="registro-container">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="text-center mb-4">Registro EICMAPRI</h2>
+                    <form id="registroForm" onsubmit="return handleRegistro(event)">
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre completo</label>
+                            <input type="text" class="form-control" id="nombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+                            <input type="password" class="form-control" id="confirmPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tipoUsuario" class="form-label">Tipo de Usuario</label>
+                            <select class="form-select" id="tipoUsuario" onchange="mostrarCamposAdicionales()">
+                                <option value="CLIENTE">Cliente</option>
+                                <option value="TRABAJADOR">Trabajador</option>
+                            </select>
+                        </div>
+
+                        <!-- Campos para Cliente -->
+                        <div id="camposCliente">
+                            <div class="mb-3">
+                                <label for="direccion" class="form-label">Dirección</label>
+                                <input type="text" class="form-control" id="direccion">
+                            </div>
+                            <div class="mb-3">
+                                <label for="telefono" class="form-label">Teléfono</label>
+                                <input type="tel" class="form-control" id="telefono">
+                            </div>
+                        </div>
+
+                        <!-- Campos para Trabajador -->
+                        <div id="camposTrabajador" style="display: none;">
+                            <div class="mb-3">
+                                <label for="cargo" class="form-label">Cargo</label>
+                                <input type="text" class="form-control" id="cargo">
+                            </div>
+                            <div class="mb-3">
+                                <label for="departamento" class="form-label">Departamento</label>
+                                <select class="form-select" id="departamento">
+                                    <option value="TELEMATICA">Telemática</option>
+                                    <option value="OFIMATICA">Ofimática</option>
+                                    <option value="COMUNICACIONES">Comunicaciones</option>
+                                    <option value="CENTRO_MULTISERVICIO">Centro Multiservicio</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="salario" class="form-label">Salario</label>
+                                <input type="number" class="form-control" id="salario">
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Registrarse</button>
+                            <a href="/login.html" class="btn btn-outline-secondary">Volver al Login</a>
+                        </div>
+                        <div id="errorMessage" class="error-message text-center"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+        // Verificar si ya hay una sesión activa
+        if (auth.isAuthenticated()) {
+            window.location.href = '/';
+        }
+
+        function mostrarCamposAdicionales() {
+            const tipoUsuario = document.getElementById('tipoUsuario').value;
+            const camposCliente = document.getElementById('camposCliente');
+            const camposTrabajador = document.getElementById('camposTrabajador');
+
+            if (tipoUsuario === 'CLIENTE') {
+                camposCliente.style.display = 'block';
+                camposTrabajador.style.display = 'none';
+            } else {
+                camposCliente.style.display = 'none';
+                camposTrabajador.style.display = 'block';
+            }
+        }
+
+        async function handleRegistro(event) {
+            event.preventDefault();
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Validar contraseñas
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                errorMessage.textContent = 'Las contraseñas no coinciden';
+                errorMessage.style.display = 'block';
+                return false;
+            }
+
+            // Recopilar datos comunes
+            const datos = {
+                nombre: document.getElementById('nombre').value,
+                email: document.getElementById('email').value,
+                contrasena: password,
+                tipoUsuario: document.getElementById('tipoUsuario').value
+            };
+
+            // Agregar datos específicos según el tipo de usuario
+            if (datos.tipoUsuario === 'CLIENTE') {
+                datos.direccion = document.getElementById('direccion').value;
+                datos.telefono = document.getElementById('telefono').value;
+            } else {
+                datos.cargo = document.getElementById('cargo').value;
+                datos.departamentoId = document.getElementById('departamento').value;
+                datos.salario = parseFloat(document.getElementById('salario').value);
+            }
+
+            try {
+                const response = await fetch('/api/usuarios/registro', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(datos)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Iniciar sesión automáticamente después del registro
+                    const loginSuccess = await auth.login(datos.email, datos.contrasena);
+                    if (loginSuccess) {
+                        window.location.href = '/';
+                    }
+                } else {
+                    errorMessage.textContent = result.error || 'Error en el registro';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                errorMessage.textContent = 'Error en el registro';
+                errorMessage.style.display = 'block';
+            }
+
+            return false;
+        }
+    </script>
+</body>
+</html>

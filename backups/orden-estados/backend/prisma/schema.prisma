@@ -1,0 +1,156 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum TipoUsuario {
+  ADMIN
+  CLIENTE
+  TRABAJADOR
+}
+
+enum TipoDepartamento {
+  TELEMATICA
+  OFIMATICA
+  COMUNICACIONES
+  CENTRO_MULTISERVICIO
+}
+
+enum EstadoOrden {
+  SOLICITADA
+  PROGRAMADA
+  EN_PROCESO
+  COMPLETADA
+  CANCELADA
+}
+
+enum EstadoNotificacion {
+  PENDIENTE
+  ENVIADA
+  LEIDA
+}
+
+model Usuario {
+  id            Int         @id @default(autoincrement())
+  nombre        String
+  email         String      @unique
+  contrasena    String
+  tipoUsuario   TipoUsuario
+  cliente       Cliente?
+  trabajador    Trabajador?
+  notificaciones Notificacion[]
+}
+
+model Cliente {
+  id              Int      @id @default(autoincrement())
+  usuarioId       Int      @unique
+  usuario         Usuario  @relation(fields: [usuarioId], references: [id])
+  direccion       String
+  telefono        String
+  ordenes         Orden[]
+}
+
+model Trabajador {
+  id              Int      @id @default(autoincrement())
+  usuarioId       Int      @unique
+  usuario         Usuario  @relation(fields: [usuarioId], references: [id])
+  cargo           String
+  departamentoId  Int
+  departamento    Departamento @relation(fields: [departamentoId], references: [id])
+  salario         Float
+  ordenes         Orden[]
+}
+
+model Departamento {
+  id                Int              @id @default(autoincrement())
+  nombre            TipoDepartamento
+  responsable       String
+  trabajadores      Trabajador[]
+  servicios         Servicio[]
+}
+
+model Servicio {
+  id              Int      @id @default(autoincrement())
+  nombre          String
+  descripcion     String
+  precioBase      Float
+  departamentoId  Int
+  departamento    Departamento @relation(fields: [departamentoId], references: [id])
+  piezas          PiezaServicio[]
+  ordenesServicios OrdenServicio[]
+}
+
+model Pieza {
+  id              Int      @id @default(autoincrement())
+  codigo          String   @unique
+  nombre          String
+  descripcion     String
+  precio          Float
+  stock           Int
+  stockMinimo     Int
+  servicios       PiezaServicio[]
+}
+
+model PiezaServicio {
+  servicioId      Int
+  piezaId         Int
+  cantidad        Int
+  servicio        Servicio @relation(fields: [servicioId], references: [id])
+  pieza           Pieza    @relation(fields: [piezaId], references: [id])
+
+  @@id([servicioId, piezaId])
+}
+
+model Orden {
+  id                Int          @id @default(autoincrement())
+  fechaCreacion     DateTime     @default(now())
+  fechaProgramada   DateTime?
+  clienteId         Int
+  trabajadorId      Int?
+  estado            EstadoOrden  @default(SOLICITADA)
+  descripcion       String
+  cliente           Cliente      @relation(fields: [clienteId], references: [id])
+  trabajador        Trabajador?  @relation(fields: [trabajadorId], references: [id])
+  servicios         OrdenServicio[]
+  factura           Factura?
+}
+
+model OrdenServicio {
+  ordenId          Int
+  servicioId       Int
+  cantidad         Int
+  observaciones    String?
+  orden            Orden    @relation(fields: [ordenId], references: [id])
+  servicio         Servicio @relation(fields: [servicioId], references: [id])
+
+  @@id([ordenId, servicioId])
+}
+
+model Factura {
+  id              Int      @id @default(autoincrement())
+  ordenId         Int      @unique
+  orden           Orden    @relation(fields: [ordenId], references: [id])
+  fecha           DateTime @default(now())
+  subtotal        Float
+  total           Float
+}
+
+model Notificacion {
+  id              Int                 @id @default(autoincrement())
+  usuarioId       Int
+  usuario         Usuario             @relation(fields: [usuarioId], references: [id])
+  tipo            String
+  mensaje         String
+  fecha           DateTime            @default(now())
+  estado          EstadoNotificacion  @default(PENDIENTE)
+}

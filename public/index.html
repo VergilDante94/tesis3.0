@@ -782,10 +782,12 @@
                         break;
                     case 'ordenes':
                         console.log('Cargando sección de órdenes...');
-                        if (typeof loadServicesForOrders === 'function') {
+                        if (typeof mostrarVistaOrdenes === 'function') {
+                            mostrarVistaOrdenes();
+                        } else if (typeof loadServicesForOrders === 'function') {
                             loadServicesForOrders();
                         } else {
-                            console.error('La función loadServicesForOrders no está definida');
+                            console.error('No se encontraron funciones para cargar órdenes');
                         }
                         break;
                     case 'servicios':

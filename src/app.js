@@ -216,18 +216,18 @@ app.use('/api/servicios', servicioRoutes);
 app.use('/api/facturas', facturaRoutes);
 
 // Rutas de órdenes
-app.post('/api/ordenes', async (req, res) => {
+app.post('/api/ordenes', verificarToken, async (req, res) => {
   try {
     const { clienteId, servicios } = req.body;
     console.log('Creando orden:', { clienteId, servicios });
 
-    // Buscar el cliente asociado al usuario
+    // Buscar el cliente directamente por su ID
     const cliente = await prisma.cliente.findUnique({
-      where: { usuarioId: parseInt(clienteId) }
+      where: { id: parseInt(clienteId) }
     });
 
     if (!cliente) {
-      return res.status(404).json({ error: 'Cliente no encontrado para este usuario' });
+      return res.status(404).json({ error: 'Cliente no encontrado' });
     }
 
     const orden = await prisma.orden.create({
@@ -265,7 +265,7 @@ app.post('/api/ordenes', async (req, res) => {
     // Crear notificación de nueva orden
     await prisma.notificacion.create({
       data: {
-        usuarioId: clienteId,
+        usuarioId: cliente.usuarioId,
         mensaje: `Nueva orden creada #${orden.id}`,
       }
     });
@@ -1209,6 +1209,224 @@ app.patch('/api/usuarios/:id/reactivar', async (req, res) => {
             return res.status(401).json({ message: 'Token expirado' });
         }
         res.status(500).json({ message: 'Error al reactivar usuario' });
+    }
+});
+
+// Ruta para cancelar una orden (solo si está en estado PENDIENTE)
+app.put('/api/ordenes/:id/cancelar', verificarToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const ordenId = parseInt(id);
+    
+    // Verificar que la orden exista
+    const orden = await prisma.orden.findUnique({
+      where: { id: ordenId },
+      include: { cliente: true }
+    });
+
+    if (!orden) {
+      return res.status(404).json({ error: 'Orden no encontrada' });
+    }
+
+    // Verificar que la orden esté en estado PENDIENTE
+    if (orden.estado !== 'PENDIENTE') {
+      return res.status(400).json({ 
+        error: 'Solo se pueden cancelar órdenes en estado PENDIENTE',
+        estadoActual: orden.estado
+      });
+    }
+
+    // Verificar que el usuario sea el cliente o un administrador
+    const authHeader = req.headers.authorization;
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    if (decoded.tipo !== 'ADMIN') {
+      const cliente = await prisma.cliente.findUnique({
+        where: { usuarioId: decoded.id }
+      });
+      
+      if (!cliente || cliente.id !== orden.clienteId) {
+        return res.status(403).json({ error: 'No tienes permiso para cancelar esta orden' });
+      }
+    }
+
+    // Actualizar el estado de la orden a CANCELADA
+    const ordenActualizada = await prisma.orden.update({
+      where: { id: ordenId },
+      data: { estado: 'CANCELADA' },
+      include: { cliente: true, servicios: { include: { servicio: true } } }
+    });
+
+    // Crear notificación de cancelación
+    await prisma.notificacion.create({
+      data: {
+        usuarioId: orden.cliente.usuarioId,
+        mensaje: `La orden #${orden.id} ha sido cancelada`,
+      }
+    });
+
+    res.json(ordenActualizada);
+  } catch (error) {
+    console.error('Error al cancelar orden:', error);
+    res.status(500).json({ error: 'Error al cancelar la orden' });
+  }
+});
+
+// Ruta para actualizar el estado de una orden
+app.put('/api/ordenes/:id/estado', verificarToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { estado } = req.body;
+    const ordenId = parseInt(id);
+    
+    if (!estado) {
+      return res.status(400).json({ error: 'El estado es requerido' });
+    }
+    
+    // Validar que el estado sea válido
+    const estadosValidos = ['PENDIENTE', 'PROGRAMADA', 'EN_PROCESO', 'COMPLETADA', 'CANCELADA'];
+    if (!estadosValidos.includes(estado)) {
+      return res.status(400).json({ 
+        error: 'Estado inválido', 
+        estadosPermitidos: estadosValidos 
+      });
+    }
+    
+    // Obtener la orden actual para verificar permisos y estado actual
+    const orden = await prisma.orden.findUnique({
+      where: { id: ordenId },
+      include: { cliente: true }
+    });
+    
+    if (!orden) {
+      return res.status(404).json({ error: 'Orden no encontrada' });
+    }
+    
+    // Validar el flujo de estados
+    const estadoActual = orden.estado;
+    
+    // No permitir cambios a órdenes ya canceladas
+    if (estadoActual === 'CANCELADA') {
+      return res.status(400).json({ 
+        error: 'No se puede cambiar el estado de una orden cancelada' 
+      });
+    }
+    
+    // Decodificar el token para obtener la información del usuario
+    const authHeader = req.headers.authorization;
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Solo administradores pueden cambiar el estado (excepto cancelar)
+    if (estado !== 'CANCELADA' && decoded.tipo !== 'ADMIN') {
+      return res.status(403).json({ 
+        error: 'Solo los administradores pueden cambiar el estado de las órdenes' 
+      });
+    }
+    
+    // Clientes solo pueden cancelar sus propias órdenes en estado PENDIENTE
+    if (estado === 'CANCELADA' && decoded.tipo === 'CLIENTE') {
+      const cliente = await prisma.cliente.findUnique({
+        where: { usuarioId: decoded.id }
+      });
+      
+      if (!cliente || cliente.id !== orden.clienteId) {
+        return res.status(403).json({ 
+          error: 'No tienes permiso para cancelar esta orden' 
+        });
+      }
+      
+      if (estadoActual !== 'PENDIENTE') {
+        return res.status(400).json({ 
+          error: 'Solo se pueden cancelar órdenes en estado PENDIENTE' 
+        });
+      }
+    }
+    
+    // Validar progresión lógica de estados
+    if (decoded.tipo === 'ADMIN') {
+      const flujoEstados = {
+        'PENDIENTE': ['PROGRAMADA', 'EN_PROCESO', 'CANCELADA'],
+        'PROGRAMADA': ['EN_PROCESO', 'CANCELADA'],
+        'EN_PROCESO': ['COMPLETADA', 'CANCELADA']
+      };
+      
+      if (flujoEstados[estadoActual] && !flujoEstados[estadoActual].includes(estado)) {
+        return res.status(400).json({ 
+          error: `Desde ${estadoActual} solo puede cambiar a: ${flujoEstados[estadoActual].join(', ')}` 
+        });
+      }
+    }
+    
+    // Actualizar el estado de la orden
+    const ordenActualizada = await prisma.orden.update({
+      where: { id: ordenId },
+      data: { estado },
+      include: { 
+        cliente: true, 
+        servicios: { include: { servicio: true } } 
+      }
+    });
+    
+    // Crear una notificación sobre el cambio de estado
+    await prisma.notificacion.create({
+      data: {
+        usuarioId: orden.cliente.usuarioId,
+        mensaje: `El estado de la orden #${orden.id} ha cambiado a ${estado}`,
+        leida: false
+      }
+    });
+    
+    res.json(ordenActualizada);
+  } catch (error) {
+    console.error('Error al actualizar estado de orden:', error);
+    res.status(500).json({ error: 'Error al actualizar el estado de la orden' });
+  }
+});
+
+// Ruta para eliminar una orden
+app.delete('/api/ordenes/:id', verificarToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const usuario = req.user;
+
+        // Verificar si el usuario es administrador
+        if (usuario.tipo !== 'ADMIN') {
+            return res.status(403).json({ message: 'No tienes permisos para eliminar órdenes' });
+        }
+
+        // Buscar la orden
+        const orden = await prisma.orden.findUnique({
+            where: { id: parseInt(id) }
+        });
+
+        if (!orden) {
+            return res.status(404).json({ message: 'Orden no encontrada' });
+        }
+
+        // Eliminar en una transacción para asegurar consistencia
+        await prisma.$transaction(async (tx) => {
+            // 1. Eliminar facturas relacionadas
+            await tx.factura.deleteMany({
+                where: { ordenId: parseInt(id) }
+            });
+
+            // 2. Eliminar servicios relacionados
+            await tx.ordenServicio.deleteMany({
+                where: { ordenId: parseInt(id) }
+            });
+
+            // 3. Finalmente eliminar la orden
+            await tx.orden.delete({
+                where: { id: parseInt(id) }
+            });
+        });
+
+        res.json({ message: 'Orden eliminada correctamente' });
+    } catch (error) {
+        console.error('Error al eliminar la orden:', error);
+        res.status(500).json({ message: 'Error al eliminar la orden' });
     }
 });
 

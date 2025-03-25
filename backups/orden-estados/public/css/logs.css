@@ -1,0 +1,84 @@
+/* 
+ * Estilos para la visualización de logs
+ * Archivo placeholder para evitar errores 404
+ */
+
+.log-container {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+    overflow-x: auto;
+}
+
+.log-entry {
+    margin-bottom: 10px;
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    font-family: monospace;
+}
+
+.log-entry:last-child {
+    border-bottom: none;
+}
+
+.log-timestamp {
+    color: #6c757d;
+    margin-right: 10px;
+}
+
+.log-level {
+    font-weight: bold;
+    margin-right: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.log-level-info {
+    background-color: #cfe2ff;
+    color: #084298;
+}
+
+.log-level-warn {
+    background-color: #fff3cd;
+    color: #664d03;
+}
+
+.log-level-error {
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+.log-message {
+    margin-left: 5px;
+}
+
+/* Estilos para tema oscuro */
+[data-bs-theme="dark"] .log-container {
+    background-color: #212529;
+    border-color: #495057;
+}
+
+[data-bs-theme="dark"] .log-entry {
+    border-color: #495057;
+}
+
+[data-bs-theme="dark"] .log-timestamp {
+    color: #adb5bd;
+}
+
+[data-bs-theme="dark"] .log-level-info {
+    background-color: #0d6efd33;
+    color: #6ea8fe;
+}
+
+[data-bs-theme="dark"] .log-level-warn {
+    background-color: #ffc10733;
+    color: #ffda6a;
+}
+
+[data-bs-theme="dark"] .log-level-error {
+    background-color: #dc354533;
+    color: #ea868f;
+} 

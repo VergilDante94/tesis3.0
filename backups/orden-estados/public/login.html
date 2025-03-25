@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Gestión</title>
+    <link href="/css/bootstrap-5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+<body class="login-page">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="login-form-container">
+                    <form class="login-form" onsubmit="login(event)">
+                        <h1 class="h3 mb-4 fw-normal text-center">Iniciar Sesión</h1>
+
+                        <!-- Alerta para mensajes de error -->
+                        <div id="loginAlert" class="alert alert-danger d-none" role="alert">
+                            Credenciales incorrectas. Por favor, verifique su email y contraseña.
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="email" class="form-label">Correo electrónico</label>
+                            <input type="email"
+                                   class="form-control"
+                                   id="email"
+                                   name="email"
+                                   required
+                                   autocomplete="email">
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="password" class="form-label">Contraseña</label>
+                            <input type="password"
+                                   class="form-control"
+                                   id="password"
+                                   name="password"
+                                   required
+                                   autocomplete="current-password">
+                        </div>
+
+                        <button class="w-100 btn btn-primary" type="submit">
+                            Iniciar Sesión
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/js/auth.js"></script>
+    <script>
+        async function login(event) {
+            event.preventDefault();
+            
+            // Ocultar alerta de error previa si existe
+            document.getElementById('loginAlert').classList.add('d-none');
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                if (!response.ok) {
+                    // Mostrar alerta de error
+                    document.getElementById('loginAlert').classList.remove('d-none');
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                // Guardar datos de autenticación
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('usuario', JSON.stringify(data.usuario));
+                
+                // Redirigir al dashboard
+                window.location.href = '/index.html';
+            } catch (error) {
+                console.error('Error en login:', error);
+                // Mostrar alerta de error
+                document.getElementById('loginAlert').classList.remove('d-none');
+            }
+        }
+    </script>
+</body>
+</html>

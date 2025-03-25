@@ -1,0 +1,6 @@
+/* 
+ * Este archivo redirige al archivo styles.css principal 
+ * Creado para evitar errores 404 en la consola
+ */
+
+@import url('styles.css'); 

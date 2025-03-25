@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - Sistema de Gestión</title>
+    <link href="/css/bootstrap-5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="mb-0">Mi Perfil</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Nombre:</div>
+                            <div class="col-md-8" id="nombre"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Email:</div>
+                            <div class="col-md-8" id="email"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Rol:</div>
+                            <div class="col-md-8" id="rol"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Dirección:</div>
+                            <div class="col-md-8" id="direccion"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4 fw-bold">Teléfono:</div>
+                            <div class="col-md-8" id="telefono"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Verificar si el usuario está autenticado
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login.html';
+                return;
+            }
+
+            try {
+                // Obtener datos del usuario del localStorage
+                const usuario = JSON.parse(localStorage.getItem('usuario'));
+                
+                // Mostrar datos en el perfil
+                document.getElementById('nombre').textContent = usuario.nombre;
+                document.getElementById('email').textContent = usuario.email;
+                document.getElementById('rol').textContent = usuario.rol;
+                document.getElementById('direccion').textContent = usuario.direccion || 'No especificada';
+                document.getElementById('telefono').textContent = usuario.telefono || 'No especificado';
+            } catch (error) {
+                console.error('Error al cargar el perfil:', error);
+                window.location.href = '/login.html';
+            }
+        });
+    </script>
+</body>
+</html>

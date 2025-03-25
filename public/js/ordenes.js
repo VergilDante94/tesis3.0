@@ -17,7 +17,9 @@ const ordenesManager = {
         try {
             const queryParams = new URLSearchParams(filtros);
             const response = await fetch(`/api/ordenes?${queryParams}`, {
-                headers: auth.getHeaders()
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
             });
             return await response.json();
         } catch (error) {
@@ -30,13 +32,49 @@ const ordenesManager = {
         try {
             const response = await fetch(`/api/ordenes/${ordenId}/estado`, {
                 method: 'PUT',
-                headers: auth.getHeaders(),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
                 body: JSON.stringify({ estado })
             });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Error al actualizar estado: ${response.status}`);
+            }
+            
             return await response.json();
         } catch (error) {
             console.error('Error al actualizar estado:', error);
             throw error;
+        }
+    },
+    
+    async cancelarOrden(ordenId) {
+        try {
+            const response = await fetch(`/api/ordenes/${ordenId}/cancelar`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || `Error al cancelar la orden: ${response.status}`);
+            }
+
+            const orden = await response.json();
+            console.log('Orden cancelada:', orden);
+            
+            mostrarAlerta('Orden cancelada con éxito', 'success');
+            
+            // Recargar la lista de órdenes
+            await mostrarListaOrdenes();
+        } catch (error) {
+            console.error('Error al cancelar la orden:', error);
+            mostrarAlerta(`Error: ${error.message}`, 'danger');
         }
     }
 };
@@ -135,130 +173,6 @@ function mostrarFormularioOrden() {
     cargarServicios();
 }
 
-// Función para mostrar lista de órdenes
-async function mostrarListaOrdenes(filtros = {}) {
-    try {
-        // Construir URL con parámetros de filtrado
-        let url = '/api/ordenes';
-        const queryParams = new URLSearchParams();
-        
-        // Añadir filtros a los query params
-        Object.entries(filtros).forEach(([key, value]) => {
-            if (value) queryParams.append(key, value);
-        });
-        
-        // Añadir los query params a la URL si hay alguno
-        if (queryParams.toString()) {
-            url += `?${queryParams.toString()}`;
-        }
-        
-        const response = await fetch(url, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
-        });
-
-        if (response.status === 404) {
-            console.log('El endpoint de órdenes no está disponible');
-            const ordenesContainer = document.getElementById('listaOrdenes');
-            if (ordenesContainer) {
-                ordenesContainer.innerHTML = `
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i>
-                        El servicio de órdenes no está disponible en este momento.
-                    </div>
-                `;
-            }
-            return;
-        }
-
-        if (!response.ok) {
-            throw new Error('Error al cargar órdenes');
-        }
-
-        const ordenes = await response.json();
-        const ordenesContainer = document.getElementById('listaOrdenes');
-        
-        if (!ordenesContainer) {
-            console.log('Contenedor de órdenes no encontrado');
-            return;
-        }
-
-        if (!Array.isArray(ordenes) || ordenes.length === 0) {
-            ordenesContainer.innerHTML = `
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i>
-                    No hay órdenes disponibles con los filtros seleccionados.
-                </div>
-            `;
-            return;
-        }
-
-        ordenesContainer.innerHTML = ordenes.map(orden => `
-            <div class="card mb-3">
-                <div class="card-header d-flex justify-content-between align-items-center bg-light">
-                    <div>
-                        <span class="badge bg-primary me-2">ID: ${orden.id}</span>
-                        <span class="badge ${getEstadoBadgeClass(orden.estado)}">${orden.estado}</span>
-                    </div>
-                    <div>
-                        <button class="btn btn-sm btn-outline-primary ver-detalle-orden" 
-                                data-orden-id="${orden.id}">Ver detalles</button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">Cliente: ${orden.cliente?.usuario?.nombre || 'N/A'}</h5>
-                    <p class="card-text">Email: ${orden.cliente?.usuario?.email || 'N/A'}</p>
-                    <p class="card-text">Fecha: ${orden.fechaFormateada || new Date(orden.fecha).toLocaleDateString()}</p>
-                    
-                    <div class="servicios-lista">
-                        <h6>Servicios:</h6>
-                        <ul class="list-group">
-                            ${orden.servicios?.map(s => `
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>${s.servicio?.nombre || 'N/A'}</span>
-                                    <span class="badge bg-secondary me-2">x${s.cantidad}</span>
-                                    <span class="precio">$${s.precioUnitario * s.cantidad}</span>
-                                </li>
-                            `).join('') || ''}
-                        </ul>
-                    </div>
-                    
-                    <div class="mt-3 precios-resumen">
-                        <div class="d-flex justify-content-between">
-                            <span>Subtotal:</span>
-                            <strong>$${orden.precios?.subtotal.toFixed(2) || 'N/A'}</strong>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span>Total:</span>
-                            <strong class="text-primary">$${orden.precios?.total.toFixed(2) || 'N/A'}</strong>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `).join('');
-        
-        // Añadir eventos para ver detalles
-        document.querySelectorAll('.ver-detalle-orden').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                const ordenId = e.target.dataset.ordenId;
-                mostrarDetalleOrden(ordenId);
-            });
-        });
-    } catch (error) {
-        console.error('Error al mostrar órdenes:', error);
-        const ordenesContainer = document.getElementById('listaOrdenes');
-        if (ordenesContainer) {
-            ordenesContainer.innerHTML = `
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-circle"></i>
-                    Error al cargar las órdenes: ${error.message}
-                </div>
-            `;
-        }
-    }
-}
-
 // Función para mostrar detalle de una orden específica
 async function mostrarDetalleOrden(ordenId) {
     try {
@@ -273,6 +187,11 @@ async function mostrarDetalleOrden(ordenId) {
         }
 
         const orden = await response.json();
+        
+        // Obtener datos del usuario actual
+        const token = localStorage.getItem('token');
+        const userData = window.decodeJWT(token);
+        const esAdmin = userData && userData.tipo === 'ADMIN';
         
         // Crear modal para mostrar detalles
         const modalHtml = `
@@ -297,6 +216,30 @@ async function mostrarDetalleOrden(ordenId) {
                                 <div class="col-md-6">
                                     <p><strong>Fecha:</strong> ${orden.fechaFormateada || new Date(orden.fecha).toLocaleDateString()}</p>
                                     <p><strong>Fecha de creación:</strong> ${new Date(orden.createdAt || orden.fecha).toLocaleString()}</p>
+                                    ${esAdmin ? `
+                                    <div class="mb-3">
+                                        <label for="cambiarEstadoOrden" class="form-label"><strong>Cambiar Estado:</strong></label>
+                                        <select class="form-select" id="cambiarEstadoOrden">
+                                            <option value="">Seleccionar nuevo estado</option>
+                                            ${orden.estado !== 'PENDIENTE' ? '' : `
+                                                <option value="PROGRAMADA">PROGRAMADA</option>
+                                                <option value="EN_PROCESO">EN PROCESO</option>
+                                            `}
+                                            ${orden.estado !== 'PROGRAMADA' ? '' : `
+                                                <option value="EN_PROCESO">EN PROCESO</option>
+                                            `}
+                                            ${orden.estado !== 'EN_PROCESO' ? '' : `
+                                                <option value="COMPLETADA">COMPLETADA</option>
+                                            `}
+                                            ${orden.estado === 'CANCELADA' ? '' : `
+                                                <option value="CANCELADA">CANCELADA</option>
+                                            `}
+                                        </select>
+                                        <button class="btn btn-primary mt-2" id="btnCambiarEstado">
+                                            Actualizar Estado
+                                        </button>
+                                    </div>
+                                    ` : ''}
                                 </div>
                             </div>
                             
@@ -344,7 +287,7 @@ async function mostrarDetalleOrden(ordenId) {
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            ${orden.estado === 'PENDIENTE' ? 
+                            ${orden.estado === 'COMPLETADA' ? 
                                 `<button type="button" class="btn btn-primary" id="btnImprimirFactura" data-orden-id="${orden.id}">
                                     Generar Factura
                                 </button>` : ''}
@@ -368,6 +311,34 @@ async function mostrarDetalleOrden(ordenId) {
         if (btnImprimirFactura) {
             btnImprimirFactura.addEventListener('click', () => {
                 generarFactura(orden.id);
+            });
+        }
+        
+        // Evento para cambiar estado (solo admin)
+        const btnCambiarEstado = document.getElementById('btnCambiarEstado');
+        if (btnCambiarEstado) {
+            btnCambiarEstado.addEventListener('click', async () => {
+                const selectEstado = document.getElementById('cambiarEstadoOrden');
+                const nuevoEstado = selectEstado.value;
+                
+                if (!nuevoEstado) {
+                    mostrarAlerta('Debe seleccionar un estado', 'warning');
+                    return;
+                }
+                
+                try {
+                    await ordenesManager.actualizarEstado(orden.id, nuevoEstado);
+                    mostrarAlerta(`Estado de la orden actualizado a ${nuevoEstado}`, 'success');
+                    
+                    // Cerrar modal
+                    modal.hide();
+                    
+                    // Recargar la lista de órdenes
+                    await mostrarListaOrdenes();
+                } catch (error) {
+                    console.error('Error al cambiar estado:', error);
+                    mostrarAlerta(`Error: ${error.message}`, 'danger');
+                }
             });
         }
         
@@ -668,6 +639,49 @@ function mostrarFormularioNuevaOrden() {
     const formContainer = document.getElementById('nuevaOrdenForm');
     if (formContainer) {
         formContainer.style.display = 'block';
+        
+        // Añadir botón de cancelar si no existe
+        const botonesContainer = formContainer.querySelector('.text-end');
+        if (botonesContainer && !document.getElementById('btnCancelarOrden')) {
+            const btnCancelar = document.createElement('button');
+            btnCancelar.id = 'btnCancelarOrden';
+            btnCancelar.type = 'button';
+            btnCancelar.className = 'btn btn-outline-danger me-2';
+            btnCancelar.innerHTML = '<i class="fas fa-times-circle"></i> Cancelar';
+            btnCancelar.style = 'font-weight: 500; padding: 8px 16px;';
+            btnCancelar.onclick = cancelarNuevaOrden;
+            botonesContainer.insertBefore(btnCancelar, botonesContainer.firstChild);
+        }
+    }
+}
+
+// Función para cancelar la creación de una nueva orden
+function cancelarNuevaOrden() {
+    if (confirm('¿Estás seguro de que deseas cancelar la creación de esta orden? Se perderán todos los datos ingresados.')) {
+        // Limpiar el estado
+        ordenesState.serviciosSeleccionados = [];
+        ordenesState.total = 0;
+        
+        // Ocultar el formulario
+        const formContainer = document.getElementById('nuevaOrdenForm');
+        if (formContainer) {
+            formContainer.style.display = 'none';
+        }
+        
+        // Mostrar la lista de órdenes
+        const listaOrdenes = document.getElementById('listaOrdenes');
+        if (listaOrdenes) {
+            listaOrdenes.style.display = 'block';
+        }
+        
+        // Limpiar el resumen
+        const resumenOrden = document.getElementById('resumenOrden');
+        if (resumenOrden) {
+            resumenOrden.style.display = 'none';
+        }
+        
+        // Mostrar mensaje de cancelación
+        mostrarAlerta('Creación de orden cancelada', 'info');
     }
 }
 
@@ -683,6 +697,19 @@ function nuevaOrden() {
     if (formContainer && listaOrdenes) {
         formContainer.style.display = 'block';
         listaOrdenes.style.display = 'none';
+        
+        // Añadir botón de cancelar si no existe
+        const botonesContainer = formContainer.querySelector('.text-end');
+        if (botonesContainer && !document.getElementById('btnCancelarOrden')) {
+            const btnCancelar = document.createElement('button');
+            btnCancelar.id = 'btnCancelarOrden';
+            btnCancelar.type = 'button';
+            btnCancelar.className = 'btn btn-outline-danger me-2';
+            btnCancelar.innerHTML = '<i class="fas fa-times-circle"></i> Cancelar';
+            btnCancelar.style = 'font-weight: 500; padding: 8px 16px;';
+            btnCancelar.onclick = cancelarNuevaOrden;
+            botonesContainer.insertBefore(btnCancelar, botonesContainer.firstChild);
+        }
     }
     
     // Limpiar el resumen
@@ -944,6 +971,36 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             try {
+                // Obtener el usuario actual
+                const usuario = JSON.parse(localStorage.getItem('usuario'));
+                
+                // Obtener el cliente asociado al usuario
+                const clienteResponse = await fetch(`/api/usuarios/${usuario.id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!clienteResponse.ok) {
+                    throw new Error('Error al obtener información del cliente');
+                }
+
+                const clienteData = await clienteResponse.json();
+                
+                if (!clienteData.cliente) {
+                    throw new Error('No se encontró un cliente asociado a este usuario');
+                }
+
+                console.log('Preparando datos para crear orden:', {
+                    clienteId: clienteData.cliente.id,
+                    servicios: ordenesState.serviciosSeleccionados.map(s => ({
+                        servicioId: s.id,
+                        cantidad: s.cantidad
+                    })),
+                    fechaProgramada,
+                    descripcion
+                });
+
                 const response = await fetch('/api/ordenes', {
                     method: 'POST',
                     headers: {
@@ -951,7 +1008,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     },
                     body: JSON.stringify({
-                        clienteId: JSON.parse(localStorage.getItem('usuario')).id,
+                        clienteId: clienteData.cliente.id,
                         servicios: ordenesState.serviciosSeleccionados.map(s => ({
                             servicioId: s.id,
                             cantidad: s.cantidad
@@ -962,13 +1019,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 if (!response.ok) {
-                    throw new Error('Error al crear la orden');
+                    const errorData = await response.json();
+                    console.error('Error del servidor:', errorData);
+                    throw new Error(errorData.message || `Error al crear la orden: ${response.status}`);
                 }
 
                 const orden = await response.json();
+                console.log('Orden creada exitosamente:', orden);
                 
                 // Generar factura automáticamente
                 try {
+                    console.log('Iniciando generación de factura para orden:', orden.id);
                     const facturaResponse = await fetch(`/api/facturas/orden/${orden.id}`, {
                         method: 'POST',
                         headers: {
@@ -977,14 +1038,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     });
                     
-                    if (facturaResponse.ok) {
-                        const factura = await facturaResponse.json();
-                        console.log('Factura generada automáticamente:', factura);
-                        mostrarAlerta('Orden creada y factura generada exitosamente. Consulte la sección de Facturas.', 'success');
-                    } else {
-                        console.error('La factura no pudo ser generada automáticamente');
-                        mostrarAlerta('Orden creada exitosamente. Sin embargo, hubo un problema al generar la factura.', 'warning');
+                    if (!facturaResponse.ok) {
+                        const errorData = await facturaResponse.json();
+                        console.error('Error al generar factura:', errorData);
+                        throw new Error(errorData.message || `Error al generar factura: ${facturaResponse.status}`);
                     }
+
+                    const factura = await facturaResponse.json();
+                    console.log('Factura generada exitosamente:', factura);
+                    mostrarAlerta('Orden creada y factura generada exitosamente. Consulte la sección de Facturas.', 'success');
                 } catch (facturaError) {
                     console.error('Error al generar factura:', facturaError);
                     mostrarAlerta('Orden creada exitosamente. Sin embargo, hubo un problema al generar la factura.', 'warning');
@@ -996,8 +1058,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('listaOrdenes').style.display = 'block';
                 await mostrarListaOrdenes();
             } catch (error) {
-                console.error('Error al crear orden:', error);
-                mostrarAlerta('Error al crear la orden: ' + error.message, 'danger');
+                console.error('Error detallado al crear orden:', error);
+                mostrarAlerta(`Error al crear la orden: ${error.message}`, 'danger');
             }
         });
     }
@@ -1014,6 +1076,18 @@ window.eliminarServicio = eliminarServicio;
 window.nuevaOrden = nuevaOrden;
 window.mostrarAlerta = mostrarAlerta;
 window.fixFormFields = fixFormFields;
+window.cancelarNuevaOrden = cancelarNuevaOrden;
+window.cargarServiciosParaFiltro = cargarServiciosParaFiltro;
+window.cargarClientesParaFiltro = cargarClientesParaFiltro;
+window.aplicarFiltros = aplicarFiltros;
+window.limpiarFiltros = limpiarFiltros;
+window.inicializarFiltros = inicializarFiltros;
+window.mostrarVistaOrdenes = mostrarVistaOrdenes;
+window.confirmarCancelarOrden = confirmarCancelarOrden;
+window.confirmarEliminarOrden = confirmarEliminarOrden;
+window.ocultarTodasLasSecciones = ocultarTodasLasSecciones;
+window.generarFactura = generarFactura;
+window.limpiarHistorialOrdenes = limpiarHistorialOrdenes;
 
 // Función para cargar servicios en el filtro
 async function cargarServiciosParaFiltro() {
@@ -1056,84 +1130,199 @@ async function cargarServiciosParaFiltro() {
     }
 }
 
+// Función para cargar los clientes en el filtro
+function cargarClientesParaFiltro() {
+    const filtroCliente = document.getElementById('filtroCliente');
+    if (!filtroCliente) {
+        console.error('No se encontró el elemento del filtro de cliente');
+        return;
+    }
+    
+    fetch('/api/usuarios?tipo=CLIENTE', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Error al cargar clientes: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Limpiar opciones existentes excepto la primera (Todos)
+        while (filtroCliente.options.length > 1) {
+            filtroCliente.remove(1);
+        }
+        
+        // Agregar clientes al select
+        data.forEach(usuario => {
+            if (usuario.cliente) {
+                const option = document.createElement('option');
+                option.value = usuario.cliente.id;
+                option.textContent = `${usuario.nombre} ${usuario.apellido}`;
+                filtroCliente.appendChild(option);
+            }
+        });
+        
+        console.log('Clientes cargados para filtro:', data.length);
+    })
+    .catch(error => {
+        console.error('Error cargando clientes para filtro:', error);
+    });
+}
+
 // Función para aplicar filtros
 function aplicarFiltros() {
+    // Recopilar valores de los filtros
     const filtros = {
-        estado: document.getElementById('filtroEstado')?.value,
-        fechaDesde: document.getElementById('filtroFechaDesde')?.value,
-        fechaHasta: document.getElementById('filtroFechaHasta')?.value,
-        precioMinimo: document.getElementById('filtroPrecioMin')?.value,
-        precioMaximo: document.getElementById('filtroPrecioMax')?.value,
-        servicioId: document.getElementById('filtroServicio')?.value,
-        ordenarPor: document.getElementById('filtroOrdenarPor')?.value,
-        ordenDireccion: document.getElementById('filtroOrdenDireccion')?.value
+        estado: document.getElementById('filtroEstado')?.value || '',
+        fechaDesde: document.getElementById('filtroFechaDesde')?.value || '',
+        fechaHasta: document.getElementById('filtroFechaHasta')?.value || '',
+        precioMin: document.getElementById('filtroPrecioMin')?.value || '',
+        precioMax: document.getElementById('filtroPrecioMax')?.value || '',
+        servicioId: document.getElementById('filtroServicio')?.value || '',
+        ordenarPor: document.getElementById('filtroOrdenarPor')?.value || 'fecha',
+        ordenDireccion: document.getElementById('filtroOrdenDireccion')?.value || 'desc'
     };
     
-    // Eliminar campos vacíos para no enviarlos como parámetros
+    // Añadir clienteId si existe el elemento (solo para administradores)
+    const filtroCliente = document.getElementById('filtroCliente');
+    if (filtroCliente) {
+        filtros.clienteId = filtroCliente.value;
+    }
+    
+    // Eliminar campos vacíos para no enviarlos en la petición
     Object.keys(filtros).forEach(key => {
-        if (!filtros[key]) {
+        if (filtros[key] === '') {
             delete filtros[key];
         }
     });
     
-    // Guardar filtros en sessionStorage para recordarlos
+    // Guardar filtros en sessionStorage
     sessionStorage.setItem('ordenes_filtros', JSON.stringify(filtros));
     
-    // Mostrar lista de órdenes filtradas
+    // Aplicar filtros y mostrar resultados
     mostrarListaOrdenes(filtros);
 }
 
-// Función para limpiar filtros
+// Función para limpiar todos los filtros
 function limpiarFiltros() {
-    const formFiltros = document.getElementById('filtroOrdenesForm');
-    if (formFiltros) {
-        formFiltros.reset();
-        sessionStorage.removeItem('ordenes_filtros');
-        mostrarListaOrdenes();
+    // Resetear valores de todos los filtros
+    document.getElementById('filtroEstado').value = '';
+    document.getElementById('filtroFechaDesde').value = '';
+    document.getElementById('filtroFechaHasta').value = '';
+    document.getElementById('filtroPrecioMin').value = '';
+    document.getElementById('filtroPrecioMax').value = '';
+    document.getElementById('filtroServicio').value = '';
+    document.getElementById('filtroOrdenarPor').value = 'fecha';
+    document.getElementById('filtroOrdenDireccion').value = 'desc';
+    
+    // Limpiar el filtro de cliente si existe
+    const filtroCliente = document.getElementById('filtroCliente');
+    if (filtroCliente) {
+        filtroCliente.value = '';
     }
+    
+    // Eliminar filtros guardados
+    sessionStorage.removeItem('ordenes_filtros');
+    
+    // Mostrar todas las órdenes
+    mostrarListaOrdenes();
 }
 
 // Función para inicializar los filtros
 function inicializarFiltros() {
+    // Verificar si ya se han inicializado los filtros
+    if (document.getElementById('filtrosInicializados')) {
+        return;
+    }
+
     // Cargar servicios para el filtro
     cargarServiciosParaFiltro();
+    
+    // Verificar si el usuario es admin para mostrar el filtro de clientes
+    const usuario = JSON.parse(localStorage.getItem('usuario'));
+    if (usuario && usuario.tipo === 'ADMIN') {
+        // Buscar el elemento que contiene el filtro de servicio
+        const filtroServicioElement = document.getElementById('filtroServicio');
+        if (filtroServicioElement) {
+            // Obtener el elemento padre (col-md-4)
+            const parentCol = filtroServicioElement.closest('.col-md-4');
+            if (parentCol && parentCol.parentElement) {
+                // Verificar si ya existe el filtro de cliente
+                if (!document.getElementById('filtroCliente')) {
+                    // Crear un nuevo elemento para el filtro de cliente
+                    const clienteCol = document.createElement('div');
+                    clienteCol.className = 'col-md-4';
+                    clienteCol.innerHTML = `
+                        <label for="filtroCliente" class="form-label">Cliente</label>
+                        <select class="form-select" id="filtroCliente">
+                            <option value="">Todos los clientes</option>
+                        </select>
+                    `;
+                    
+                    // Insertar después del filtro de servicio
+                    parentCol.after(clienteCol);
+                    
+                    // Cargar los clientes
+                    cargarClientesParaFiltro();
+                    
+                    console.log('Filtro de cliente añadido');
+                }
+            }
+        }
+    }
     
     // Restaurar filtros guardados (si existen)
     const filtrosGuardados = sessionStorage.getItem('ordenes_filtros');
     if (filtrosGuardados) {
         const filtros = JSON.parse(filtrosGuardados);
+        console.log('Restaurando filtros guardados:', filtros);
         
-        // Aplicar valores a los campos
-        if (filtros.estado) document.getElementById('filtroEstado').value = filtros.estado;
-        if (filtros.fechaDesde) document.getElementById('filtroFechaDesde').value = filtros.fechaDesde;
-        if (filtros.fechaHasta) document.getElementById('filtroFechaHasta').value = filtros.fechaHasta;
-        if (filtros.precioMinimo) document.getElementById('filtroPrecioMin').value = filtros.precioMinimo;
-        if (filtros.precioMaximo) document.getElementById('filtroPrecioMax').value = filtros.precioMaximo;
-        if (filtros.servicioId) {
-            // Es posible que primero necesitemos esperar a que los servicios carguen
-            const intervalId = setInterval(() => {
-                const select = document.getElementById('filtroServicio');
-                if (select && select.options.length > 1) {
-                    select.value = filtros.servicioId;
-                    clearInterval(intervalId);
+        // Restaurar todos los filtros
+        const filtrosIds = [
+            'filtroEstado', 'filtroFechaDesde', 'filtroFechaHasta',
+            'filtroPrecioMin', 'filtroPrecioMax', 'filtroServicio',
+            'filtroOrdenarPor', 'filtroOrdenDireccion'
+        ];
+        
+        filtrosIds.forEach(id => {
+            const elemento = document.getElementById(id);
+            if (elemento && filtros[id.replace('filtro', '').toLowerCase()]) {
+                elemento.value = filtros[id.replace('filtro', '').toLowerCase()];
+            }
+        });
+        
+        // Restaurar clienteId si existe y el usuario es admin
+        if (filtros.clienteId && usuario && usuario.tipo === 'ADMIN') {
+            setTimeout(() => {
+                const filtroCliente = document.getElementById('filtroCliente');
+                if (filtroCliente) {
+                    filtroCliente.value = filtros.clienteId;
                 }
-            }, 100);
-            // Establecer un tiempo máximo de espera
-            setTimeout(() => clearInterval(intervalId), 5000);
+            }, 500);
         }
-        if (filtros.ordenarPor) document.getElementById('filtroOrdenarPor').value = filtros.ordenarPor;
-        if (filtros.ordenDireccion) document.getElementById('filtroOrdenDireccion').value = filtros.ordenDireccion;
-        
-        // Aplicar los filtros restaurados
-        mostrarListaOrdenes(filtros);
-    } else {
-        // Si no hay filtros guardados, mostrar todas las órdenes
-        mostrarListaOrdenes();
     }
     
-    // Asignar eventos a los botones
-    document.getElementById('aplicarFiltros')?.addEventListener('click', aplicarFiltros);
-    document.getElementById('limpiarFiltros')?.addEventListener('click', limpiarFiltros);
+    // Asignar eventos a los botones de filtros
+    const btnAplicarFiltros = document.getElementById('aplicarFiltros');
+    if (btnAplicarFiltros) {
+        btnAplicarFiltros.addEventListener('click', aplicarFiltros);
+    }
+    
+    const btnLimpiarFiltros = document.getElementById('limpiarFiltros');
+    if (btnLimpiarFiltros) {
+        btnLimpiarFiltros.addEventListener('click', limpiarFiltros);
+    }
+
+    // Marcar los filtros como inicializados
+    const filtrosContainer = document.getElementById('filtroOrdenesForm');
+    if (filtrosContainer) {
+        filtrosContainer.setAttribute('id', 'filtrosInicializados');
+    }
 }
 
 // Añadir inicialización de filtros al cargar el módulo de órdenes
@@ -1143,13 +1332,19 @@ document.addEventListener('DOMContentLoaded', function() {
         // Inicializar filtros cuando se muestre la sección de órdenes
         document.querySelectorAll('[data-section="ordenes"]').forEach(link => {
             link.addEventListener('click', function() {
-                inicializarFiltros();
+                mostrarVistaOrdenes();
             });
         });
         
-        // Comprobar si la sección de órdenes es visible (para manejar recarga de página)
-        if (document.getElementById('ordenes').style.display !== 'none') {
-            inicializarFiltros();
+        // Si estamos en la sección de órdenes al cargar la página
+        if (window.location.hash === '#ordenes') {
+            mostrarVistaOrdenes();
+        }
+        
+        // Inicializar botón de limpiar historial
+        const btnLimpiarHistorial = document.getElementById('limpiarHistorialOrdenes');
+        if (btnLimpiarHistorial) {
+            btnLimpiarHistorial.addEventListener('click', limpiarHistorialOrdenes);
         }
     }
 });
@@ -1329,31 +1524,253 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Añadir inicialización del botón de limpiar historial
-document.addEventListener('DOMContentLoaded', function() {
-    // Verificar si estamos en la página de órdenes
-    if (document.getElementById('ordenes')) {
-        // Inicializar filtros cuando se muestre la sección de órdenes
-        document.querySelectorAll('[data-section="ordenes"]').forEach(link => {
-            link.addEventListener('click', function() {
-                inicializarFiltros();
-                inicializarBotones();
+// Función para mostrar la vista de órdenes
+function mostrarVistaOrdenes() {
+    ocultarTodasLasSecciones();
+    const ordenesSection = document.getElementById('ordenes');
+    if (ordenesSection) {
+        ordenesSection.style.display = 'block';
+        
+        // Inicializar filtros
+        inicializarFiltros();
+        
+        // Mostrar la lista de órdenes (sin filtros inicialmente)
+        mostrarListaOrdenes();
+    } else {
+        console.error('No se encontró el elemento con ID "ordenes"');
+    }
+}
+
+// Función para confirmar la cancelación de una orden
+function confirmarCancelarOrden(ordenId) {
+    if (confirm('¿Estás seguro de que deseas cancelar esta orden? Esta acción no se puede deshacer.')) {
+        fetch(`/api/ordenes/${ordenId}/cancelar`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw new Error(err.message || 'Error al cancelar la orden'); });
+            }
+            return response.json();
+        })
+        .then(data => {
+            mostrarAlerta('Orden cancelada con éxito', 'success');
+            // Recargar la lista de órdenes
+            mostrarListaOrdenes();
+        })
+        .catch(error => {
+            console.error('Error al cancelar la orden:', error);
+            mostrarAlerta(`Error: ${error.message}`, 'danger');
+        });
+    }
+}
+
+// Función para confirmar la eliminación de una orden
+function confirmarEliminarOrden(ordenId) {
+    if (confirm('¿Estás seguro de que deseas eliminar esta orden? Esta acción no se puede deshacer y eliminará la orden del historial.')) {
+        fetch(`/api/ordenes/${ordenId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw new Error(err.message || 'Error al eliminar la orden'); });
+            }
+            return response.json();
+        })
+        .then(data => {
+            mostrarAlerta('Orden eliminada con éxito', 'success');
+            // Recargar la lista de órdenes
+            mostrarListaOrdenes();
+        })
+        .catch(error => {
+            console.error('Error al eliminar la orden:', error);
+            mostrarAlerta(`Error: ${error.message}`, 'danger');
+        });
+    }
+}
+
+// Función para ocultar todas las secciones
+function ocultarTodasLasSecciones() {
+    document.querySelectorAll('.content-section').forEach(seccion => {
+        seccion.style.display = 'none';
+    });
+}
+
+// Función para mostrar lista de órdenes con filtros opcionales
+async function mostrarListaOrdenes(filtros = {}) {
+    try {
+        console.log('Mostrando órdenes con filtros:', filtros);
+        
+        // Obtener el usuario actual y verificar si es admin
+        const usuario = JSON.parse(localStorage.getItem('usuario'));
+        const esAdmin = usuario && usuario.tipo === 'ADMIN';
+        
+        // Construir URL con parámetros de filtro
+        let url = '/api/ordenes';
+        const params = new URLSearchParams();
+        
+        // Añadir filtros a los parámetros
+        if (filtros.estado) params.append('estado', filtros.estado);
+        if (filtros.fechaDesde) params.append('fechaDesde', filtros.fechaDesde);
+        if (filtros.fechaHasta) params.append('fechaHasta', filtros.fechaHasta);
+        if (filtros.precioMin) params.append('precioMin', filtros.precioMin);
+        if (filtros.precioMax) params.append('precioMax', filtros.precioMax);
+        if (filtros.servicioId) params.append('servicioId', filtros.servicioId);
+        if (filtros.clienteId) params.append('clienteId', filtros.clienteId);
+        if (filtros.ordenarPor) params.append('ordenarPor', filtros.ordenarPor);
+        if (filtros.ordenDireccion) params.append('ordenDireccion', filtros.ordenDireccion);
+        
+        // Añadir parámetros a la URL
+        const queryString = params.toString();
+        if (queryString) {
+            url += `?${queryString}`;
+        }
+        
+        // Mostrar indicador de carga
+        const ordenesContainer = document.getElementById('listaOrdenes');
+        if (!ordenesContainer) {
+            console.error('No se encontró el contenedor de órdenes');
+            return;
+        }
+        
+        ordenesContainer.innerHTML = `
+            <div class="d-flex justify-content-center my-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando órdenes...</span>
+                </div>
+            </div>
+        `;
+        
+        // Realizar la petición al servidor
+        const response = await fetch(url, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+
+        if (response.status === 404) {
+            console.error('El endpoint de órdenes no está disponible');
+            ordenesContainer.innerHTML = `
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    El servicio de órdenes no está disponible en este momento.
+                </div>
+            `;
+            return;
+        }
+
+        if (!response.ok) {
+            throw new Error(`Error al cargar órdenes: ${response.status} ${response.statusText}`);
+        }
+
+        const ordenes = await response.json();
+        
+        if (!Array.isArray(ordenes) || ordenes.length === 0) {
+            ordenesContainer.innerHTML = `
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    No hay órdenes disponibles con los filtros seleccionados.
+                </div>
+            `;
+            return;
+        }
+
+        ordenesContainer.innerHTML = ordenes.map(orden => `
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                    <div>
+                        <span class="badge bg-primary me-2">ID: ${orden.id}</span>
+                        <span class="badge ${getEstadoBadgeClass(orden.estado)}">${orden.estado}</span>
+                    </div>
+                    <div>
+                        ${orden.estado === 'PENDIENTE' ? 
+                        `<button class="btn btn-sm btn-outline-danger me-2 cancelar-orden" 
+                                data-orden-id="${orden.id}">
+                            <i class="fas fa-times-circle"></i> Cancelar
+                        </button>` : ''}
+                        <button class="btn btn-sm btn-outline-primary ver-detalle-orden me-2" 
+                                data-orden-id="${orden.id}">Ver detalles</button>
+                        ${esAdmin ? `
+                        <button class="btn btn-sm btn-outline-danger eliminar-orden" 
+                                data-orden-id="${orden.id}">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                        ` : ''}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Cliente: ${orden.cliente?.usuario?.nombre || 'N/A'}</h5>
+                    <p class="card-text">Email: ${orden.cliente?.usuario?.email || 'N/A'}</p>
+                    <p class="card-text">Fecha: ${orden.fechaFormateada || new Date(orden.fecha).toLocaleDateString()}</p>
+                    
+                    <div class="servicios-lista">
+                        <h6>Servicios:</h6>
+                        <ul class="list-group">
+                            ${orden.servicios?.map(s => `
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>${s.servicio?.nombre || 'N/A'}</span>
+                                    <span class="badge bg-secondary me-2">x${s.cantidad}</span>
+                                    <span class="precio">$${s.precioUnitario * s.cantidad}</span>
+                                </li>
+                            `).join('') || ''}
+                        </ul>
+                    </div>
+                    
+                    <div class="mt-3 precios-resumen">
+                        <div class="d-flex justify-content-between">
+                            <span>Subtotal:</span>
+                            <strong>$${orden.precios?.subtotal.toFixed(2) || 'N/A'}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Total:</span>
+                            <strong class="text-primary">$${orden.precios?.total.toFixed(2) || 'N/A'}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        // Añadir eventos para ver detalles
+        document.querySelectorAll('.ver-detalle-orden').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const ordenId = e.target.dataset.ordenId;
+                mostrarDetalleOrden(ordenId);
             });
         });
         
-        // Comprobar si la sección de órdenes es visible (para manejar recarga de página)
-        if (document.getElementById('ordenes').style.display !== 'none') {
-            inicializarFiltros();
-            inicializarBotones();
-        }
-    }
-});
+        // Añadir eventos para cancelar órdenes
+        document.querySelectorAll('.cancelar-orden').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const ordenId = btn.dataset.ordenId;
+                confirmarCancelarOrden(ordenId);
+            });
+        });
 
-// Función para inicializar botones
-function inicializarBotones() {
-    // Botón para limpiar historial
-    const btnLimpiarHistorial = document.getElementById('limpiarHistorialOrdenes');
-    if (btnLimpiarHistorial) {
-        btnLimpiarHistorial.addEventListener('click', limpiarHistorialOrdenes);
+        // Añadir eventos para eliminar órdenes
+        document.querySelectorAll('.eliminar-orden').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const ordenId = btn.dataset.ordenId;
+                confirmarEliminarOrden(ordenId);
+            });
+        });
+    } catch (error) {
+        console.error('Error al mostrar órdenes:', error);
+        const errorContainer = document.getElementById('listaOrdenes');
+        if (errorContainer) {
+            errorContainer.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i>
+                    Error al cargar las órdenes: ${error.message}
+                </div>
+            `;
+        }
     }
 }
