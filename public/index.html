@@ -311,7 +311,7 @@
                                                 <option value="PENDIENTE">Pendiente</option>
                                                 <option value="PROGRAMADA">Programada</option>
                                                 <option value="EN_PROCESO">En proceso</option>
-                                                <option value="COMPLETADA">Completada</option>
+                                                <option value="REALIZADO">Realizado</option>
                                                 <option value="CANCELADA">Cancelada</option>
                                             </select>
                                         </div>
@@ -688,6 +688,11 @@
         </div>
     </div>
 
+    <!-- Modal para detalles de orden -->
+    <div class="modal fade" id="detalleOrdenModal" tabindex="-1" aria-labelledby="detalleOrdenModalLabel" aria-hidden="true">
+        <!-- El contenido del modal se cargará dinámicamente -->
+    </div>
+
     <!-- Scripts -->
     <script src="/css/bootstrap-5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/js/jwt-utils.js"></script>
@@ -704,6 +709,9 @@
     <script src="/js/notificaciones.js"></script>
     <script src="/js/logs.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <script src="js/estadosOrden.js"></script>
+    <script src="js/facturas.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('Iniciando aplicación...');

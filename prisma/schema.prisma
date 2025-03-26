@@ -85,12 +85,20 @@ model OrdenServicio {
 }
 
 model Factura {
-  id          Int      @id @default(autoincrement())
-  orden       Orden    @relation(fields: [ordenId], references: [id])
-  ordenId     Int      @unique
-  fecha       DateTime @default(now())
-  subtotal    Float
-  total       Float
+  id            Int      @id @default(autoincrement())
+  ordenId       Int      @unique
+  orden         Orden    @relation(fields: [ordenId], references: [id])
+  subtotal      Float
+  total         Float
+  fechaEmision  DateTime @default(now())
+  estado        String   @default("PENDIENTE")
+  archivoPath   String?
+  firmaCliente  String?
+  firmaAdmin    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("facturas")
 }
 
 model Notificacion {

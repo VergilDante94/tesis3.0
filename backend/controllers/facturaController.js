@@ -1,12 +1,33 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const PDFService = require('../services/pdfService');
+const fs = require('fs');
+const path = require('path');
+
+// Asegurar que los directorios necesarios existan
+const asegurarDirectorios = () => {
+    const dirs = [
+        path.join(__dirname, '../../public/facturas'),
+        path.join(__dirname, '../../logs')
+    ];
+    
+    dirs.forEach(dir => {
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+            console.log(`Directorio creado: ${dir}`);
+        }
+    });
+};
+
+// Ejecutar al inicio
+asegurarDirectorios();
 
 const facturaController = {
     // Generar factura para una orden
     async generar(req, res) {
         try {
             const { ordenId } = req.params;
+            console.log(`Iniciando generación de factura para orden ${ordenId}`);
             
             // Verificar si ya existe una factura para esta orden
             const facturaExistente = await prisma.factura.findFirst({
@@ -14,6 +35,7 @@ const facturaController = {
             });
 
             if (facturaExistente) {
+                console.log(`Ya existe una factura para la orden ${ordenId}`);
                 return res.status(400).json({ 
                     message: 'Ya existe una factura para esta orden',
                     facturaId: facturaExistente.id
@@ -36,8 +58,11 @@ const facturaController = {
             });
 
             if (!orden) {
+                console.log(`Orden ${ordenId} no encontrada`);
                 return res.status(404).json({ message: 'Orden no encontrada' });
             }
+
+            console.log(`Orden encontrada: ${JSON.stringify(orden, null, 2)}`);
 
             // Calcular importe total y preparar detalles
             let subtotal = 0;
@@ -52,8 +77,9 @@ const facturaController = {
                 };
             });
 
-            const impuestos = subtotal * 0.16; // 16% IVA
-            const total = subtotal + impuestos;
+            const total = subtotal;
+
+            console.log(`Cálculos realizados - Subtotal: ${subtotal}, Total: ${total}`);
 
             // Generar el archivo PDF
             const pdfData = {
@@ -68,19 +94,19 @@ const facturaController = {
                 numeroOrden: orden.id,
                 detalles,
                 subtotal,
-                impuestos,
                 total
             };
 
+            console.log('Generando PDF con datos:', JSON.stringify(pdfData, null, 2));
             const pdfBuffer = await PDFService.generarFacturaPDF(pdfData);
             const pdfFileName = `factura_${orden.id}_${Date.now()}.pdf`;
             
             // Guardar la factura en la base de datos
+            console.log('Guardando factura en la base de datos...');
             const factura = await prisma.factura.create({
                 data: {
                     ordenId: parseInt(ordenId),
                     subtotal,
-                    impuestos,
                     total,
                     estado: 'PENDIENTE',
                     fechaEmision: new Date(),
@@ -88,12 +114,15 @@ const facturaController = {
                 }
             });
 
-            // Almacenar el archivo PDF (simulado)
+            console.log('Factura guardada en BD:', factura);
+
+            // Almacenar el archivo PDF
+            console.log('Guardando archivo PDF...');
             await PDFService.guardarPDF(pdfBuffer, pdfFileName);
             
             // Notificar al cliente sobre la factura
             try {
-                // Crear notificación en la base de datos
+                console.log('Creando notificación para el cliente...');
                 await prisma.notificacion.create({
                     data: {
                         usuarioId: orden.cliente.usuarioId,
@@ -102,6 +131,7 @@ const facturaController = {
                         entidadId: factura.id
                     }
                 });
+                console.log('Notificación creada exitosamente');
             } catch (notifError) {
                 console.error('Error al enviar notificación:', notifError);
                 // No detenemos el proceso por un error de notificación
@@ -116,10 +146,14 @@ const facturaController = {
                 datos: pdfData
             };
             
+            console.log('Respuesta final:', JSON.stringify(respuesta, null, 2));
             res.status(201).json(respuesta);
         } catch (error) {
             console.error('Error al generar factura:', error);
-            res.status(500).json({ error: 'Error al generar factura' });
+            res.status(500).json({ 
+                error: 'Error al generar factura',
+                details: error.message
+            });
         }
     },
 
@@ -162,12 +196,26 @@ const facturaController = {
     async listarPorCliente(req, res) {
         try {
             const { clienteId } = req.params;
+            console.log('Buscando facturas para cliente:', clienteId);
+            
+            // Primero obtener el ID del cliente desde el usuario
+            const cliente = await prisma.cliente.findFirst({
+                where: {
+                    usuarioId: parseInt(clienteId)
+                }
+            });
+
+            if (!cliente) {
+                console.log('Cliente no encontrado');
+                return res.status(404).json({ error: 'Cliente no encontrado' });
+            }
+
+            console.log('Cliente encontrado:', cliente);
+            
             const facturas = await prisma.factura.findMany({
                 where: {
                     orden: {
-                        cliente: {
-                            id: parseInt(clienteId)
-                        }
+                        clienteId: cliente.id
                     }
                 },
                 include: {
@@ -187,10 +235,11 @@ const facturaController = {
                     }
                 },
                 orderBy: {
-                    fecha: 'desc'
+                    fechaEmision: 'desc'
                 }
             });
 
+            console.log('Facturas encontradas:', facturas.length);
             res.json(facturas);
         } catch (error) {
             console.error('Error al listar facturas:', error);
@@ -202,6 +251,8 @@ const facturaController = {
     async descargarPDF(req, res) {
         try {
             const { id } = req.params;
+            console.log('Descargando PDF para factura:', id);
+
             const factura = await prisma.factura.findUnique({
                 where: { id: parseInt(id) },
                 include: {
@@ -223,38 +274,58 @@ const facturaController = {
             });
 
             if (!factura) {
+                console.error('Factura no encontrada:', id);
                 return res.status(404).json({ error: 'Factura no encontrada' });
             }
 
-            // Verificar permisos (solo dueño de la factura o admin/trabajador)
-            const usuarioActual = req.usuario;
-            const esCliente = usuarioActual.tipo === 'CLIENTE';
-            const esClienteDueño = esCliente && factura.orden.cliente.usuarioId === usuarioActual.id;
-            
-            if (esCliente && !esClienteDueño) {
-                return res.status(403).json({ error: 'No tienes permiso para ver esta factura' });
-            }
+            console.log('Preparando datos para el PDF...');
+            const pdfData = {
+                numeroFactura: factura.numeroFactura || `FC-${factura.id}`,
+                fecha: factura.fechaEmision.toLocaleDateString(),
+                cliente: {
+                    nombre: factura.orden.cliente.usuario.nombre,
+                    email: factura.orden.cliente.usuario.email,
+                    direccion: factura.orden.cliente.usuario.direccion || 'N/A',
+                    telefono: factura.orden.cliente.usuario.telefono || 'N/A'
+                },
+                numeroOrden: factura.ordenId,
+                detalles: factura.orden.servicios.map(os => ({
+                    servicio: os.servicio.nombre,
+                    cantidad: os.cantidad,
+                    precioUnitario: os.precioUnitario,
+                    importe: os.cantidad * os.precioUnitario
+                })),
+                subtotal: factura.subtotal || factura.orden.servicios.reduce((sum, os) => 
+                    sum + (os.cantidad * os.precioUnitario), 0),
+                total: factura.total
+            };
 
-            // Configurar headers para la descarga del PDF
+            console.log('Generando PDF con datos:', JSON.stringify(pdfData, null, 2));
+            const pdfBuffer = await PDFService.generarFacturaPDF(pdfData);
+            console.log('PDF generado exitosamente');
+
+            // Configurar headers para la descarga
             res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', `attachment; filename=factura-${factura.id}.pdf`);
+            res.setHeader('Content-Disposition', `attachment; filename=factura-${factura.numeroFactura || factura.id}.pdf`);
+            res.setHeader('Content-Length', pdfBuffer.length);
 
-            // Generar y enviar el PDF
-            await PDFService.generarFacturaPDF(factura, res);
+            // Enviar el PDF
+            res.send(pdfBuffer);
+            console.log('PDF enviado al cliente');
+
         } catch (error) {
-            console.error('Error al generar PDF:', error);
-            res.status(500).json({ error: 'Error al generar PDF' });
+            console.error('Error al descargar PDF:', error);
+            res.status(500).json({ 
+                error: 'Error al generar el PDF',
+                details: error.message,
+                stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            });
         }
     },
     
-    // Listar todas las facturas (solo para admin/trabajador)
+    // Listar todas las facturas
     async listarTodas(req, res) {
         try {
-            // Verificar si el usuario es ADMIN o TRABAJADOR
-            if (!['ADMIN', 'TRABAJADOR'].includes(req.usuario.tipo)) {
-                return res.status(403).json({ error: 'No tienes permiso para ver todas las facturas' });
-            }
-            
             const facturas = await prisma.factura.findMany({
                 include: {
                     orden: {
@@ -273,14 +344,14 @@ const facturaController = {
                     }
                 },
                 orderBy: {
-                    fecha: 'desc'
+                    fechaEmision: 'desc'
                 }
             });
 
             res.json(facturas);
         } catch (error) {
-            console.error('Error al listar todas las facturas:', error);
-            res.status(500).json({ error: 'Error al obtener las facturas' });
+            console.error('Error al listar facturas:', error);
+            res.status(500).json({ error: 'Error al obtener facturas' });
         }
     }
 };

@@ -30,21 +30,36 @@ const ordenesManager = {
 
     async actualizarEstado(ordenId, estado) {
         try {
+            console.log('Actualizando estado:', { ordenId, estado });
+            
+            // Validar el estado antes de enviarlo
+            const estadosValidos = ['PENDIENTE', 'PROGRAMADA', 'EN_PROCESO', 'COMPLETADA', 'CANCELADA'];
+            const estadoUpper = estado.toUpperCase();
+            
+            if (!estadosValidos.includes(estadoUpper)) {
+                throw new Error(`Estado inválido: ${estado}. Estados válidos: ${estadosValidos.join(', ')}`);
+            }
+
             const response = await fetch(`/api/ordenes/${ordenId}/estado`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
-                body: JSON.stringify({ estado })
+                body: JSON.stringify({ estado: estadoUpper })
             });
             
+            const data = await response.json();
+            console.log('Respuesta del servidor:', data);
+            
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `Error al actualizar estado: ${response.status}`);
+                if (data.estadosPermitidos) {
+                    throw new Error(`Estado inválido. Estados permitidos: ${data.estadosPermitidos.join(', ')}`);
+                }
+                throw new Error(data.message || data.error || `Error al actualizar estado: ${response.status}`);
             }
             
-            return await response.json();
+            return data;
         } catch (error) {
             console.error('Error al actualizar estado:', error);
             throw error;
@@ -176,6 +191,44 @@ function mostrarFormularioOrden() {
 // Función para mostrar detalle de una orden específica
 async function mostrarDetalleOrden(ordenId) {
     try {
+        const modal = document.getElementById('detalleOrdenModal');
+        if (!modal) {
+            console.error('Modal no encontrado');
+            return;
+        }
+
+        // Crear la estructura del modal si no existe
+        if (!modal.querySelector('.modal-dialog')) {
+            modal.innerHTML = `
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Detalles de la Orden</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="detalleOrdenContenido">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="button" class="btn btn-success" id="btnGenerarFactura" style="display: none;">
+                                Generar Factura
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Mostrar el modal
+        const modalBootstrap = new bootstrap.Modal(modal);
+        modalBootstrap.show();
+
+        // Obtener los detalles de la orden
         const response = await fetch(`/api/ordenes/${ordenId}`, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -183,173 +236,170 @@ async function mostrarDetalleOrden(ordenId) {
         });
 
         if (!response.ok) {
-            throw new Error('Error al cargar los detalles de la orden');
+            throw new Error('Error al obtener los detalles de la orden');
         }
 
         const orden = await response.json();
+        const contenido = document.getElementById('detalleOrdenContenido');
         
-        // Obtener datos del usuario actual
-        const token = localStorage.getItem('token');
-        const userData = window.decodeJWT(token);
-        const esAdmin = userData && userData.tipo === 'ADMIN';
-        
-        // Crear modal para mostrar detalles
-        const modalHtml = `
-            <div class="modal fade" id="detalleOrdenModal" tabindex="-1" aria-labelledby="detalleOrdenModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="detalleOrdenModalLabel">
-                                <span class="badge bg-primary me-2">Orden ID: ${orden.id}</span>
-                                <span class="badge ${getEstadoBadgeClass(orden.estado)}">${orden.estado}</span>
-                            </h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <p><strong>Cliente:</strong> ${orden.cliente?.usuario?.nombre || 'N/A'}</p>
-                                    <p><strong>Email:</strong> ${orden.cliente?.usuario?.email || 'N/A'}</p>
-                                    <p><strong>Dirección:</strong> ${orden.cliente?.direccion || 'N/A'}</p>
-                                    <p><strong>Teléfono:</strong> ${orden.cliente?.telefono || 'N/A'}</p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>Fecha:</strong> ${orden.fechaFormateada || new Date(orden.fecha).toLocaleDateString()}</p>
-                                    <p><strong>Fecha de creación:</strong> ${new Date(orden.createdAt || orden.fecha).toLocaleString()}</p>
-                                    ${esAdmin ? `
-                                    <div class="mb-3">
-                                        <label for="cambiarEstadoOrden" class="form-label"><strong>Cambiar Estado:</strong></label>
-                                        <select class="form-select" id="cambiarEstadoOrden">
-                                            <option value="">Seleccionar nuevo estado</option>
-                                            ${orden.estado !== 'PENDIENTE' ? '' : `
-                                                <option value="PROGRAMADA">PROGRAMADA</option>
-                                                <option value="EN_PROCESO">EN PROCESO</option>
-                                            `}
-                                            ${orden.estado !== 'PROGRAMADA' ? '' : `
-                                                <option value="EN_PROCESO">EN PROCESO</option>
-                                            `}
-                                            ${orden.estado !== 'EN_PROCESO' ? '' : `
-                                                <option value="COMPLETADA">COMPLETADA</option>
-                                            `}
-                                            ${orden.estado === 'CANCELADA' ? '' : `
-                                                <option value="CANCELADA">CANCELADA</option>
-                                            `}
-                                        </select>
-                                        <button class="btn btn-primary mt-2" id="btnCambiarEstado">
-                                            Actualizar Estado
-                                        </button>
-                                    </div>
-                                    ` : ''}
-                                </div>
-                            </div>
-                            
-                            <h6>Detalle de Servicios:</h6>
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Servicio</th>
-                                        <th>Descripción</th>
-                                        <th>Cantidad</th>
-                                        <th>Precio Unit.</th>
-                                        <th>Subtotal</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${orden.detallesServicios ? orden.detallesServicios.map(s => `
-                                        <tr>
-                                            <td>${s.nombre}</td>
-                                            <td>${s.descripcion}</td>
-                                            <td>${s.cantidad}</td>
-                                            <td>$${s.precioUnitario.toFixed(2)}</td>
-                                            <td>$${s.subtotal.toFixed(2)}</td>
-                                        </tr>
-                                    `).join('') : orden.servicios.map(s => `
-                                        <tr>
-                                            <td>${s.servicio.nombre}</td>
-                                            <td>${s.servicio.descripcion}</td>
-                                            <td>${s.cantidad}</td>
-                                            <td>$${s.precioUnitario.toFixed(2)}</td>
-                                            <td>$${(s.cantidad * s.precioUnitario).toFixed(2)}</td>
-                                        </tr>
-                                    `).join('')}
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="4" class="text-end"><strong>Subtotal:</strong></td>
-                                        <td>$${orden.precios?.subtotal.toFixed(2) || 'N/A'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="4" class="text-end"><strong>Total:</strong></td>
-                                        <td class="text-primary"><strong>$${orden.precios?.total.toFixed(2) || 'N/A'}</strong></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            ${orden.estado === 'COMPLETADA' ? 
-                                `<button type="button" class="btn btn-primary" id="btnImprimirFactura" data-orden-id="${orden.id}">
-                                    Generar Factura
-                                </button>` : ''}
-                        </div>
-                    </div>
+        if (!contenido) {
+            console.error('Contenedor de detalles no encontrado');
+            return;
+        }
+
+        // Formatear fechas con logs para debugging
+        console.log('Fecha de creación recibida:', orden.fechaCreacion);
+        console.log('Fecha recibida:', orden.fecha);
+
+        const fechaCreacion = orden.fechaCreacion ? 
+            new Date(orden.fechaCreacion).toLocaleString('es-ES', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            }) : 
+            (orden.fecha ? new Date(orden.fecha).toLocaleString('es-ES', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            }) : 'No especificada');
+
+        const fecha = orden.fecha ? 
+            new Date(orden.fecha).toLocaleString('es-ES', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            }) : 'No especificada';
+
+        // Obtener el usuario actual para verificar si es admin
+        const usuario = JSON.parse(localStorage.getItem('usuario'));
+        const esAdmin = usuario && usuario.tipo === 'ADMIN';
+
+        // Construir el HTML de los detalles
+        let serviciosHtml = orden.servicios.map(servicio => {
+            const precioBase = servicio.servicio?.precioBase || 0;
+            const cantidad = servicio.cantidad || 1;
+            const subtotal = precioBase * cantidad;
+            return `
+                <tr>
+                    <td>${servicio.servicio?.nombre || 'Servicio no especificado'}</td>
+                    <td>${cantidad}</td>
+                    <td>$${precioBase.toFixed(2)}</td>
+                    <td>$${subtotal.toFixed(2)}</td>
+                </tr>
+            `;
+        }).join('');
+
+        // Calcular el total
+        const total = orden.servicios.reduce((sum, servicio) => {
+            const precioBase = servicio.servicio?.precioBase || 0;
+            const cantidad = servicio.cantidad || 1;
+            return sum + (precioBase * cantidad);
+        }, 0);
+
+        // Obtener las transiciones permitidas para el estado actual
+        const transicionesPermitidas = window.estadosOrden.obtenerTransicionesPermitidas(orden.estado);
+        const selectEstadosHtml = transicionesPermitidas.length > 0 ? `
+            <div class="mb-3">
+                <label for="cambiarEstado" class="form-label"><strong>Cambiar Estado:</strong></label>
+                <select class="form-select" id="cambiarEstado">
+                    <option value="">Seleccionar nuevo estado</option>
+                    ${transicionesPermitidas.map(estado => `
+                        <option value="${estado.value}">${estado.label}</option>
+                    `).join('')}
+                </select>
+            </div>
+        ` : '';
+
+        contenido.innerHTML = `
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <p><strong>Cliente:</strong> ${orden.cliente?.usuario?.nombre || 'No especificado'}</p>
+                    <p><strong>Email:</strong> ${orden.cliente?.usuario?.email || 'No especificado'}</p>
+                    <p><strong>Fecha de Creación:</strong> ${fechaCreacion}</p>
+                    <p><strong>Fecha Programada:</strong> ${fecha}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Estado:</strong> <span class="badge ${window.estadosOrden.getEstadoBadgeClass(orden.estado)}">${window.estadosOrden.ESTADOS_ORDEN[orden.estado]?.nombre || orden.estado}</span></p>
+                    ${esAdmin ? selectEstadosHtml : ''}
+                    <p><strong>Total:</strong> $${total.toFixed(2)}</p>
                 </div>
             </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Servicio</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unitario</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${serviciosHtml}
+                    </tbody>
+                </table>
+            </div>
+            ${orden.descripcion ? `<div class="mt-3"><strong>Descripción:</strong><br>${orden.descripcion}</div>` : ''}
         `;
-        
-        // Añadir modal al DOM
-        const modalContainer = document.createElement('div');
-        modalContainer.innerHTML = modalHtml;
-        document.body.appendChild(modalContainer);
-        
-        // Mostrar modal
-        const modal = new bootstrap.Modal(document.getElementById('detalleOrdenModal'));
-        modal.show();
-        
-        // Evento para generar factura
-        const btnImprimirFactura = document.getElementById('btnImprimirFactura');
-        if (btnImprimirFactura) {
-            btnImprimirFactura.addEventListener('click', () => {
-                generarFactura(orden.id);
-            });
+
+        // Mostrar botón de generar factura si el estado es "COMPLETADA"
+        const btnGenerarFactura = document.getElementById('btnGenerarFactura');
+        if (btnGenerarFactura) {
+            if (orden.estado === 'COMPLETADA') {
+                btnGenerarFactura.style.display = 'block';
+                btnGenerarFactura.onclick = () => generarFactura(ordenId);
+            } else {
+                btnGenerarFactura.style.display = 'none';
+            }
         }
-        
-        // Evento para cambiar estado (solo admin)
-        const btnCambiarEstado = document.getElementById('btnCambiarEstado');
-        if (btnCambiarEstado) {
-            btnCambiarEstado.addEventListener('click', async () => {
-                const selectEstado = document.getElementById('cambiarEstadoOrden');
-                const nuevoEstado = selectEstado.value;
-                
-                if (!nuevoEstado) {
-                    mostrarAlerta('Debe seleccionar un estado', 'warning');
-                    return;
-                }
-                
-                try {
-                    await ordenesManager.actualizarEstado(orden.id, nuevoEstado);
-                    mostrarAlerta(`Estado de la orden actualizado a ${nuevoEstado}`, 'success');
+
+        // Añadir evento para cambiar estado (si es admin)
+        if (esAdmin) {
+            const selectEstado = document.getElementById('cambiarEstado');
+            if (selectEstado) {
+                selectEstado.addEventListener('change', async (e) => {
+                    const nuevoEstado = e.target.value;
+                    console.log('Nuevo estado seleccionado:', nuevoEstado);
                     
-                    // Cerrar modal
-                    modal.hide();
-                    
-                    // Recargar la lista de órdenes
-                    await mostrarListaOrdenes();
-                } catch (error) {
-                    console.error('Error al cambiar estado:', error);
-                    mostrarAlerta(`Error: ${error.message}`, 'danger');
-                }
-            });
+                    if (nuevoEstado && nuevoEstado !== orden.estado) {
+                        try {
+                            console.log('Intentando actualizar estado a:', nuevoEstado);
+                            
+                            // Usar el método del nuevo módulo de estados
+                            await window.estadosOrden.actualizarEstado(ordenId, nuevoEstado);
+                            
+                            mostrarAlerta('Estado actualizado correctamente', 'success');
+                            
+                            // Cerrar el modal actual
+                            const modal = document.getElementById('detalleOrdenModal');
+                            if (modal) {
+                                const modalInstance = bootstrap.Modal.getInstance(modal);
+                                if (modalInstance) {
+                                    modalInstance.hide();
+                                }
+                            }
+                            
+                            // Recargar la lista de órdenes
+                            await mostrarListaOrdenes();
+                        } catch (error) {
+                            console.error('Error al actualizar estado:', error);
+                            // Restaurar el estado anterior en el select
+                            selectEstado.value = orden.estado;
+                        }
+                    }
+                });
+            }
         }
-        
-        // Limpiar DOM cuando se cierre el modal
-        document.getElementById('detalleOrdenModal').addEventListener('hidden.bs.modal', function () {
-            document.body.removeChild(modalContainer);
-        });
-        
+
     } catch (error) {
         console.error('Error al mostrar detalles de la orden:', error);
-        mostrarAlerta('Error al cargar los detalles de la orden', 'danger');
+        mostrarAlerta('Error al cargar los detalles de la orden', 'error');
     }
 }
 
@@ -784,8 +834,8 @@ function mostrarAlerta(mensaje, tipo, duracion = 5000) {
     // Añadir animación de desaparición gradual
     const timeoutId = setTimeout(() => {
         alertaDiv.classList.add('fade-out');
-        setTimeout(() => {
-            alertaDiv.remove();
+    setTimeout(() => {
+        alertaDiv.remove();
         }, 300);
     }, duracion);
     
@@ -1030,21 +1080,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Generar factura automáticamente
                 try {
                     console.log('Iniciando generación de factura para orden:', orden.id);
-                    const facturaResponse = await fetch(`/api/facturas/orden/${orden.id}`, {
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                        mostrarAlerta('Debes iniciar sesión para generar facturas', 'warning');
+                        return;
+                    }
+
+                    const response = await fetch(`/api/facturas/orden/${orden.id}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            'Authorization': `Bearer ${token}`
                         }
                     });
-                    
-                    if (!facturaResponse.ok) {
-                        const errorData = await facturaResponse.json();
-                        console.error('Error al generar factura:', errorData);
-                        throw new Error(errorData.message || `Error al generar factura: ${facturaResponse.status}`);
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        if (error.message === 'Ya existe una factura para esta orden') {
+                            // Si ya existe una factura, mostrar mensaje y redirigir a la sección de facturas
+                            mostrarAlerta('Esta orden ya tiene una factura asociada. Redirigiendo...', 'info');
+                            setTimeout(() => {
+                                showSection('facturas');
+                                mostrarListaFacturas();
+                            }, 1500);
+                            return;
+                        }
+                        throw new Error(error.message || 'Error al generar factura');
                     }
 
-                    const factura = await facturaResponse.json();
+                    const factura = await response.json();
                     console.log('Factura generada exitosamente:', factura);
                     mostrarAlerta('Orden creada y factura generada exitosamente. Consulte la sección de Facturas.', 'success');
                 } catch (facturaError) {
@@ -1365,7 +1429,7 @@ async function generarFactura(ordenId) {
             btnFactura.disabled = true;
         }
 
-        const response = await fetch(`/api/facturas/generar/${ordenId}`, {
+        const response = await fetch(`/api/facturas/orden/${ordenId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1381,10 +1445,22 @@ async function generarFactura(ordenId) {
 
         if (!response.ok) {
             const error = await response.json();
+            if (error.message === 'Ya existe una factura para esta orden') {
+                // Si ya existe una factura, mostrar mensaje y redirigir a la sección de facturas
+                mostrarAlerta('Esta orden ya tiene una factura asociada. Redirigiendo...', 'info');
+                setTimeout(() => {
+                    showSection('facturas');
+                    mostrarListaFacturas();
+                }, 1500);
+                return;
+            }
             throw new Error(error.message || 'Error al generar factura');
         }
 
         const factura = await response.json();
+        
+        // Mostrar mensaje de éxito
+        mostrarAlerta('Factura generada correctamente', 'success');
         
         // Cerrar modal actual si existe
         const modalActual = document.getElementById('detalleOrdenModal');
@@ -1393,52 +1469,6 @@ async function generarFactura(ordenId) {
             if (instancia) {
                 instancia.hide();
             }
-        }
-        
-        // Mostrar mensaje de éxito
-        mostrarAlerta('Factura generada correctamente', 'success');
-        
-        // Opcional: Mostrar enlace para descargar la factura
-        if (factura.archivoPath) {
-            // Construir modal de confirmación
-            const modalHtml = `
-                <div class="modal fade" id="facturaGeneradaModal" tabindex="-1" aria-labelledby="facturaGeneradaLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="facturaGeneradaLabel">Factura Generada</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p>La factura se ha generado correctamente.</p>
-                                <p>Número de factura: <strong>${factura.numeroFactura || 'No disponible'}</strong></p>
-                                <p>Fecha: <strong>${new Date(factura.fechaEmision).toLocaleDateString()}</strong></p>
-                                <p>Total: <strong>$${factura.total.toFixed(2)}</strong></p>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                <a href="${factura.archivoPath}" class="btn btn-primary" target="_blank">
-                                    <i class="fas fa-download"></i> Descargar Factura
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // Añadir modal al DOM
-            const modalContainer = document.createElement('div');
-            modalContainer.innerHTML = modalHtml;
-            document.body.appendChild(modalContainer);
-            
-            // Mostrar modal
-            const modal = new bootstrap.Modal(document.getElementById('facturaGeneradaModal'));
-            modal.show();
-            
-            // Limpiar DOM cuando se cierre el modal
-            document.getElementById('facturaGeneradaModal').addEventListener('hidden.bs.modal', function () {
-                document.body.removeChild(modalContainer);
-            });
         }
         
         // Actualizar lista de órdenes para reflejar el cambio

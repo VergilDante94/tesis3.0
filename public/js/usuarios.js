@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     try {
-        // Inicializar el modal
+    // Inicializar el modal
         modalUsuario = new bootstrap.Modal(modalElement);
         console.log('Modal inicializado correctamente');
     } catch (error) {
@@ -189,7 +189,7 @@ function mostrarUsuarios(usuarios) {
                         <i class="fas fa-check"></i> Reactivar
                     </button>
                     <button class="btn btn-sm btn-danger" onclick="eliminarPermanentemente(${usuario.id})">
-                        <i class="fas fa-trash"></i> Eliminar
+                    <i class="fas fa-trash"></i> Eliminar
                     </button>`
                 }
             </td>
@@ -255,7 +255,7 @@ async function editarUsuario(id) {
         
         // Guardar el usuario actual en variable global - IMPORTANTE PARA EDICIÓN
         usuarioActual = usuario;
-        
+
         console.log('Datos del usuario cargados (guardados en usuarioActual):', usuario);
 
         // Restaurar el formulario en el modal - sin usar ID hidden
@@ -381,7 +381,7 @@ async function guardarUsuario() {
             mostrarAlerta('Error en el formulario, por favor recarga la página', 'error');
             return;
         }
-        
+
         // Determinar si es una edición basado en la variable global usuarioActual
         const esEdicion = usuarioActual !== null && usuarioActual.id;
         
@@ -435,12 +435,12 @@ async function guardarUsuario() {
             },
             body: JSON.stringify(formData)
         });
-        
+
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.message || `Error al ${esEdicion ? 'actualizar' : 'crear'} usuario`);
         }
-        
+
         const data = await response.json();
         console.log('Respuesta del servidor:', data);
         
@@ -640,7 +640,7 @@ async function eliminarPermanentemente(id) {
         if (!confirm('⚠️ ADVERTENCIA: Esta acción eliminará permanentemente al usuario y todos sus datos asociados.\n\n¿Está ABSOLUTAMENTE seguro de proceder?')) {
             return;
         }
-        
+
         // Pedir confirmación adicional por texto
         const confirmText = prompt('Para confirmar, escriba "ELIMINAR" en mayúsculas:');
         if (confirmText !== 'ELIMINAR') {

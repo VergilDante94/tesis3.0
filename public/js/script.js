@@ -97,21 +97,31 @@ function showSection(sectionId) {
 
 // Función para cargar datos específicos de cada sección
 function cargarDatosSeccion(sectionId) {
+    console.log('Cargando datos para la sección:', sectionId);
     switch(sectionId) {
         case 'usuarios':
             if (typeof loadUsers === 'function') loadUsers();
             break;
         case 'ordenes':
-            if (typeof loadServicesForOrders === 'function') loadServicesForOrders();
+            console.log('Cargando sección de órdenes...');
+            if (typeof mostrarVistaOrdenes === 'function') {
+                mostrarVistaOrdenes();
+            } else if (typeof loadServicesForOrders === 'function') {
+                loadServicesForOrders();
+            } else {
+                console.error('No se encontraron funciones para cargar órdenes');
+            }
             break;
         case 'servicios':
             if (typeof loadServices === 'function') loadServices();
             break;
         case 'facturas':
+            console.log('Iniciando carga de facturas...');
             if (typeof mostrarListaFacturas === 'function') {
+                console.log('Función mostrarListaFacturas encontrada, llamando...');
                 mostrarListaFacturas();
             } else {
-                console.error('No se encontró una función para cargar facturas');
+                console.error('No se encontró la función mostrarListaFacturas');
             }
             break;
         case 'notificaciones':
