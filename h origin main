@@ -1,0 +1,13 @@
+[33mcommit 16604b9d6c17485948a7d8ef3a882b454412c3ee[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: Bryan <brayan940730@gmail.com>
+Date:   Tue Apr 8 02:31:34 2025 -0800
+
+    Enhance invoice and order management features
+    
+    - Add 'multer' dependency for handling file uploads in the application.
+    - Update server port configuration from 3000 to 3001 for better environment management.
+    - Refactor invoice status logic to dynamically set based on order state, improving accuracy in invoice tracking.
+    - Implement synchronization of invoice states with their corresponding orders, ensuring consistency in data.
+    - Introduce new API routes for downloading invoices and synchronizing invoice states, enhancing user functionality.
+    - Improve error handling and logging in the invoice controller for better debugging and user feedback.
+    - Update frontend components to reflect changes in invoice and order management, including improved user notifications and interactions.
