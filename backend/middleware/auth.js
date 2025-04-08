@@ -1,31 +1,38 @@
 const jwt = require('jsonwebtoken');
 
-const verificarToken = (req, res, next) => {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-
-    if (!token) {
-        return res.status(401).json({ error: 'Acceso denegado. Token no proporcionado.' });
-    }
-
+const verificarToken = async (req, res, next) => {
     try {
-        const verificado = jwt.verify(token, process.env.JWT_SECRET);
-        req.usuario = verificado;
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).json({ message: 'No autorizado' });
+        }
+
+        const token = authHeader.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: 'Token no proporcionado' });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
         next();
     } catch (error) {
-        res.status(401).json({ error: 'Token inválido' });
+        console.error('Error al verificar token:', error);
+        if (error.name === 'JsonWebTokenError') {
+            return res.status(401).json({ message: 'Token inválido' });
+        }
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'Token expirado' });
+        }
+        res.status(500).json({ message: 'Error al verificar token' });
     }
 };
 
 const esAdmin = (req, res, next) => {
-    if (!req.usuario) {
-        return res.status(401).json({ error: 'Usuario no autenticado' });
+    if (req.user && req.user.tipo === 'ADMIN') {
+        next();
+    } else {
+        res.status(403).json({ message: 'Acceso denegado. Se requieren permisos de administrador.' });
     }
-
-    if (req.usuario.tipo !== 'ADMIN') {
-        return res.status(403).json({ error: 'Acceso denegado. Se requieren privilegios de administrador.' });
-    }
-
-    next();
 };
 
 module.exports = {

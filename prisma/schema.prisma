@@ -18,6 +18,11 @@ enum TipoServicio {
   POR_CANTIDAD
 }
 
+enum TipoOrden {
+  SERVICIO
+  COMPRA
+}
+
 model Usuario {
   id            Int            @id @default(autoincrement())
   nombre        String
@@ -42,6 +47,7 @@ model Cliente {
   direccion String
   telefono  String
   ordenes   Orden[]
+  ventas    Venta[]
 }
 
 model Trabajador {
@@ -65,13 +71,18 @@ model Servicio {
 }
 
 model Orden {
-  id          Int      @id @default(autoincrement())
-  cliente     Cliente  @relation(fields: [clienteId], references: [id])
-  clienteId   Int
-  fecha       DateTime @default(now())
-  estado      String
-  servicios   OrdenServicio[]
-  factura     Factura?
+  id                Int      @id @default(autoincrement())
+  cliente           Cliente  @relation(fields: [clienteId], references: [id])
+  clienteId         Int
+  fecha             DateTime @default(now())
+  fechaProgramada   DateTime?
+  estado            String
+  tipo              TipoOrden @default(SERVICIO)
+  descripcion       String?  @db.Text
+  servicios         OrdenServicio[]
+  factura           Factura?
+  venta             Venta?   @relation(fields: [ventaId], references: [id])
+  ventaId           Int?     @unique
 }
 
 model OrdenServicio {
@@ -108,4 +119,64 @@ model Notificacion {
   mensaje     String
   fecha       DateTime @default(now())
   leida       Boolean  @default(false)
+}
+
+model Categoria {
+  id          Int       @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  productos   Producto[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Producto {
+  id          Int       @id @default(autoincrement())
+  nombre      String
+  descripcion String?   @db.Text
+  precio      Float
+  imagen      String?
+  categoria   Categoria @relation(fields: [categoriaId], references: [id])
+  categoriaId Int
+  stock       Stock?
+  detallesVenta DetalleVenta[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  activo      Boolean   @default(true)
+}
+
+model Stock {
+  id          Int      @id @default(autoincrement())
+  producto    Producto @relation(fields: [productoId], references: [id])
+  productoId  Int      @unique
+  cantidad    Int
+  minimo      Int      @default(5)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Venta {
+  id          Int            @id @default(autoincrement())
+  cliente     Cliente        @relation(fields: [clienteId], references: [id])
+  clienteId   Int
+  fecha       DateTime       @default(now())
+  total       Float
+  estado      String         @default("PENDIENTE")
+  detalles    DetalleVenta[]
+  orden       Orden?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model DetalleVenta {
+  id          Int      @id @default(autoincrement())
+  venta       Venta    @relation(fields: [ventaId], references: [id])
+  ventaId     Int
+  producto    Producto @relation(fields: [productoId], references: [id])
+  productoId  Int
+  cantidad    Int
+  precioUnitario Float
+  subtotal    Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 } 

@@ -106,6 +106,8 @@ function cargarDatosSeccion(sectionId) {
             console.log('Cargando sección de órdenes...');
             if (typeof mostrarVistaOrdenes === 'function') {
                 mostrarVistaOrdenes();
+            } else if (typeof mostrarListaOrdenes === 'function') {
+                mostrarListaOrdenes();
             } else if (typeof loadServicesForOrders === 'function') {
                 loadServicesForOrders();
             } else {

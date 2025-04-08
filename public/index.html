@@ -82,6 +82,35 @@
             color: #212529 !important;
         }
     </style>
+    <style>
+        /* Estilos para el modal manual */
+        .modal.show {
+            display: block;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1040;
+        }
+        
+        .modal-content {
+            z-index: 1050;
+            position: relative;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-open {
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body>
     <!-- Skip link para accesibilidad -->
@@ -150,7 +179,13 @@
                         <li class="nav-item">
                             <a class="nav-link" href="#" data-section="facturas">
                                 <i class="fas fa-file-invoice-dollar"></i>
-                                Facturas
+                                Prefacturas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="tiendaLink" href="/tienda.html">
+                                <i class="fas fa-shopping-cart"></i>
+                                Tienda
                             </a>
                         </li>
                         <li class="nav-item">
@@ -169,6 +204,12 @@
                             <a class="nav-link" href="#" data-section="usuarios">
                                 <i class="fas fa-users-cog"></i>
                                 Gestión Usuarios
+                            </a>
+                        </li>
+                        <li class="nav-item admin-only" style="display: block !important;">
+                            <a class="nav-link" id="adminTiendaLink" href="/admin/tienda.html">
+                                <i class="fas fa-store"></i>
+                                Gestión Tienda
                             </a>
                         </li>
                         <!-- Enlace a Logs para administradores -->
@@ -432,10 +473,10 @@
 
                 <div id="facturas" class="content-section" style="display: none;">
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                        <h1 class="h2" id="facturasTitle">Facturas</h1>
+                        <h1 class="h2" id="facturasTitle">Prefacturas</h1>
                     </div>
                     <div id="facturasDatos" class="row">
-                        <div class="loader" aria-label="Cargando facturas"></div>
+                        <div class="loader" aria-label="Cargando prefacturas"></div>
                     </div>
                 </div>
 
@@ -695,6 +736,7 @@
 
     <!-- Scripts -->
     <script src="/css/bootstrap-5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/js/jwt-utils.js"></script>
     <script src="/js/auth.js"></script>
     <script src="/js/filtros.js"></script>
@@ -804,12 +846,12 @@
                         }
                         break;
                     case 'facturas':
-                        if (typeof mostrarListaFacturas === 'function') {
+                        if (typeof mostrarListaPrefacturas === 'function') {
+                            mostrarListaPrefacturas();
+                        } else if (typeof mostrarListaFacturas === 'function') {
                             mostrarListaFacturas();
-                        } else if (typeof loadInvoices === 'function') {
-                            loadInvoices();
                         } else {
-                            console.error('No se encontró una función para cargar facturas');
+                            console.error('No se encontró una función para cargar prefacturas');
                         }
                         break;
                     case 'notificaciones':
@@ -948,6 +990,51 @@
         
         // Exponer la función globalmente
         window.fixFormFieldsGlobally = fixFormFieldsGlobally;
+    </script>
+    <script>
+        // Monitorear clics en enlaces de tienda
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar enlaces de tienda
+            const tiendaLink = document.getElementById('tiendaLink');
+            const adminTiendaLink = document.getElementById('adminTiendaLink');
+            
+            if (tiendaLink) {
+                tiendaLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('[Nav Debug] Clic en enlace de tienda');
+                    const usuario = JSON.parse(localStorage.getItem('usuario'));
+                    console.log('[Nav Debug] Usuario actual:', usuario);
+                    
+                    // Verificar autenticación antes de redirigir
+                    if (usuario && localStorage.getItem('token')) {
+                        window.location.replace('/tienda.html');
+                    } else {
+                        console.log('[Nav Debug] Usuario no autenticado');
+                        window.location.replace('/login.html');
+                    }
+                });
+            }
+            
+            if (adminTiendaLink) {
+                adminTiendaLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('[Nav Debug] Clic en enlace de administración de tienda');
+                    const usuario = JSON.parse(localStorage.getItem('usuario'));
+                    console.log('[Nav Debug] Usuario actual:', usuario);
+                    
+                    if (usuario && usuario.tipo === 'ADMIN') {
+                        window.location.replace('/admin/tienda.html');
+                    } else {
+                        console.log('[Nav Debug] Usuario no autorizado para acceder a administración de tienda');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Acceso denegado',
+                            text: 'No tienes permisos para acceder a esta sección'
+                        });
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>

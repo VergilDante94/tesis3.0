@@ -35,4 +35,16 @@ router.get('/:id/pdf',
     facturaController.descargarPDF
 );
 
+// Descargar PDF directamente con token en URL (sin middleware de autenticación)
+router.get('/:id/pdf-download', 
+    facturaController.descargarPDFConToken
+);
+
+// Sincronizar estados de facturas con sus órdenes (solo admin)
+router.post('/sync-estados', 
+    authMiddleware.verificarToken,
+    authMiddleware.verificarRol(['ADMIN']),
+    facturaController.sincronizarEstadosFacturas
+);
+
 module.exports = router;

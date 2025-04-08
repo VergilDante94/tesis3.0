@@ -28,7 +28,12 @@ function initAuth() {
 
 // Función para verificar si estamos en la página de login
 function isLoginPage() {
-    return window.location.pathname.endsWith('login.html');
+    const isLogin = window.location.pathname.endsWith('login.html');
+    console.log('[Auth Debug] Verificando página de login:', {
+        pathname: window.location.pathname,
+        isLogin: isLogin
+    });
+    return isLogin;
 }
 
 // Función para decodificar el token de manera segura
@@ -52,22 +57,33 @@ function decodeToken(token) {
 
 // Función para verificar autenticación
 async function verificarAutenticacion() {
-    console.log('Verificando autenticación en:', window.location.pathname);
+    console.log('[Auth Debug] Iniciando verificación de autenticación:', {
+        pathname: window.location.pathname,
+        href: window.location.href,
+        search: window.location.search,
+        hash: window.location.hash
+    });
     
     // Inicializar estado de autenticación
     initAuth();
+    console.log('[Auth Debug] Estado de autenticación inicial:', {
+        token: auth.token ? 'Presente' : 'No presente',
+        usuario: auth.usuario,
+        initialized: auth.initialized
+    });
 
     const token = localStorage.getItem('token');
     if (!token) {
-        console.log('No hay token disponible');
+        console.log('[Auth Debug] No hay token disponible');
         if (!isLoginPage()) {
-            console.log('Redirigiendo a login por falta de token');
-            window.location.href = '/login.html';
+            console.log('[Auth Debug] Redirigiendo a login por falta de token');
+            window.location.replace('/login.html');
         }
         return false;
     }
 
     try {
+        console.log('[Auth Debug] Verificando token con el servidor');
         // Verificar el token con el servidor
         const response = await fetch('/api/usuarios/me', {
             headers: {
@@ -76,27 +92,46 @@ async function verificarAutenticacion() {
         });
 
         if (!response.ok) {
+            console.log('[Auth Debug] Token inválido:', {
+                status: response.status,
+                statusText: response.statusText
+            });
             throw new Error('Token inválido');
         }
 
         const userData = await response.json();
-        console.log('Datos de usuario verificados:', userData);
+        console.log('[Auth Debug] Datos de usuario verificados:', userData);
 
         // Si estamos en la página de login y el token es válido, redirigir al dashboard
         if (isLoginPage()) {
-            console.log('Token válido en página de login, redirigiendo a dashboard');
-            window.location.href = '/index.html';
+            console.log('[Auth Debug] Token válido en página de login, redirigiendo a dashboard');
+            window.location.replace('/index.html');
             return true;
         }
 
+        // Verificar acceso a la página de administración de tienda
+        if (window.location.pathname.includes('/admin/tienda.html')) {
+            console.log('[Auth Debug] Verificando acceso a administración de tienda:', {
+                userType: userData.tipo,
+                isAdmin: userData.tipo === 'ADMIN'
+            });
+            if (userData.tipo !== 'ADMIN') {
+                console.log('[Auth Debug] Usuario no autorizado para acceder a la administración de tienda');
+                window.location.replace('/');
+                return false;
+            }
+        }
+
         // Actualizar la UI con la información del usuario
+        console.log('[Auth Debug] Actualizando UI con datos de usuario');
         actualizarInfoUsuario(userData);
         
-        console.log('Verificación de autenticación exitosa');
+        console.log('[Auth Debug] Verificación de autenticación exitosa');
         return true;
     } catch (error) {
-        console.error('Error en verificación de autenticación:', error);
+        console.error('[Auth Debug] Error en verificación de autenticación:', error);
         if (!isLoginPage()) {
+            console.log('[Auth Debug] Error detectado, ejecutando logout');
             logout();
         }
         return false;
@@ -105,11 +140,16 @@ async function verificarAutenticacion() {
 
 // Función para actualizar la UI con la información del usuario
 function actualizarInfoUsuario(userData) {
-    console.log('Actualizando UI con datos de usuario:', userData);
+    console.log('[Auth Debug] Iniciando actualización de UI:', userData);
     
     const usuarioActual = document.getElementById('usuario-actual');
     const tipoUsuario = document.getElementById('tipo-usuario-actual');
     
+    console.log('[Auth Debug] Elementos encontrados:', {
+        usuarioActual: usuarioActual ? 'Presente' : 'No encontrado',
+        tipoUsuario: tipoUsuario ? 'Presente' : 'No encontrado'
+    });
+
     if (usuarioActual) {
         usuarioActual.textContent = userData.nombre || userData.email;
     }
@@ -119,12 +159,20 @@ function actualizarInfoUsuario(userData) {
 
     // Manejar elementos específicos de administrador
     const adminElements = document.querySelectorAll('.admin-only');
-    console.log('Elementos admin encontrados:', adminElements.length);
-    console.log('Tipo de usuario:', userData.tipo);
+    console.log('[Auth Debug] Elementos admin encontrados:', {
+        cantidad: adminElements.length,
+        tipoUsuario: userData.tipo
+    });
     
-    adminElements.forEach(element => {
+    adminElements.forEach((element, index) => {
+        console.log(`[Auth Debug] Procesando elemento admin #${index}:`, {
+            tagName: element.tagName,
+            classes: element.className,
+            isVisible: window.getComputedStyle(element).display !== 'none'
+        });
+
         if (userData.tipo === 'ADMIN') {
-            console.log('Mostrando elemento admin:', element);
+            console.log(`[Auth Debug] Mostrando elemento admin #${index}`);
             element.style.display = 'block';
             element.classList.remove('d-none');
             
@@ -133,7 +181,7 @@ function actualizarInfoUsuario(userData) {
                 element.style.display = 'list-item';
             }
         } else {
-            console.log('Ocultando elemento admin:', element);
+            console.log(`[Auth Debug] Ocultando elemento admin #${index}`);
             element.style.display = 'none';
             element.classList.add('d-none');
         }
@@ -142,9 +190,14 @@ function actualizarInfoUsuario(userData) {
     // Actualizar el estado global
     auth.usuario = userData;
     auth.initialized = true;
+    console.log('[Auth Debug] Estado global actualizado:', {
+        usuario: auth.usuario,
+        initialized: auth.initialized
+    });
 
     // Guardar en localStorage para persistencia
     localStorage.setItem('usuario', JSON.stringify(userData));
+    console.log('[Auth Debug] Datos guardados en localStorage');
 }
 
 // Función para formatear el rol
@@ -241,6 +294,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Función para obtener información del usuario actual
+function getUserInfo() {
+    try {
+        return JSON.parse(localStorage.getItem('usuario'));
+    } catch (e) {
+        console.error('[Auth Debug] Error al obtener información del usuario:', e);
+        return null;
+    }
+}
+
+// Función para verificar si el usuario es administrador
+function isAdmin() {
+    const user = getUserInfo();
+    return user && user.tipo === 'ADMIN';
+}
+
+// Función para verificar si el usuario está autenticado
+function isAuthenticated() {
+    return !!localStorage.getItem('token');
+}
+
 // Exponer funciones globalmente
 window.auth = auth;
 window.initAuth = initAuth;
+window.verificarAutenticacion = verificarAutenticacion;
+window.getUserInfo = getUserInfo;
+window.isAdmin = isAdmin;
+window.isAuthenticated = isAuthenticated;

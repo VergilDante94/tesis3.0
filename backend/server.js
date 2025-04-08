@@ -6,7 +6,7 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 console.log('Variables de entorno cargadas:', {
     DATABASE_URL: process.env.DATABASE_URL,

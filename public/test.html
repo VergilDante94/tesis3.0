@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico de Servidor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #28a745;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 10px;
+        }
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .test-container {
+            margin: 20px 0;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0069d9;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        #result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Diagnóstico del Servidor</h1>
+    <p class="success">✅ Si puedes ver esta página, el servidor web está funcionando correctamente.</p>
+    
+    <div class="test-container">
+        <h2>Prueba de Conexión a API</h2>
+        <button onclick="testServices()">Probar API de Servicios</button>
+        <button onclick="testAuth()">Probar API de Autenticación</button>
+        <div id="result"></div>
+    </div>
+    
+    <div class="test-container">
+        <h2>Navegación</h2>
+        <p>Intenta acceder a estas páginas:</p>
+        <ul>
+            <li><a href="/login.html">Página de login</a></li>
+            <li><a href="/index.html">Página principal</a></li>
+        </ul>
+    </div>
+    
+    <div class="test-container">
+        <h2>Información de Sistema</h2>
+        <p id="browser-info"></p>
+        <p id="date-info"></p>
+        <p>Puerto actual: <span id="port-info"></span></p>
+    </div>
+
+    <script>
+        // Mostrar información del navegador y fecha
+        document.getElementById('browser-info').textContent = `Navegador: ${navigator.userAgent}`;
+        document.getElementById('date-info').textContent = `Fecha y hora: ${new Date().toLocaleString()}`;
+        document.getElementById('port-info').textContent = window.location.port || '80/443 (default)';
+        
+        // Prueba de API de servicios
+        async function testServices() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Probando conexión a API de servicios...</p>';
+            
+            try {
+                const response = await fetch('/api/servicios');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <p class="success">✅ Conexión exitosa a API de servicios</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <p class="error">❌ Error al conectar a API de servicios</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <p class="error">❌ Error de conexión: ${error.message}</p>
+                `;
+            }
+        }
+        
+        // Prueba de API de autenticación
+        async function testAuth() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Probando conexión a API de autenticación...</p>';
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'test@example.com',
+                        password: 'password123'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <p class="${response.ok ? 'success' : 'error'}">
+                        ${response.ok ? '✅ API de autenticación responde correctamente' : '❌ Error en API de autenticación'}
+                    </p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <p class="error">❌ Error de conexión: ${error.message}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html> 

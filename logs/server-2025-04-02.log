@@ -1,0 +1,12 @@
+[2025-04-02T07:13:46.516Z] [INFO] Módulo servicioRoutes cargado correctamente
+[2025-04-02T07:13:46.533Z] [INFO] Módulo facturaRoutes cargado correctamente
+[2025-04-02T07:13:46.536Z] [SUCCESS] Servidor iniciado en el puerto 3000
+[2025-04-02T07:13:49.392Z] [INFO] GET /api/servicios
+[2025-04-02T07:13:50.099Z] [INFO] GET /api/servicios
+[2025-04-02T07:13:55.958Z] [INFO] POST /api/auth/login
+[2025-04-02T07:13:56.170Z] [INFO] GET /api/usuarios/me
+[2025-04-02T07:13:56.262Z] [INFO] GET /api/servicios
+[2025-04-02T07:13:58.483Z] [INFO] GET /api/servicios
+[2025-04-02T07:14:00.306Z] [INFO] GET /api/ordenes
+[2025-04-02T07:14:09.515Z] [INFO] GET /api/servicios
+[2025-04-02T07:14:10.026Z] [INFO] GET /api/ordenes

@@ -1,0 +1,54 @@
+[2025-04-01T09:11:44.411Z] [INFO] Módulo servicioRoutes cargado correctamente
+[2025-04-01T09:11:44.416Z] [INFO] Módulo facturaRoutes cargado correctamente
+[2025-04-01T09:11:44.419Z] [SUCCESS] Servidor iniciado en el puerto 3000
+[2025-04-01T09:12:33.814Z] [INFO] GET /api/usuarios/me
+[2025-04-01T09:12:33.821Z] [INFO] GET /api/servicios
+[2025-04-01T09:12:33.836Z] [INFO] GET /api/usuarios/me
+[2025-04-01T09:17:47.986Z] [INFO] Módulo servicioRoutes cargado correctamente
+[2025-04-01T09:17:47.989Z] [INFO] Módulo facturaRoutes cargado correctamente
+[2025-04-01T09:17:47.992Z] [SUCCESS] Servidor iniciado en el puerto 3000
+[2025-04-01T09:17:54.843Z] [INFO] GET /test
+[2025-04-01T09:17:54.843Z] [INFO] Accediendo a la ruta de prueba
+[2025-04-01T09:18:29.194Z] [INFO] GET /api/usuarios/me
+[2025-04-01T09:18:29.200Z] [INFO] GET /api/servicios
+[2025-04-01T09:18:29.215Z] [INFO] GET /api/usuarios/me
+[2025-04-01T09:20:20.642Z] [INFO] GET /api/servicios
+[2025-04-01T09:20:21.379Z] [INFO] GET /api/servicios
+[2025-04-01T09:20:22.057Z] [INFO] GET /favicon.ico
+[2025-04-01T09:20:22.058Z] [WARN] Ruta no encontrada: /favicon.ico
+[2025-04-01T09:20:27.753Z] [INFO] POST /api/auth/login
+[2025-04-01T09:20:27.955Z] [INFO] GET /api/usuarios/me
+[2025-04-01T09:20:27.957Z] [INFO] GET /api/servicios
+[2025-04-01T09:20:27.963Z] [INFO] GET /api/usuarios/me
+[2025-04-01T09:22:59.094Z] [INFO] Módulo servicioRoutes cargado correctamente
+[2025-04-01T09:22:59.098Z] [INFO] Módulo facturaRoutes cargado correctamente
+[2025-04-01T09:22:59.102Z] [SUCCESS] Servidor iniciado en el puerto 3000
+[2025-04-01T09:23:40.183Z] [INFO] GET /api/usuarios/me
+[2025-04-01T09:23:40.189Z] [INFO] GET /api/servicios
+[2025-04-01T09:23:40.204Z] [INFO] GET /api/usuarios/me
+[2025-04-01T09:23:59.692Z] [INFO] POST /api/auth/login
+[2025-04-01T09:23:59.877Z] [INFO] GET /api/usuarios/me
+[2025-04-01T09:23:59.879Z] [INFO] GET /api/servicios
+[2025-04-01T09:23:59.886Z] [INFO] GET /api/usuarios/me
+[2025-04-01T09:24:37.612Z] [INFO] POST /api/auth/login
+[2025-04-01T09:24:37.980Z] [INFO] GET /api/usuarios/me
+[2025-04-01T09:24:37.984Z] [INFO] GET /api/servicios
+[2025-04-01T09:24:37.991Z] [INFO] GET /api/usuarios/me
+[2025-04-01T09:29:37.512Z] [INFO] Módulo servicioRoutes cargado correctamente
+[2025-04-01T09:29:37.520Z] [INFO] Módulo facturaRoutes cargado correctamente
+[2025-04-01T09:29:37.524Z] [SUCCESS] Servidor iniciado en el puerto 3000
+[2025-04-01T09:33:25.295Z] [INFO] GET /api/usuarios/me
+[2025-04-01T09:33:25.301Z] [INFO] GET /api/servicios
+[2025-04-01T09:33:25.317Z] [INFO] GET /api/usuarios/me
+[2025-04-01T09:33:39.466Z] [INFO] POST /api/auth/login
+[2025-04-01T09:33:39.611Z] [INFO] GET /api/usuarios/me
+[2025-04-01T09:33:39.692Z] [INFO] GET /api/servicios
+[2025-04-01T09:34:24.061Z] [INFO] GET /api/usuarios/me
+[2025-04-01T09:34:24.063Z] [INFO] GET /api/servicios
+[2025-04-01T09:34:24.067Z] [INFO] GET /api/usuarios/me
+[2025-04-01T09:44:02.306Z] [INFO] Módulo servicioRoutes cargado correctamente
+[2025-04-01T09:44:02.309Z] [INFO] Módulo facturaRoutes cargado correctamente
+[2025-04-01T09:44:02.313Z] [SUCCESS] Servidor iniciado en el puerto 3000
+[2025-04-01T15:45:56.128Z] [INFO] GET /api/usuarios/me
+[2025-04-01T15:45:56.180Z] [INFO] GET /api/servicios
+[2025-04-01T15:45:56.416Z] [INFO] GET /api/usuarios/me

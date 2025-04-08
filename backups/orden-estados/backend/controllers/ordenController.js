@@ -5,7 +5,7 @@ const ordenController = {
     // Crear nueva orden
     async crear(req, res) {
         try {
-            const { clienteId: usuarioId, servicios } = req.body;
+            const { clienteId: usuarioId, servicios, fechaProgramada, descripcion } = req.body;
 
             // Buscar el cliente asociado al usuario
             const cliente = await prisma.cliente.findUnique({
@@ -20,6 +20,8 @@ const ordenController = {
                 data: {
                     clienteId: cliente.id, // Usar el ID real del cliente
                     estado: 'PENDIENTE', // Establecer estado inicial
+                    fechaProgramada: new Date(fechaProgramada), // Usar la fecha programada proporcionada
+                    descripcion: descripcion || '', // Usar la descripción proporcionada o cadena vacía
                     servicios: {
                         create: servicios.map(s => ({
                             servicioId: s.servicioId,

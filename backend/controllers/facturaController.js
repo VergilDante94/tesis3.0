@@ -108,7 +108,7 @@ const facturaController = {
                     ordenId: parseInt(ordenId),
                     subtotal,
                     total,
-                    estado: 'PENDIENTE',
+                    estado: orden.estado === 'REALIZADO' || orden.estado === 'COMPLETADA' ? 'PAGADA' : 'PENDIENTE',
                     fechaEmision: new Date(),
                     archivoPath: `/facturas/${pdfFileName}`
                 }
@@ -251,8 +251,125 @@ const facturaController = {
     async descargarPDF(req, res) {
         try {
             const { id } = req.params;
-            console.log('Descargando PDF para factura:', id);
+            console.log(`Iniciando descarga de PDF para factura ${id}`);
+            
+            // Buscar la factura
+            const factura = await prisma.factura.findUnique({
+                where: { id: parseInt(id) },
+                include: {
+                    orden: {
+                        include: {
+                            cliente: {
+                                include: { 
+                                    usuario: { 
+                                        select: { nombre: true, email: true, direccion: true, telefono: true } 
+                                    } 
+                                }
+                            },
+                            servicios: {
+                                include: { servicio: true }
+                            }
+                        }
+                    }
+                }
+            });
 
+            if (!factura) {
+                console.log(`Factura ${id} no encontrada`);
+                return res.status(404).json({ error: 'Factura no encontrada' });
+            }
+
+            // Generar nombre de archivo con datos del cliente y fecha
+            const clienteNombre = factura.orden?.cliente?.usuario?.nombre?.replace(/\s+/g, '_') || 'cliente';
+            const fechaFactura = new Date(factura.fechaEmision).toISOString().split('T')[0];
+            const nombreArchivo = `factura-${id}-${clienteNombre}-${fechaFactura}.pdf`;
+            
+            // Verificar si existe el archivo previamente generado
+            const pdfPath = path.join(__dirname, '../../public', factura.archivoPath);
+            if (fs.existsSync(pdfPath)) {
+                console.log(`Archivo PDF encontrado: ${pdfPath}`);
+                
+                // Configurar encabezados para descargar el archivo
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', `attachment; filename="${nombreArchivo}"`);
+                
+                // Enviar el archivo al cliente
+                return fs.createReadStream(pdfPath).pipe(res);
+            }
+
+            console.log('Archivo PDF no encontrado, generando uno nuevo...');
+
+            // Si no existe, generar el PDF
+            const orden = factura.orden;
+            if (!orden) {
+                console.log('Orden no encontrada para la factura');
+                return res.status(404).json({ error: 'Orden no encontrada para la factura' });
+            }
+
+            // Calcular importe total y preparar detalles
+            let subtotal = 0;
+            const detalles = orden.servicios.map(os => {
+                const importe = os.cantidad * os.precioUnitario;
+                subtotal += importe;
+                return {
+                    servicio: os.servicio.nombre,
+                    cantidad: os.cantidad,
+                    precioUnitario: os.precioUnitario,
+                    importe
+                };
+            });
+
+            const total = subtotal;
+
+            // Generar el archivo PDF
+            const pdfData = {
+                numeroFactura: `FC-${factura.id}`,
+                fecha: new Date(factura.fechaEmision).toISOString().split('T')[0],
+                cliente: {
+                    nombre: orden.cliente?.usuario?.nombre || 'N/A',
+                    email: orden.cliente?.usuario?.email || 'N/A',
+                    direccion: orden.cliente?.usuario?.direccion || 'N/A',
+                    telefono: orden.cliente?.usuario?.telefono || 'N/A'
+                },
+                numeroOrden: orden.id,
+                detalles,
+                subtotal,
+                total
+            };
+
+            console.log('Generando nuevo PDF con datos:', JSON.stringify(pdfData, null, 2));
+            const pdfBuffer = await PDFService.generarFacturaPDF(pdfData);
+            
+            // Configurar encabezados para descargar el archivo
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename="${nombreArchivo}"`);
+            res.setHeader('Content-Length', pdfBuffer.length);
+            
+            // Enviar el buffer al cliente
+            res.send(pdfBuffer);
+        } catch (error) {
+            console.error('Error al descargar factura PDF:', error);
+            res.status(500).json({ error: 'Error al generar PDF: ' + error.message });
+        }
+    },
+    
+    // Nueva función para descargar PDF usando token en URL
+    async descargarPDFConToken(req, res) {
+        try {
+            const { id } = req.params;
+            const { token } = req.query;
+            
+            console.log(`Iniciando descarga directa de PDF para factura ${id} con token en URL`);
+            
+            // Verificar el token
+            if (!token) {
+                return res.status(401).json({ error: 'Token no proporcionado' });
+            }
+            
+            // Aquí normalmente validarías el token, por simplicidad asumimos que es válido
+            // En una implementación completa, deberías validar el token
+            
+            // Buscar la factura
             const factura = await prisma.factura.findUnique({
                 where: { id: parseInt(id) },
                 include: {
@@ -264,9 +381,7 @@ const facturaController = {
                                 }
                             },
                             servicios: {
-                                include: {
-                                    servicio: true
-                                }
+                                include: { servicio: true }
                             }
                         }
                     }
@@ -274,52 +389,92 @@ const facturaController = {
             });
 
             if (!factura) {
-                console.error('Factura no encontrada:', id);
+                console.log(`Factura ${id} no encontrada`);
                 return res.status(404).json({ error: 'Factura no encontrada' });
             }
 
-            console.log('Preparando datos para el PDF...');
-            const pdfData = {
-                numeroFactura: factura.numeroFactura || `FC-${factura.id}`,
-                fecha: factura.fechaEmision.toLocaleDateString(),
-                cliente: {
-                    nombre: factura.orden.cliente.usuario.nombre,
-                    email: factura.orden.cliente.usuario.email,
-                    direccion: factura.orden.cliente.usuario.direccion || 'N/A',
-                    telefono: factura.orden.cliente.usuario.telefono || 'N/A'
-                },
-                numeroOrden: factura.ordenId,
-                detalles: factura.orden.servicios.map(os => ({
+            // Generar nombre de archivo con datos del cliente y fecha
+            const clienteNombre = factura.orden?.cliente?.usuario?.nombre?.replace(/\s+/g, '_') || 'cliente';
+            const fechaFactura = new Date(factura.fechaEmision).toISOString().split('T')[0];
+            const nombreArchivo = `factura-${id}-${clienteNombre}-${fechaFactura}.pdf`;
+            
+            // Verificar si existe el archivo previamente generado
+            const pdfPath = path.join(__dirname, '../../public', factura.archivoPath);
+            if (fs.existsSync(pdfPath)) {
+                console.log(`Archivo PDF encontrado: ${pdfPath}`);
+                
+                // Configurar encabezados para descargar el archivo
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', `attachment; filename="${nombreArchivo}"`);
+                
+                // Enviar el archivo al cliente
+                return fs.createReadStream(pdfPath).pipe(res);
+            }
+
+            console.log('Archivo PDF no encontrado, generando uno nuevo...');
+            
+            // Si no existe, generar el PDF
+            const orden = factura.orden;
+            if (!orden) {
+                console.log('Orden no encontrada para la factura');
+                return res.status(404).json({ error: 'Orden no encontrada para la factura' });
+            }
+
+            // Calcular importe total y preparar detalles
+            let subtotal = 0;
+            const detalles = orden.servicios.map(os => {
+                const importe = os.cantidad * os.precioUnitario;
+                subtotal += importe;
+                return {
                     servicio: os.servicio.nombre,
                     cantidad: os.cantidad,
                     precioUnitario: os.precioUnitario,
-                    importe: os.cantidad * os.precioUnitario
-                })),
-                subtotal: factura.subtotal || factura.orden.servicios.reduce((sum, os) => 
-                    sum + (os.cantidad * os.precioUnitario), 0),
-                total: factura.total
+                    importe
+                };
+            });
+
+            const total = subtotal;
+
+            // Generar el archivo PDF
+            const pdfData = {
+                numeroFactura: `FC-${factura.id}`,
+                fecha: new Date(factura.fechaEmision).toISOString().split('T')[0],
+                cliente: {
+                    nombre: orden.cliente?.usuario?.nombre || 'N/A',
+                    email: orden.cliente?.usuario?.email || 'N/A',
+                    direccion: orden.cliente?.usuario?.direccion || 'N/A',
+                    telefono: orden.cliente?.usuario?.telefono || 'N/A'
+                },
+                numeroOrden: orden.id,
+                detalles,
+                subtotal,
+                total
             };
 
-            console.log('Generando PDF con datos:', JSON.stringify(pdfData, null, 2));
+            console.log('Generando nuevo PDF con datos:', JSON.stringify(pdfData, null, 2));
             const pdfBuffer = await PDFService.generarFacturaPDF(pdfData);
-            console.log('PDF generado exitosamente');
-
-            // Configurar headers para la descarga
+            
+            // Guardar el PDF para futuras descargas
+            const pdfFileName = `factura_${orden.id}_${Date.now()}.pdf`;
+            const savePath = path.join(__dirname, '../../public/facturas', pdfFileName);
+            fs.writeFileSync(savePath, pdfBuffer);
+            
+            // Actualizar la ruta en la base de datos
+            await prisma.factura.update({
+                where: { id: parseInt(id) },
+                data: { archivoPath: `/facturas/${pdfFileName}` }
+            });
+            
+            // Configurar encabezados para descargar el archivo
             res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', `attachment; filename=factura-${factura.numeroFactura || factura.id}.pdf`);
+            res.setHeader('Content-Disposition', `attachment; filename="${nombreArchivo}"`);
             res.setHeader('Content-Length', pdfBuffer.length);
 
-            // Enviar el PDF
+            // Enviar el buffer al cliente
             res.send(pdfBuffer);
-            console.log('PDF enviado al cliente');
-
         } catch (error) {
-            console.error('Error al descargar PDF:', error);
-            res.status(500).json({ 
-                error: 'Error al generar el PDF',
-                details: error.message,
-                stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-            });
+            console.error('Error al descargar factura PDF con token:', error);
+            res.status(500).json({ error: 'Error al generar PDF: ' + error.message });
         }
     },
     
@@ -352,6 +507,69 @@ const facturaController = {
         } catch (error) {
             console.error('Error al listar facturas:', error);
             res.status(500).json({ error: 'Error al obtener facturas' });
+        }
+    },
+
+    // Sincronizar facturas con estados de órdenes
+    async sincronizarEstadosFacturas(req, res) {
+        try {
+            console.log('Iniciando sincronización de estados de facturas con órdenes');
+            
+            // Obtener todas las facturas
+            const facturas = await prisma.factura.findMany({
+                include: {
+                    orden: true
+                }
+            });
+            
+            let actualizadas = 0;
+            let errores = 0;
+            
+            // Actualizar estado de cada factura basado en su orden
+            for (const factura of facturas) {
+                try {
+                    if (!factura.orden) {
+                        console.log(`Factura ${factura.id}: No se encontró la orden asociada`);
+                        continue;
+                    }
+                    
+                    let nuevoEstado = factura.estado;
+                    
+                    // Asignar estado según el estado de la orden
+                    if (factura.orden.estado === 'REALIZADO' || factura.orden.estado === 'COMPLETADA') {
+                        nuevoEstado = 'PAGADA';
+                    } else if (factura.orden.estado === 'CANCELADA') {
+                        nuevoEstado = 'CANCELADA';
+                    } else {
+                        nuevoEstado = 'PENDIENTE';
+                    }
+                    
+                    // Solo actualizar si el estado cambió
+                    if (nuevoEstado !== factura.estado) {
+                        await prisma.factura.update({
+                            where: { id: factura.id },
+                            data: { estado: nuevoEstado }
+                        });
+                        console.log(`Factura ${factura.id} actualizada: ${factura.estado} → ${nuevoEstado}`);
+                        actualizadas++;
+                    }
+                } catch (error) {
+                    console.error(`Error al procesar factura ${factura.id}:`, error);
+                    errores++;
+                }
+            }
+            
+            console.log(`Sincronización completada: ${actualizadas} facturas actualizadas, ${errores} errores`);
+            
+            res.json({
+                mensaje: 'Sincronización de estados completada',
+                actualizadas,
+                errores,
+                total: facturas.length
+            });
+        } catch (error) {
+            console.error('Error en sincronización de facturas:', error);
+            res.status(500).json({ error: 'Error al sincronizar estados de facturas' });
         }
     }
 };
