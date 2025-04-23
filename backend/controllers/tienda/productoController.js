@@ -189,7 +189,8 @@ const actualizarProducto = async (req, res) => {
         // Verificar si el producto existe
         console.log('Verificando existencia del producto...');
         const productoExistente = await prisma.producto.findUnique({
-            where: { id: parseInt(id) }
+            where: { id: parseInt(id) },
+            include: { stock: true }
         });
 
         if (!productoExistente) {
@@ -210,27 +211,62 @@ const actualizarProducto = async (req, res) => {
             }
         }
 
-        // Preparar datos de actualización
+        // Extraer cantidad para actualizar stock por separado
+        const cantidad = req.body.cantidad ? parseInt(req.body.cantidad) : undefined;
+        
+        // Preparar datos de actualización para el producto (excluyendo cantidad)
+        const { cantidad: _, ...datosProducto } = req.body;
+        
         const datosActualizacion = {
-            ...req.body,
-            precio: req.body.precio ? parseFloat(req.body.precio) : undefined,
-            categoriaId: req.body.categoriaId ? parseInt(req.body.categoriaId) : undefined,
+            ...datosProducto,
+            precio: datosProducto.precio ? parseFloat(datosProducto.precio) : undefined,
+            categoriaId: datosProducto.categoriaId ? parseInt(datosProducto.categoriaId) : undefined,
             imagen: req.file ? req.file.filename : undefined
         };
 
         console.log('Actualizando producto con datos:', datosActualizacion);
-        const producto = await prisma.producto.update({
-            where: { id: parseInt(id) },
-            data: datosActualizacion
+        
+        // Usar transacción para actualizar producto y stock de manera atómica
+        const resultado = await prisma.$transaction(async (tx) => {
+            // 1. Actualizar el producto
+            const productoActualizado = await tx.producto.update({
+                where: { id: parseInt(id) },
+                data: datosActualizacion,
+                include: { stock: true }
+            });
+            
+            // 2. Actualizar el stock si se proporcionó cantidad
+            if (cantidad !== undefined) {
+                console.log(`Actualizando stock para producto ID ${id} con cantidad: ${cantidad}`);
+                
+                if (productoExistente.stock) {
+                    // Actualizar stock existente
+                    await tx.stock.update({
+                        where: { productoId: parseInt(id) },
+                        data: { cantidad }
+                    });
+                } else {
+                    // Crear stock si no existe
+                    await tx.stock.create({
+                        data: {
+                            productoId: parseInt(id),
+                            cantidad
+                        }
+                    });
+                }
+            }
+            
+            return productoActualizado;
         });
 
         console.log('Producto actualizado exitosamente:', {
-            id: producto.id,
-            nombre: producto.nombre,
-            categoria: producto.categoriaId
+            id: resultado.id,
+            nombre: resultado.nombre,
+            categoria: resultado.categoriaId,
+            stock: resultado.stock?.cantidad
         });
 
-        res.json(producto);
+        res.json(resultado);
     } catch (error) {
         console.error('Error al actualizar producto:', error);
         res.status(500).json({ error: 'Error al actualizar el producto' });

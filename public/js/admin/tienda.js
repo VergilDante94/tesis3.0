@@ -341,7 +341,10 @@ async function manejarEnvioProducto(event) {
         // Convertir precio y stock a números
         const precio = parseFloat(formData.get('precio'));
         const cantidad = parseInt(formData.get('stock'));
-        const categoriaId = parseInt(formData.get('categoriaId'));
+        
+        // Obtener categoriaId y asegurarse de que sea un número
+        let categoriaId = formData.get('categoria');
+        categoriaId = categoriaId ? parseInt(categoriaId) : null;
         
         // Validar que los valores sean números válidos
         if (isNaN(precio) || precio < 0) {
@@ -350,7 +353,10 @@ async function manejarEnvioProducto(event) {
         if (isNaN(cantidad) || cantidad < 0) {
             throw new Error('El stock debe ser un número válido mayor o igual a 0');
         }
-        if (isNaN(categoriaId)) {
+        
+        // Si estamos creando un nuevo producto, validar la categoría
+        // Si estamos editando, hacerla opcional para permitir actualizaciones parciales
+        if (!editandoProducto && (!categoriaId || isNaN(categoriaId))) {
             throw new Error('Debe seleccionar una categoría válida');
         }
 
@@ -374,7 +380,11 @@ async function manejarEnvioProducto(event) {
         nuevoFormData.append('descripcion', formData.get('descripcion'));
         nuevoFormData.append('precio', precio);
         nuevoFormData.append('cantidad', cantidad);
-        nuevoFormData.append('categoriaId', categoriaId);
+        
+        // Solo añadir categoriaId si existe
+        if (categoriaId) {
+            nuevoFormData.append('categoriaId', categoriaId);
+        }
         
         // Solo añadir la imagen si existe
         const imagen = formData.get('imagen');
@@ -401,6 +411,7 @@ async function manejarEnvioProducto(event) {
 
         if (!response.ok) {
             const data = await response.json();
+            console.error('[Admin Tienda] Error en respuesta del servidor:', data);
             throw new Error(data.error || 'Error al guardar producto');
         }
         

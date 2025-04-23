@@ -26,18 +26,12 @@ function mostrarVistaOrdenes() {
         btnAplicarFiltros.addEventListener('click', aplicarFiltros);
     }
     
-    // Inicializar evento para boton de nueva orden
+    // Verificar que el botón de nueva orden esté conectado a la función correcta
     const btnNuevaOrden = document.querySelector('button[onclick="nuevaOrden()"]');
-    if (btnNuevaOrden) {
-        btnNuevaOrden.onclick = function() {
-            const nuevaOrdenForm = document.getElementById('nuevaOrdenForm');
-            const listaOrdenes = document.getElementById('listaOrdenes');
-            
-            if (nuevaOrdenForm && listaOrdenes) {
-                nuevaOrdenForm.style.display = 'block';
-                listaOrdenes.style.display = 'none';
-            }
-        };
+    if (btnNuevaOrden && !btnNuevaOrden.onclick) {
+        // Solo asignar si no tiene un manejador ya configurado
+        console.log('Configurando evento para botón de nueva orden');
+        btnNuevaOrden.onclick = nuevaOrden;
     }
     
     // Cargar las órdenes
@@ -247,7 +241,7 @@ async function mostrarListaOrdenes(filtros = {}) {
                 } else if (orden.descripcion) {
                     // Intentar extraer información de la descripción si no hay detalles
                     try {
-                        // Primero intentamos extraer con el formato específico "Nx Producto"
+                        // Intentamos extraer con el formato específico "Nx Producto"
                         const productosRegex = /(\d+)x\s+([^,\n:]+)/g;
                         let match;
                         const productosEncontrados = [];
@@ -260,46 +254,10 @@ async function mostrarListaOrdenes(filtros = {}) {
                         if (productosEncontrados.length > 0) {
                             detallesTexto = productosEncontrados.join(', ');
     } else {
-                            // Buscar productos específicos por nombres conocidos
-                            const nombreProductosComunes = [
-                                'Producto #1', 'Producto #2', 'Producto #3', 
-                                'Laptop', 'Monitor', 'Teclado', 'Mouse', 'Impresora',
-                                'Seagate BarraCuda', 'Teclado retroiluminado'
-                            ];
-                            const productosEncontrados = [];
-                            
-                            const mapeoProductos = {
-                                'Producto #1': {nombre: 'Monitor', precio: 100.00},
-                                'Producto #2': {nombre: 'Teclado', precio: 25.00},
-                                'Producto #3': {nombre: 'Mouse', precio: 15.00},
-                                'Seagate BarraCuda': {nombre: 'Seagate BarraCuda - Disco duro interno de 2 TB', precio: 15.00},
-                                'Teclado retroiluminado': {nombre: 'Teclado retroiluminado de impresión grande', precio: 15.00}
-                            };
-                            
-                            for (const producto of nombreProductosComunes) {
-                                if (orden.descripcion.includes(producto)) {
-                                    // Buscar si hay un número antes del nombre del producto (cantidad)
-                                    const cantidadRegex = new RegExp(`(\\d+)\\s*(?:x\\s*)?${producto}`, 'i');
-                                    const cantidadMatch = orden.descripcion.match(cantidadRegex);
-                                    
-                                    // Usar el nombre mapeado si existe, de lo contrario usar el nombre original
-                                    const nombreProducto = mapeoProductos[producto]?.nombre || producto;
-                                    
-                                    if (cantidadMatch && cantidadMatch[1]) {
-                                        productosEncontrados.push(`${nombreProducto} (${cantidadMatch[1]})`);
-                } else {
-                                        productosEncontrados.push(nombreProducto);
-                                    }
-                                }
-                            }
-                            
-                            if (productosEncontrados.length > 0) {
-                                detallesTexto = productosEncontrados.join(', ');
-                            } else {
-                                // Si no se encontraron productos, usar descripción directamente
+                            // Si no se encontraron productos con el formato específico,
+                            // usar la descripción directamente
                                 const descripcionLimpia = orden.descripcion.replace('Compra de productos:', '').trim();
                                 detallesTexto = descripcionLimpia || 'Productos no especificados';
-                            }
                         }
                     } catch (error) {
                         console.error("Error al extraer productos de la descripción:", error);
@@ -318,42 +276,13 @@ async function mostrarListaOrdenes(filtros = {}) {
                 ? new Date(orden.fechaProgramada || orden.fecha).toLocaleDateString() 
                 : 'Sin fecha registrada';
             
-            // Formatear total para órdenes específicas o calcular según datos disponibles
-            let totalFormateado;
-            
-            // Intentar obtener precios reales para las órdenes con productos específicos
-            if (orden.id === 23 || orden.id === 24 || 
-                (orden.descripcion && 
-                (orden.descripcion.includes('Seagate BarraCuda') || 
-                 orden.descripcion.includes('Teclado retroiluminado')))) {
-                
-                // Establecer valores fijos para estos productos
-                const precioDiscoDuro = 60.00;
-                const precioTeclado = 25.00;
-                
-                // Asignar precios según el tipo de orden
-                let totalCalculado = 0;
-                
-                if (orden.id === 23 || orden.descripcion?.includes('Seagate BarraCuda')) {
-                    totalCalculado += precioDiscoDuro;
-                }
-                
-                if (orden.id === 24 || orden.descripcion?.includes('Teclado retroiluminado')) {
-                    totalCalculado += precioTeclado;
-                }
-                
-                totalFormateado = `$${totalCalculado.toFixed(2)}`;
-            } else {
-                // Calcular el total para otras órdenes
-                const total = orden.total || orden.precios?.total || 
-                            (orden.descripcion && orden.descripcion.includes('Producto #2') ? 25.00 : 0);
-                            
-                totalFormateado = total.toLocaleString('es-ES', { 
+            // Formatear total
+            const total = orden.total || orden.precios?.total || 0;
+            const totalFormateado = total.toLocaleString('es-ES', { 
                     style: 'currency', 
                     currency: 'USD',
                     minimumFractionDigits: 2 
                 }).replace('US$', '$');
-            }
             
                 return `
             <div class="card mb-3" data-orden-id="${orden.id}">
@@ -548,30 +477,6 @@ async function mostrarDetalleOrden(ordenId) {
             } else {
                 console.log('No se encontraron detalles de productos estructurados');
             }
-            
-            // Log para productos específicos
-            if ([23, 24].includes(detalle.id) || 
-                (detalle.descripcion && 
-                (detalle.descripcion.includes('Seagate BarraCuda') || 
-                 detalle.descripcion.includes('Teclado retroiluminado')))) {
-                console.log('=== Procesando productos específicos ===');
-                console.log('Intentando obtener productos de la tienda...');
-                
-                try {
-                    const productosResponse = await fetch('/api/tienda/productos', {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    
-                    if (productosResponse.ok) {
-                        const productos = await productosResponse.json();
-                        console.log('Productos obtenidos de la tienda:', productos);
-                    } else {
-                        console.error('Error al obtener productos de la tienda:', productosResponse.status);
-                    }
-                } catch (error) {
-                    console.error('Error al consultar productos:', error);
-                }
-            }
         }
 
         // Log para el cálculo de totales
@@ -604,18 +509,6 @@ async function mostrarDetalleOrden(ordenId) {
         const esCompra = detalle.tipo === 'COMPRA';
         console.log('Es orden de compra:', esCompra);
         
-        // Calcular el precio para producto #2 si es necesario
-        let precioProducto2 = 0;
-        if (esCompra && detalle.descripcion && detalle.descripcion.includes('Producto #2')) {
-            let cantidad = 1;
-            const cantidadMatch = detalle.descripcion.match(/(\d+)x\s+Producto #2/);
-            if (cantidadMatch && cantidadMatch[1]) {
-                cantidad = parseInt(cantidadMatch[1]);
-            }
-            precioProducto2 = 25.00 * cantidad;
-            console.log('Precio calculado para Producto #2:', precioProducto2);
-        }
-        
         // Formatear total
         const totalFormateado = total.toLocaleString('es-ES', { 
             style: 'currency', 
@@ -629,21 +522,7 @@ async function mostrarDetalleOrden(ordenId) {
         
         if (esCompra) {
             if (detalle.descripcion) {
-                // Mapeo de nombres de productos en la descripción
-                let descripcionFormateada = detalle.descripcion;
-                const mapeoProductos = {
-                    'Producto #1': 'Monitor',
-                    'Producto #2': 'Teclado',
-                    'Producto #3': 'Mouse'
-                };
-                
-                Object.entries(mapeoProductos).forEach(([clave, valor]) => {
-                    if (descripcionFormateada.includes(clave)) {
-                        descripcionFormateada = descripcionFormateada.replace(clave, valor);
-                    }
-                });
-                
-                descripcionDetalle = descripcionFormateada;
+                descripcionDetalle = detalle.descripcion;
             } else if (detalle.detalles && detalle.detalles.length > 0) {
                 const productosStr = detalle.detalles.map(item => 
                     `${item.cantidad}x ${item.producto?.nombre || item.productoNombre || 'Producto'}`
@@ -665,54 +544,28 @@ async function mostrarDetalleOrden(ordenId) {
             }
         }
         
-        // Si es un formato no estructurado con "Producto #2", cambiar la visualización a formato tabular
+        // Generar la tabla de productos/servicios
         let productoTabla = '';
         if (esCompra) {
-            if (detalle.descripcion && detalle.descripcion.includes('Producto #2') && !detalle.detalles) {
-                // Extraer cantidad si existe
-                let cantidad = 1;  // Por defecto
-                const cantidadMatch = detalle.descripcion.match(/(\d+)x\s+Producto #2/);
-                if (cantidadMatch && cantidadMatch[1]) {
-                    cantidad = parseInt(cantidadMatch[1]);
-                }
-                
-                // Formato tabla para mostrar el producto específico y su precio
+            // Lógica para generar tabla de productos...
+            productoTabla = await generarTablaProductos(detalle);
+        } else {
+            // Lógica para generar tabla de servicios...
+            if (detalle.servicios && detalle.servicios.length > 0) {
                 productoTabla = `<table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Producto</th>
-                            <th class="text-center">Cantidad</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Teclado</strong></td>
-                            <td class="text-center">${cantidad}</td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="1" class="text-end"><strong>Total:</strong></td>
-                            <td class="text-end"><strong>$${(25.00 * cantidad).toFixed(2)}</strong></td>
-                        </tr>
-                    </tfoot>
-                </table>`;
-            } else if (detalle.detalles && detalle.detalles.length > 0) {
-                // Para compras con detalles estructurados, mostrar tabla
-                productoTabla = `<table class="table table-striped" id="tablaProductos">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
+                            <th>Servicio</th>
                             <th>Descripción</th>
                             <th class="text-center">Cantidad</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${detalle.detalles.map(item => `
-                            <tr data-producto-id="${item.productoId || ''}">
-                                <td>${item.producto?.nombre || item.productoNombre || 'Cargando...'}</td>
-                                <td>${item.descripcion || ''}</td>
-                                <td class="text-center">${item.cantidad}</td>
+                        ${detalle.servicios.map(item => `
+                            <tr>
+                                <td>${item.servicio?.nombre || 'Servicio sin nombre'}</td>
+                                <td>${item.descripcion || 'Instalacion de Equipos 5514'}</td>
+                                <td class="text-center">${item.cantidad || 1}</td>
                             </tr>
                         `).join('')}
                     </tbody>
@@ -724,289 +577,15 @@ async function mostrarDetalleOrden(ordenId) {
                     </tfoot>
                 </table>`;
             } else {
-                // Para cualquier otra compra sin detalles estructurados, mostrar tabla genérica
-                // Extraer productos de la descripción si es posible
-                let productos = [];
-                
-                if (detalle.descripcion) {
-                    // Intentar extraer con regexes
-                    const productosRegex = /(\d+)x\s+([^,\n:]+)/g;
-                    let match;
-                    
-                    while ((match = productosRegex.exec(detalle.descripcion)) !== null) {
-                        productos.push({
-                            nombre: match[2].trim(),
-                            cantidad: parseInt(match[1]),
-                            precio: 15.00 // Precio predeterminado
-                        });
-                    }
-                    
-                    // Si no se encontraron productos con el formato anterior
-                    if (productos.length === 0) {
-                        // Verificar si hay productos conocidos mencionados
-                        const nombreProductosComunes = [
-                            'Producto #1', 'Producto #2', 'Producto #3', 
-                            'Laptop', 'Monitor', 'Teclado', 'Mouse', 'Impresora',
-                            'Seagate BarraCuda', 'Teclado retroiluminado'
-                        ];
-                        const productosEncontrados = [];
-                        
-                        const mapeoProductos = {
-                            'Producto #1': {nombre: 'Monitor', precio: 100.00},
-                            'Producto #2': {nombre: 'Teclado', precio: 25.00},
-                            'Producto #3': {nombre: 'Mouse', precio: 15.00},
-                            'Seagate BarraCuda': {nombre: 'Seagate BarraCuda - Disco duro interno de 2 TB', precio: 15.00},
-                            'Teclado retroiluminado': {nombre: 'Teclado retroiluminado de impresión grande', precio: 15.00}
-                        };
-                        
-                        for (const producto of nombreProductosComunes) {
-                            if (detalle.descripcion.includes(producto)) {
-                                const cantidadRegex = new RegExp(`(\\d+)\\s*(?:x\\s*)?${producto}`, 'i');
-                                const cantidadMatch = detalle.descripcion.match(cantidadRegex);
-                                const cantidad = cantidadMatch && cantidadMatch[1] ? parseInt(cantidadMatch[1]) : 1;
-                                
-                                const productoInfo = mapeoProductos[producto] || {
-                                    nombre: producto,
-                                    precio: 15.00
-                                };
-                                
-                                productos.push({
-                                    nombre: productoInfo.nombre,
-                                    cantidad: cantidad,
-                                    precio: productoInfo.precio
-                                });
-                            }
-                        }
-                        
-                        // Si aún no hay productos, crear uno genérico basado en la descripción
-                        if (productos.length === 0) {
-                            productos.push({
-                                nombre: 'Producto',
-                                cantidad: 1,
-                                precio: total || 15.00
-                            });
-                        }
-                    }
-                } else {
-                    // Si no hay descripción, agregar un producto genérico
-                    productos.push({
-                        nombre: 'Producto no especificado',
-                        cantidad: 1,
-                        precio: total || 15.00
-                    });
-                }
-                
-                // Generar filas para la tabla
-                const filas = productos.map(prod => {
-                    const subtotal = prod.precio * prod.cantidad;
-                    return `
-                        <tr>
-                            <td><strong>${prod.nombre}</strong></td>
-                            <td class="text-center">${prod.cantidad}</td>
-                        </tr>
-                    `;
-                }).join('');
-                
-                // Calcular el total basado en los productos
-                let totalCalculado = productos.reduce((sum, prod) => sum + (prod.precio * prod.cantidad), 0);
-                // Si hay un total especificado en la orden, usarlo en lugar del calculado
-                if (total && total > 0) {
-                    totalCalculado = total;
-                }
-                
-                productoTabla = `<table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th class="text-center">Cantidad</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${filas}
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="1" class="text-end"><strong>Total:</strong></td>
-                            <td class="text-end"><strong>$${totalCalculado.toFixed(2)}</strong></td>
-                        </tr>
-                    </tfoot>
-                </table>`;
+                productoTabla = `<div class="bg-light p-3" style="border-radius: 5px;">
+                    <div class="row">
+                        <div class="col">
+                            <p class="mb-1"><i class="fas fa-info-circle me-2 text-info"></i><strong>Descripción:</strong> ${descripcionDetalle}</p>
+                            <p class="mb-0"><i class="fas fa-dollar-sign me-2 text-success"></i><strong>Total:</strong> ${totalFormateado}</p>
+                        </div>
+                    </div>
+                </div>`;
             }
-        }
-        
-        // Caso especial para ordenes específicas que sabemos que contienen productos conocidos
-        if ([23, 24].includes(detalle.id) || 
-            (detalle.descripcion && (detalle.descripcion.includes('Seagate BarraCuda') || 
-            detalle.descripcion.includes('Teclado retroiluminado')))) {
-            
-            // Crear la información de productos según el ID o descripción
-            const productosInfo = [];
-            
-            // Obtener los productos de la base de datos
-            const productosPromesas = [];
-            
-            if (detalle.id === 23 || detalle.descripcion?.includes('Seagate BarraCuda')) {
-                productosPromesas.push(
-                    fetch('/api/tienda/productos?nombre=Seagate', {
-                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                    }).then(r => r.json())
-                );
-            }
-            
-            if (detalle.id === 24 || detalle.descripcion?.includes('Teclado retroiluminado')) {
-                productosPromesas.push(
-                    fetch('/api/tienda/productos?nombre=Teclado', {
-                        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                    }).then(r => r.json())
-                );
-            }
-            
-            try {
-                const resultados = await Promise.all(productosPromesas);
-                for (const productos of resultados) {
-                    if (Array.isArray(productos) && productos.length > 0) {
-                        const producto = productos[0];
-                        productosInfo.push({
-                            nombre: producto.nombre,
-                            precio: producto.precio,
-                            cantidad: 1
-                        });
-                    }
-                }
-                
-                // Si no se encontraron productos, usar valores por defecto
-                if (productosInfo.length === 0) {
-                    if (detalle.id === 23 || detalle.descripcion?.includes('Seagate BarraCuda')) {
-                        productosInfo.push({
-                            nombre: 'Seagate BarraCuda - Disco duro interno de 2 TB',
-                            precio: 60.00,
-                            cantidad: 1
-                        });
-                    }
-                    if (detalle.id === 24 || detalle.descripcion?.includes('Teclado retroiluminado')) {
-                        productosInfo.push({
-                            nombre: 'Teclado retroiluminado de impresión grande',
-                            precio: 25.00,
-                            cantidad: 1
-                        });
-                    }
-                }
-                
-                // Calcular total
-                const totalCalculado = productosInfo.reduce((sum, prod) => sum + (prod.precio * prod.cantidad), 0);
-                
-                // Actualizar la tabla de productos en el modal
-                const detalleOrdenContainer = document.getElementById('detalleOrdenContainer');
-                if (detalleOrdenContainer) {
-                    // Actualizar/crear tabla de productos
-                    const tablaHTML = `
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Producto</th>
-                                <th class="text-center">Cantidad</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${productosInfo.map(prod => `
-                                <tr>
-                                    <td><strong>${prod.nombre}</strong></td>
-                                    <td class="text-center">${prod.cantidad}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="1" class="text-end"><strong>Total:</strong></td>
-                                <td class="text-end"><strong>$${totalCalculado.toFixed(2)}</strong></td>
-                            </tr>
-                        </tfoot>
-                    </table>`;
-                    
-                    // Actualizar la sección de detalle con la tabla
-                    const detalleSeccion = detalleOrdenContainer.querySelector('.mb-3');
-                    if (detalleSeccion) {
-                        detalleSeccion.innerHTML = `<h6 class="mb-3">Detalle de Productos:</h6>${tablaHTML}`;
-                    }
-                    
-                    // Actualizar el total en verde
-                    const totalPie = detalleOrdenContainer.querySelector('.border-top h5.text-success');
-                    if (totalPie) {
-                        totalPie.textContent = `Total: $${totalCalculado.toFixed(2)}`;
-                    }
-                }
-            } catch (error) {
-                console.error('Error al obtener productos:', error);
-            }
-        } else {
-            // Para todas las demás órdenes, el código existente para calcular el total
-            setTimeout(() => {
-                try {
-                    // Buscar el total en la tabla
-                    const totalEnTabla = document.querySelector('#detalleOrdenContainer table tfoot strong');
-                    if (totalEnTabla) {
-                        const totalTexto = totalEnTabla.textContent;
-                        console.log('Total en tabla encontrado:', totalTexto);
-                        
-                        // Extraer el valor numérico con diferentes formatos posibles
-                        const valorMatchDolar = totalTexto.match(/\$\s*(\d+(?:\.\d+)?)/);
-                        if (valorMatchDolar && valorMatchDolar[1]) {
-                            const valorTotal = valorMatchDolar[1];
-                            console.log('Valor total extraído:', valorTotal);
-                            
-                            // Actualizar todos los lugares donde se muestra el total
-                            document.querySelectorAll('#detalleOrdenContainer .text-success').forEach(el => {
-                                el.textContent = `Total: $${valorTotal}`;
-                            });
-                            
-                            // También asegurarnos de que el h5 en el pie de la modal esté actualizado
-                            const borderTopDiv = document.querySelector('#detalleOrdenContainer .border-top');
-                            if (borderTopDiv) {
-                                const h5Element = borderTopDiv.querySelector('h5');
-                                if (h5Element) {
-                                    h5Element.textContent = `Total: $${valorTotal}`;
-                                    console.log('Total en pie de modal actualizado a:', `Total: $${valorTotal}`);
-                                }
-                            }
-                        }
-                    } else {
-                        // Plan B: Calcular suma de subtotales si no encontramos el total en la tabla
-                        console.log('No se encontró total en la tabla, calculando desde subtotales');
-                        const subtotales = Array.from(document.querySelectorAll('#detalleOrdenContainer table tbody td:last-child'));
-                        if (subtotales.length > 0) {
-                            let totalCalculado = 0;
-                            subtotales.forEach(subtotal => {
-                                const subtotalTexto = subtotal.textContent;
-                                const valorMatch = subtotalTexto.match(/\$\s*(\d+(?:\.\d+)?)/);
-                                if (valorMatch && valorMatch[1]) {
-                                    totalCalculado += parseFloat(valorMatch[1]);
-                                }
-                            });
-                            
-                            if (totalCalculado > 0) {
-                                console.log('Total calculado desde subtotales:', totalCalculado);
-                                
-                                // Actualizar todos los lugares donde se muestra el total
-                                document.querySelectorAll('#detalleOrdenContainer .text-success').forEach(el => {
-                                    el.textContent = `Total: $${totalCalculado.toFixed(2)}`;
-                                });
-                                
-                                // También actualizar el h5 en el pie de la modal
-                                const borderTopDiv = document.querySelector('#detalleOrdenContainer .border-top');
-                                if (borderTopDiv) {
-                                    const h5Element = borderTopDiv.querySelector('h5');
-                                    if (h5Element) {
-                                        h5Element.textContent = `Total: $${totalCalculado.toFixed(2)}`;
-                                        console.log('Total en pie de modal actualizado a:', `Total: $${totalCalculado.toFixed(2)}`);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error al actualizar totales:', error);
-                }
-            }, 250);
         }
         
         // Generar HTML según el diseño mostrado en la imagen
@@ -1045,49 +624,13 @@ async function mostrarDetalleOrden(ordenId) {
                 
                 <div class="mb-3">
                     <h6 class="mb-3">${esCompra ? 'Detalle de Productos:' : 'Detalle de Servicios:'}</h6>
-                    
-                    ${productoTabla || // Primera opción: usar la tabla generada 
-                      // Solo para servicios ya que todas las compras ahora tienen tabla
-                      (!esCompra && detalle.servicios && detalle.servicios.length > 0 ? 
-                      `<table class="table table-striped">
-                          <thead>
-                              <tr>
-                                  <th>Servicio</th>
-                                  <th>Descripción</th>
-                                  <th class="text-center">Cantidad</th>
-                              </tr>
-                          </thead>
-                          <tbody>
-                              ${detalle.servicios.map(item => `
-                                  <tr>
-                                      <td>${item.servicio?.nombre || 'Servicio sin nombre'}</td>
-                                      <td>${item.descripcion || 'Instalacion de Equipos 5514'}</td>
-                                      <td class="text-center">${item.cantidad || 1}</td>
-                                  </tr>
-                              `).join('')}
-                          </tbody>
-                          <tfoot>
-                              <tr>
-                                  <td colspan="2" class="text-end"><strong>Total:</strong></td>
-                                  <td class="text-end"><strong>$${totalFormateado}</strong></td>
-                              </tr>
-                          </tfoot>
-                      </table>` : 
-                      // Como último recurso para servicios sin estructura, mostrar en formato simplificado
-                      `<div class="bg-light p-3" style="border-radius: 5px;">
-                          <div class="row">
-                              <div class="col">
-                                  <p class="mb-1"><i class="fas fa-info-circle me-2 text-info"></i><strong>Descripción:</strong> ${descripcionDetalle}</p>
-                                  <p class="mb-0"><i class="fas fa-dollar-sign me-2 text-success"></i><strong>Total:</strong> ${totalFormateado}</p>
-                            </div>
-                            </div>
-                      </div>`)}
+                    ${productoTabla}
                             </div>
                         </div>
             
             <div class="border-top p-3 d-flex justify-content-between align-items-center">
                 <div>
-                    <h5 class="mb-0 text-success">Total: $0.00</h5>
+                    <h5 class="mb-0 text-success">Total: ${totalFormateado}</h5>
                 </div>
                 <div>
                     ${detalle.estado === 'COMPLETADA' ? `
@@ -1208,6 +751,172 @@ async function obtenerNombreProducto(productoId) {
     }
 }
 
+// Función para generar la tabla de productos de una orden
+async function generarTablaProductos(detalle) {
+    const total = detalle.total || detalle.precios?.total || 0;
+    
+    // Si tiene detalles estructurados, usarlos
+    if (detalle.detalles && detalle.detalles.length > 0) {
+        return `<table class="table table-striped" id="tablaProductos">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Descripción</th>
+                    <th class="text-center">Cantidad</th>
+                    <th class="text-end">Precio Unitario</th>
+                    <th class="text-end">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${detalle.detalles.map(item => {
+                    const precioUnitario = item.precioUnitario || item.precio || 0;
+                    const subtotal = precioUnitario * (item.cantidad || 1);
+                    return `
+                        <tr data-producto-id="${item.productoId || ''}">
+                            <td>${item.producto?.nombre || item.productoNombre || 'Cargando...'}</td>
+                            <td>${item.descripcion || ''}</td>
+                            <td class="text-center">${item.cantidad || 1}</td>
+                            <td class="text-end">$${precioUnitario.toFixed(2)}</td>
+                            <td class="text-end">$${subtotal.toFixed(2)}</td>
+                        </tr>
+                    `;
+                }).join('')}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="text-end"><strong>Total:</strong></td>
+                    <td class="text-end"><strong>$${total.toFixed(2)}</strong></td>
+                </tr>
+            </tfoot>
+        </table>`;
+    }
+    
+    // Si no tiene detalles estructurados, extraer productos de la descripción
+    if (detalle.descripcion) {
+        // Extraer productos de la descripción
+        const productos = await extraerProductosDeLaDescripcion(detalle.descripcion, total);
+        
+        if (productos.length > 0) {
+            // Crear filas de la tabla
+            const filas = productos.map(prod => {
+                const subtotal = prod.precio * prod.cantidad;
+                return `
+                    <tr>
+                        <td><strong>${prod.nombre}</strong></td>
+                        <td class="text-center">${prod.cantidad}</td>
+                        <td class="text-end">$${prod.precio.toFixed(2)}</td>
+                        <td class="text-end">$${subtotal.toFixed(2)}</td>
+                    </tr>
+                `;
+            }).join('');
+            
+            // Calcular el total basado en los productos
+            let totalCalculado = productos.reduce((sum, prod) => sum + (prod.precio * prod.cantidad), 0);
+            // Si hay un total especificado en la orden, usarlo en lugar del calculado
+            if (total && total > 0) {
+                totalCalculado = total;
+            }
+            
+            return `<table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th class="text-center">Cantidad</th>
+                        <th class="text-end">Precio</th>
+                        <th class="text-end">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${filas}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                        <td class="text-end"><strong>$${totalCalculado.toFixed(2)}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>`;
+        }
+    }
+    
+    // Si no hay información de productos, devolver tabla vacía
+    return `<div class="alert alert-info">No hay información de productos disponible</div>`;
+}
+
+// Función para extraer productos de la descripción de una orden
+async function extraerProductosDeLaDescripcion(descripcion, total) {
+    const productos = [];
+    
+    if (!descripcion) return productos;
+    
+    // Intentar extraer con formato "Nx Producto"
+    const productosRegex = /(\d+)x\s+([^,\n:]+)/g;
+    let match;
+    const productosPromesas = [];
+    
+    while ((match = productosRegex.exec(descripcion)) !== null) {
+        const nombreProducto = match[2].trim();
+        const cantidad = parseInt(match[1]);
+        
+        // Guardar promesa para resolver después
+        productosPromesas.push(
+            obtenerPrecioPorNombre(nombreProducto).then(precio => ({
+                nombre: nombreProducto,
+                cantidad: cantidad,
+                precio: precio
+            }))
+        );
+    }
+    
+    // Si no hay productos identificados, crear un producto genérico
+    if (productosPromesas.length === 0) {
+        productos.push({
+            nombre: 'Producto',
+            cantidad: 1,
+            precio: total || 50.00
+        });
+    } else {
+        // Esperar a que se resuelvan todas las promesas
+        const productosResueltos = await Promise.all(productosPromesas);
+        productos.push(...productosResueltos);
+    }
+    
+    return productos;
+}
+
+// Función para obtener un precio estimado basado en el nombre del producto
+async function obtenerPrecioPorNombre(nombreProducto) {
+    console.log(`Buscando precio para producto: "${nombreProducto}"`);
+    
+    try {
+        const token = localStorage.getItem('token');
+        
+        // Buscar productos en la base de datos que coincidan con el nombre
+        const response = await fetch(`/api/tienda/productos/buscar?nombre=${encodeURIComponent(nombreProducto)}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        
+        if (response.ok) {
+            const productos = await response.json();
+            
+            // Si encontramos productos coincidentes, usar el precio del primero
+            if (productos && productos.length > 0) {
+                console.log(`Productos encontrados para "${nombreProducto}":`, productos);
+                return productos[0].precio;
+            }
+        }
+        
+        // Si no se encuentra, devolver precio predeterminado
+        console.log(`No se encontró precio para "${nombreProducto}", usando predeterminado`);
+        return 50.00;
+    } catch (error) {
+        console.error(`Error al buscar precio para "${nombreProducto}":`, error);
+        return 50.00;
+    }
+}
+
 // Función para confirmar cancelación de una orden
 function confirmarCancelarOrden(ordenId) {
     if (!ordenId) return;
@@ -1311,3 +1020,474 @@ async function calcularTotalOrden(productos) {
     
     return total;
 } 
+
+// Estado global para órdenes
+const ordenesState = {
+    serviciosSeleccionados: [],
+    total: 0
+};
+
+// Función para crear una nueva orden
+function nuevaOrden() {
+    console.log('Iniciando nueva orden...');
+    ordenesState.serviciosSeleccionados = [];
+    ordenesState.total = 0;
+    
+    const formContainer = document.getElementById('nuevaOrdenForm');
+    const listaOrdenes = document.getElementById('listaOrdenes');
+    
+    if (formContainer && listaOrdenes) {
+        formContainer.style.display = 'block';
+        listaOrdenes.style.display = 'none';
+        
+        // Mantener el título original, eliminar el botón superior si existe
+        const tituloElement = formContainer.querySelector('h3');
+        // Si el título ha sido reemplazado por nuestro contenedor flex, restaurarlo
+        if (!tituloElement && formContainer.querySelector('.d-flex h3')) {
+            const headerContainer = formContainer.querySelector('.d-flex');
+            const nuevoTitulo = document.createElement('h3');
+            nuevoTitulo.textContent = 'Nueva Orden';
+            headerContainer.parentNode.replaceChild(nuevoTitulo, headerContainer);
+        }
+        
+        // Añadir botón de cancelación al panel de resumen
+        const resumenOrden = document.getElementById('resumenOrden');
+        if (resumenOrden) {
+            // Mostrar el resumen siempre, aunque esté vacío inicialmente
+            resumenOrden.style.display = 'block';
+            
+            // Buscar el contenedor de botones
+            const botonesContainer = resumenOrden.querySelector('.text-end');
+            if (botonesContainer) {
+                // Verificar si ya existe un botón de submit
+                const btnCrear = botonesContainer.querySelector('button[type="submit"]');
+                if (btnCrear) {
+                    // Eliminar botón anterior si existe
+                    const btnCancelarExistente = document.getElementById('btnCancelarOrden');
+                    if (btnCancelarExistente) {
+                        btnCancelarExistente.remove();
+                    }
+                    
+                    // Crear el botón de cancelar con el mismo estilo que el botón crear
+                    const btnCancelar = document.createElement('button');
+                    btnCancelar.id = 'btnCancelarOrden';
+                    btnCancelar.type = 'button';
+                    btnCancelar.className = 'btn btn-danger me-2';
+                    btnCancelar.innerHTML = '<i class="fas fa-times-circle"></i> Cancelar';
+                    btnCancelar.onclick = cancelarNuevaOrden;
+                    
+                    // Insertar antes del botón crear
+                    botonesContainer.insertBefore(btnCancelar, btnCrear);
+                }
+            }
+        }
+    }
+    
+    // Cargar servicios disponibles
+    loadServicesForOrders();
+}
+
+// Función para cargar servicios disponibles para órdenes
+async function loadServicesForOrders() {
+    console.log('Iniciando carga de servicios para órdenes...');
+    try {
+        const token = localStorage.getItem('token');
+        
+        console.log('Realizando petición a /api/servicios...');
+        const response = await fetch('/api/servicios', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            console.error('Error en la respuesta:', error);
+            throw new Error(`Error al cargar servicios: ${response.status} ${response.statusText}`);
+        }
+
+        const servicios = await response.json();
+        console.log('Servicios obtenidos:', servicios);
+        
+        if (!Array.isArray(servicios)) {
+            console.error('La respuesta no es un array:', servicios);
+            throw new Error('Formato de respuesta inválido');
+        }
+
+        displayServicesForOrders(servicios);
+        console.log('Servicios mostrados correctamente');
+    } catch (error) {
+        console.error('Error en loadServicesForOrders:', error);
+        mostrarAlerta('Error al cargar servicios para órdenes: ' + error.message, 'danger');
+    }
+}
+
+// Función para mostrar servicios en el formulario de órdenes
+function displayServicesForOrders(servicios) {
+    console.log('Iniciando displayServicesForOrders...');
+    const container = document.getElementById('serviciosDisponibles');
+    
+    if (!container) {
+        console.error('No se encontró el contenedor #serviciosDisponibles');
+        mostrarAlerta('Error: No se encontró el contenedor de servicios', 'danger');
+        return;
+    }
+
+    console.log('Limpiando contenedor...');
+    container.innerHTML = '';
+
+    if (!Array.isArray(servicios) || servicios.length === 0) {
+        console.log('No hay servicios para mostrar');
+        container.innerHTML = `
+            <div class="col-12 text-center">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    No hay servicios disponibles en este momento
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    // Crear las tarjetas de servicios
+    const serviciosHTML = servicios.map(servicio => {
+        const tipoServicio = servicio.tipo === 'POR_HORA' ? 'Por Hora' : 'Por Cantidad';
+        const unidad = servicio.tipo === 'POR_HORA' ? '/hora' : '/unidad';
+
+        return `
+            <div class="col-md-6 mb-4 servicio-item" data-id="${servicio.id}" data-tipo="${servicio.tipo}">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="card-title mb-0 text-primary">${servicio.nombre}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text text-dark">${servicio.descripcion || 'Sin descripción'}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="mb-0 text-dark"><strong>Precio Base:</strong> <span class="text-success">$${(servicio.precioBase || 0).toFixed(2)}${unidad}</span></p>
+                                <p class="mb-0 text-dark"><strong>Tipo:</strong> <span class="badge bg-info">${tipoServicio}</span></p>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <input type="number" class="form-control mb-2" 
+                                       id="cantidad-${servicio.id}" 
+                                       min="1" value="1" 
+                                       style="width: 80px; background-color: #ffffff; color: #212529;">
+                                <button type="button" class="btn btn-primary" 
+                                        onclick="seleccionarServicio(${servicio.id}, '${servicio.nombre}', ${servicio.precioBase}, '${servicio.tipo}')">
+                                    <i class="fas fa-plus-circle"></i> Seleccionar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // Crear contenedor para los servicios
+    container.innerHTML = `
+        <div class="row">
+            <div class="col-12 mb-3">
+                <input type="text" id="buscarServicio" class="form-control" placeholder="Buscar servicio..." 
+                       style="background-color: #ffffff; color: #212529;">
+            </div>
+            <div id="listaServiciosDisponibles" class="row w-100">
+                ${serviciosHTML}
+            </div>
+        </div>
+    `;
+    
+    // Implementar búsqueda simple
+    const buscarServicioInput = document.getElementById('buscarServicio');
+    if (buscarServicioInput) {
+        buscarServicioInput.addEventListener('input', function() {
+            const busqueda = this.value.toLowerCase().trim();
+            const serviciosItems = document.querySelectorAll('.servicio-item');
+            
+            serviciosItems.forEach(item => {
+                const nombre = item.querySelector('.card-title').textContent.toLowerCase();
+                const descripcion = item.querySelector('.card-text').textContent.toLowerCase();
+                
+                if (nombre.includes(busqueda) || descripcion.includes(busqueda)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    }
+}
+
+// Función para seleccionar un servicio
+function seleccionarServicio(servicioId, nombre, precioBase, tipo = 'POR_HORA') {
+    console.log('Seleccionando servicio:', servicioId);
+    
+    const cantidadInput = document.getElementById(`cantidad-${servicioId}`);
+    if (!cantidadInput) {
+        console.error('No se encontró el input de cantidad para el servicio:', servicioId);
+        mostrarAlerta('Error al seleccionar el servicio', 'danger');
+        return;
+    }
+
+    const cantidad = parseInt(cantidadInput.value);
+    if (isNaN(cantidad) || cantidad < 1) {
+        mostrarAlerta('Por favor ingrese una cantidad válida', 'warning');
+        return;
+    }
+
+    // Agregar servicio al estado
+    const servicio = {
+        id: servicioId,
+        nombre: nombre,
+        cantidad: cantidad,
+        precioBase: precioBase,
+        tipo: tipo,
+        total: cantidad * precioBase
+    };
+
+    // Verificar si el servicio ya está seleccionado
+    const index = ordenesState.serviciosSeleccionados.findIndex(s => s.id === servicioId);
+    if (index >= 0) {
+        ordenesState.serviciosSeleccionados[index] = servicio;
+    } else {
+        ordenesState.serviciosSeleccionados.push(servicio);
+    }
+
+    actualizarResumenOrden();
+    mostrarAlerta(`Servicio agregado: ${nombre} x ${cantidad}`, 'success');
+}
+
+// Función para actualizar el resumen de la orden
+function actualizarResumenOrden() {
+    const resumenOrden = document.getElementById('resumenOrden');
+    const serviciosSeleccionados = document.getElementById('serviciosSeleccionados');
+    const totalOrden = document.getElementById('totalOrden');
+    
+    if (!resumenOrden || !serviciosSeleccionados || !totalOrden) {
+        console.error('No se encontraron los elementos necesarios para actualizar el resumen');
+        return;
+    }
+    
+    // El resumen siempre debe estar visible una vez que se inicie una nueva orden
+    resumenOrden.style.display = 'block';
+    
+    // Generar HTML para servicios seleccionados
+    if (ordenesState.serviciosSeleccionados.length > 0) {
+        const serviciosHTML = ordenesState.serviciosSeleccionados.map(servicio => {
+            const tipoServicio = servicio.tipo === 'POR_HORA' ? 'hora(s)' : 'unidad(es)';
+            return `
+                <div class="card mb-2">
+                    <div class="card-body p-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-0">${servicio.nombre}</h5>
+                                <p class="mb-0 text-muted">${servicio.cantidad} ${tipoServicio} x $${servicio.precioBase.toFixed(2)}</p>
+                            </div>
+                            <div>
+                                <span class="fs-5">$${servicio.total.toFixed(2)}</span>
+                                <button type="button" class="btn btn-sm btn-outline-danger ms-2" 
+                                        onclick="eliminarServicio(${servicio.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        serviciosSeleccionados.innerHTML = serviciosHTML;
+        
+        // Calcular y mostrar el total
+        ordenesState.total = ordenesState.serviciosSeleccionados.reduce((sum, servicio) => sum + servicio.total, 0);
+        totalOrden.textContent = ordenesState.total.toFixed(2);
+    } else {
+        // Mostrar mensaje si no hay servicios seleccionados
+        serviciosSeleccionados.innerHTML = `
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                No hay servicios seleccionados. Por favor, seleccione al menos un servicio.
+            </div>
+        `;
+        totalOrden.textContent = '0.00';
+    }
+    
+    // Asegurarse de que el botón de cancelar siempre esté presente
+    const botonesContainer = resumenOrden.querySelector('.text-end');
+    if (botonesContainer) {
+        // Verificar si el botón ya existe
+        if (!document.getElementById('btnCancelarOrden')) {
+            const btnCrear = botonesContainer.querySelector('button[type="submit"]');
+            if (btnCrear) {
+                const btnCancelar = document.createElement('button');
+                btnCancelar.id = 'btnCancelarOrden';
+                btnCancelar.type = 'button';
+                btnCancelar.className = 'btn btn-danger me-2';
+                btnCancelar.innerHTML = '<i class="fas fa-times-circle"></i> Cancelar';
+                btnCancelar.onclick = cancelarNuevaOrden;
+                
+                botonesContainer.insertBefore(btnCancelar, btnCrear);
+            }
+        }
+    }
+}
+
+// Función para eliminar un servicio del resumen
+function eliminarServicio(servicioId) {
+    console.log('Eliminando servicio:', servicioId);
+    
+    // Encontrar el servicio en el array
+    const index = ordenesState.serviciosSeleccionados.findIndex(s => s.id === servicioId);
+    if (index >= 0) {
+        const servicio = ordenesState.serviciosSeleccionados[index];
+        ordenesState.serviciosSeleccionados.splice(index, 1);
+        actualizarResumenOrden();
+        mostrarAlerta(`Servicio eliminado: ${servicio.nombre}`, 'success');
+    }
+}
+
+// Función para cancelar la creación de una nueva orden
+function cancelarNuevaOrden() {
+    console.log('Cancelando creación de orden...');
+    
+    // Limpiar estado
+    ordenesState.serviciosSeleccionados = [];
+    ordenesState.total = 0;
+    
+    // Volver a la lista de órdenes
+    const formContainer = document.getElementById('nuevaOrdenForm');
+    const listaOrdenes = document.getElementById('listaOrdenes');
+    
+    if (formContainer && listaOrdenes) {
+        formContainer.style.display = 'none';
+        listaOrdenes.style.display = 'block';
+    }
+    
+    mostrarAlerta('Creación de orden cancelada', 'info');
+}
+
+// Exponemos las funciones al ámbito global
+window.nuevaOrden = nuevaOrden;
+window.seleccionarServicio = seleccionarServicio;
+window.eliminarServicio = eliminarServicio;
+window.cancelarNuevaOrden = cancelarNuevaOrden;
+
+// Añadir manejador de evento para el envío del formulario de órdenes
+document.addEventListener('DOMContentLoaded', function() {
+    const ordenesForm = document.getElementById('ordenesForm');
+    if (ordenesForm) {
+        ordenesForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (ordenesState.serviciosSeleccionados.length === 0) {
+                mostrarAlerta('Debe seleccionar al menos un servicio', 'warning');
+                return;
+            }
+
+            const fechaProgramada = document.getElementById('fechaProgramada').value;
+            const descripcion = document.getElementById('descripcion').value;
+
+            if (!fechaProgramada) {
+                mostrarAlerta('Debe seleccionar una fecha programada', 'warning');
+                return;
+            }
+
+            try {
+                // Obtener el usuario actual
+                const usuario = JSON.parse(localStorage.getItem('usuario'));
+                if (!usuario) {
+                    mostrarAlerta('No se encontró información del usuario. Por favor, inicie sesión nuevamente.', 'danger');
+                    return;
+                }
+                
+                // Obtener el cliente asociado al usuario
+                const clienteResponse = await fetch(`/api/usuarios/${usuario.id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!clienteResponse.ok) {
+                    throw new Error('Error al obtener información del cliente');
+                }
+
+                const clienteData = await clienteResponse.json();
+                
+                if (!clienteData.cliente) {
+                    throw new Error('No se encontró un cliente asociado a este usuario');
+                }
+
+                console.log('Preparando datos para crear orden:', {
+                    clienteId: clienteData.cliente.id,
+                    servicios: ordenesState.serviciosSeleccionados.map(s => ({
+                        servicioId: s.id,
+                        cantidad: s.cantidad
+                    })),
+                    fechaProgramada,
+                    descripcion
+                });
+
+                const response = await fetch('/api/ordenes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        clienteId: clienteData.cliente.id,
+                        servicios: ordenesState.serviciosSeleccionados.map(s => ({
+                            servicioId: s.id,
+                            cantidad: s.cantidad
+                        })),
+                        fechaProgramada,
+                        descripcion
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Error del servidor:', errorData);
+                    throw new Error(errorData.message || `Error al crear la orden: ${response.status}`);
+                }
+
+                const orden = await response.json();
+                console.log('Orden creada exitosamente:', orden);
+                
+                // Generar factura automáticamente
+                try {
+                    console.log('Iniciando generación de factura para orden:', orden.id);
+                    const facturaResponse = await fetch(`/api/facturas/orden/${orden.id}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        }
+                    });
+                    
+                    if (!facturaResponse.ok) {
+                        const errorData = await facturaResponse.json();
+                        console.error('Error al generar factura:', errorData);
+                        throw new Error(errorData.message || `Error al generar factura: ${facturaResponse.status}`);
+                    }
+
+                    const factura = await facturaResponse.json();
+                    console.log('Factura generada exitosamente:', factura);
+                    mostrarAlerta('Orden creada y factura generada exitosamente. Consulte la sección de Facturas.', 'success');
+                } catch (facturaError) {
+                    console.error('Error al generar factura:', facturaError);
+                    mostrarAlerta('Orden creada exitosamente. Sin embargo, hubo un problema al generar la factura.', 'warning');
+                }
+                
+                // Limpiar el formulario y mostrar la lista de órdenes
+                ordenesState.serviciosSeleccionados = [];
+                document.getElementById('nuevaOrdenForm').style.display = 'none';
+                document.getElementById('listaOrdenes').style.display = 'block';
+                await mostrarListaOrdenes();
+            } catch (error) {
+                console.error('Error detallado al crear orden:', error);
+                mostrarAlerta(`Error al crear la orden: ${error.message}`, 'danger');
+            }
+        });
+    }
+}); 

@@ -20,6 +20,12 @@ if (!fs.existsSync(facturasDir)) {
     fs.mkdirSync(facturasDir, { recursive: true });
 }
 
+// Asegurarse de que el directorio de uploads para productos exista
+const uploadsProductosDir = path.join(__dirname, '../public/uploads/productos');
+if (!fs.existsSync(uploadsProductosDir)) {
+    fs.mkdirSync(uploadsProductosDir, { recursive: true });
+}
+
 // Servir archivos estáticos
 app.use(express.static('public'));
 app.use('/facturas', express.static(facturasDir, {
