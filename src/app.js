@@ -10,7 +10,11 @@ const servicioRoutes = require('../backend/routes/servicioRoutes');
 const facturaRoutes = require('../backend/routes/facturaRoutes');
 const tiendaRoutes = require('../backend/routes/tiendaRoutes');
 const notificacionRoutes = require('../backend/routes/notificacionRoutes');
+const dashboardRoutes = require('../backend/routes/dashboardRoutes');
 const fs = require('fs');
+
+// Registrar el tiempo de inicio del servidor
+process.env.SERVER_START_TIME = new Date().toISOString();
 
 // Middleware
 app.use(express.json());
@@ -245,6 +249,9 @@ app.use('/api/tienda', tiendaRoutes);
 
 // Rutas de notificaciones
 app.use('/api/notificaciones', notificacionRoutes);
+
+// Rutas de dashboard
+app.use('/api/dashboard', dashboardRoutes);
 
 // Rutas de órdenes
 app.post('/api/ordenes', verificarToken, async (req, res) => {
@@ -1651,7 +1658,8 @@ app.use((req, res) => {
     res.status(404).json({ message: 'Ruta no encontrada' });
 });
 
-const PORT = process.env.PORT || 3000;
+// Iniciar servidor
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en puerto ${PORT}`);
 }); 

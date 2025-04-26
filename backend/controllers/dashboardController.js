@@ -216,6 +216,11 @@ const obtenerDatosGraficos = async (req, res) => {
             _count: {
                 servicioId: true
             },
+            where: {
+                orden: {
+                    estado: 'REALIZADO'
+                }
+            },
             orderBy: {
                 _count: {
                     servicioId: 'desc'

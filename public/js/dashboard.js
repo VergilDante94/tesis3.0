@@ -230,8 +230,6 @@ async function cargarDashboard() {
             </div>
         `;
         
-        // En un entorno real, descomentar esto y eliminar la línea del generador de datos ficticios
-        /*
         // Cargar datos reales del API
         const [estadisticas, actividad, datosGraficos, estadoSistema] = await Promise.all([
             dashboardManager.cargarEstadisticas(),
@@ -239,14 +237,13 @@ async function cargarDashboard() {
             dashboardManager.cargarDatosGraficos(),
             dashboardManager.cargarEstadoSistema()
         ]);
-        */
         
         // USAR DATOS FICTICIOS MIENTRAS NO HAY API
-        const datos = dashboardManager.generarDatosFicticios();
-        const estadisticas = datos.estadisticas;
-        const actividad = datos.actividad;
-        const datosGraficos = datos.graficos;
-        const estadoSistema = datos.estadoSistema;
+        // const datos = dashboardManager.generarDatosFicticios();
+        // const estadisticas = datos.estadisticas;
+        // const actividad = datos.actividad;
+        // const datosGraficos = datos.graficos;
+        // const estadoSistema = datos.estadoSistema;
         
         // Agregar estructura del dashboard
         container.innerHTML = `
