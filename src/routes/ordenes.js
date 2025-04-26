@@ -56,6 +56,9 @@ router.post('/', auth, async (req, res) => {
             data: {
                 usuarioId: parseInt(clienteId),
                 mensaje: `Nueva orden creada #${orden.id}`,
+                tipo: 'ORDEN',
+                enlaceId: orden.id,
+                enlaceTipo: 'ORDEN'
             }
         });
 

@@ -99,6 +99,33 @@ function showSection(sectionId) {
 function cargarDatosSeccion(sectionId) {
     console.log('Cargando datos para la sección:', sectionId);
     switch(sectionId) {
+        case 'datos':
+            console.log('Detectada sección datos, verificando función cargarDashboard...');
+            console.log('cargarDashboard existe:', typeof cargarDashboard === 'function');
+            console.log('window.cargarDashboard existe:', typeof window.cargarDashboard === 'function');
+            
+            if (typeof cargarDashboard === 'function') {
+                console.log('Cargando dashboard...');
+                cargarDashboard();
+            } else {
+                console.error('No se encontró la función cargarDashboard');
+                
+                // Verificar si el script se cargó
+                const dashboardScript = document.querySelector('script[src="/js/dashboard.js"]');
+                console.log('Script de dashboard encontrado en DOM:', !!dashboardScript);
+                
+                // Intentar cargar el dashboard de nuevo
+                const scriptElement = document.createElement('script');
+                scriptElement.src = '/js/dashboard.js';
+                scriptElement.onload = function() {
+                    console.log('Script de dashboard cargado dinámicamente');
+                    if (typeof window.cargarDashboard === 'function') {
+                        window.cargarDashboard();
+                    }
+                };
+                document.head.appendChild(scriptElement);
+            }
+            break;
         case 'usuarios':
             if (typeof loadUsers === 'function') loadUsers();
             break;

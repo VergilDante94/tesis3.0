@@ -111,6 +111,43 @@
             overflow: hidden;
         }
     </style>
+    <!-- Script para asegurar la inicialización de auth -->
+    <script>
+        // Asegurar que auth esté disponible y se inicialice correctamente
+        window.addEventListener('DOMContentLoaded', function() {
+            if (typeof auth === 'undefined') {
+                console.warn('Objeto auth no encontrado, creando uno básico');
+                window.auth = {
+                    initialized: false,
+                    token: localStorage.getItem('token'),
+                    usuario: null,
+                    getHeaders: function() {
+                        return {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.token || localStorage.getItem('token')}`
+                        };
+                    },
+                    estaAutenticado: function() {
+                        return !!this.token;
+                    }
+                };
+                
+                try {
+                    const usuarioGuardado = JSON.parse(localStorage.getItem('usuario'));
+                    if (usuarioGuardado && usuarioGuardado.id) {
+                        console.log('Inicializando auth con usuario guardado:', usuarioGuardado.id);
+                        window.auth.usuario = usuarioGuardado;
+                        window.auth.initialized = true;
+                    }
+                } catch (e) {
+                    console.error('Error al inicializar auth:', e);
+                }
+            }
+        });
+    </script>
+    
+    <!-- Estilos para dashboard -->
+    <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 <body>
     <!-- Skip link para accesibilidad -->
@@ -144,6 +181,12 @@
                 <span id="usuario-actual">Cargando...</span>
                 (<span id="tipo-usuario-actual" class="text-light">...</span>)
             </span>
+
+            <!-- Icono de notificaciones -->
+            <a class="nav-link px-3 position-relative" href="#" id="notificacionesBtn" data-section="notificaciones">
+                <i class="fas fa-bell"></i>
+                <span id="notificacionesContador" class="badge rounded-pill" style="display: inline;">0</span>
+            </a>
 
             <!-- Botón salir -->
             <a class="nav-link px-3" href="#" id="btn-logout">
@@ -186,12 +229,6 @@
                             <a class="nav-link" id="tiendaLink" href="/tienda.html">
                                 <i class="fas fa-shopping-cart"></i>
                                 Tienda
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-section="notificaciones">
-                                <i class="fas fa-bell"></i>
-                                Notificaciones
                             </a>
                         </li>
                         <li class="nav-item">
@@ -749,11 +786,17 @@
     <script src="/js/usuarios.js"></script>
     <script src="/js/perfil.js"></script>
     <script src="/js/notificaciones.js"></script>
+    <script src="/js/loadNotifications.js"></script>
+    <script src="/js/main.js"></script>
     <script src="/js/logs.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <script src="js/estadosOrden.js"></script>
     <script src="js/facturas.js"></script>
+    <!-- Librería Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Script para el Dashboard -->
+    <script src="/js/dashboard.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('Iniciando aplicación...');
@@ -775,12 +818,28 @@
                     // Actualizar UI basada en el rol
                     actualizarInfoUsuario(userInfo);
                     
+                    // Asegurar que el objeto auth esté inicializado correctamente
+                    if (auth) {
+                        auth.usuario = userInfo;
+                        auth.token = localStorage.getItem('token');
+                        auth.initialized = true;
+                        console.log('Objeto auth inicializado manualmente con userInfo');
+                    }
+                    
                     // Si es administrador, mostrar elementos administrativos
                     if (userInfo.tipo === 'ADMIN') {
                         document.querySelectorAll('.admin-only').forEach(element => {
                             element.style.display = '';
                             element.classList.remove('d-none');
                         });
+                    }
+                    
+                    // Iniciar sistema de notificaciones
+                    if (typeof iniciarNotificaciones === 'function') {
+                        iniciarNotificaciones();
+                        console.log('Sistema de notificaciones iniciado');
+                    } else {
+                        console.error('Función iniciarNotificaciones no encontrada');
                     }
                 }
             } catch (error) {
@@ -825,6 +884,15 @@
                 
                 // Cargar datos específicos de la sección
                 switch(sectionId) {
+                    case 'datos':
+                        if (typeof cargarDatosSeccion === 'function') {
+                            cargarDatosSeccion('datos');
+                        } else if (typeof cargarDashboard === 'function') {
+                            cargarDashboard();
+                        } else {
+                            console.error('No se encontraron funciones para cargar dashboard');
+                        }
+                        break;
                     case 'usuarios':
                         if (typeof loadUsers === 'function') {
                             loadUsers();

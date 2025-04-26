@@ -15,5 +15,9 @@ router.put('/:ordenId/estado',
     authMiddleware.verificarRol(['TRABAJADOR']),
     ordenController.actualizarEstado
 );
+router.put('/:ordenId/cancelar',
+    authMiddleware.verificarToken,
+    ordenController.cancelarOrden
+);
 
 module.exports = router;

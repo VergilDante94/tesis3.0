@@ -9,6 +9,7 @@ const prisma = new PrismaClient();
 const servicioRoutes = require('../backend/routes/servicioRoutes');
 const facturaRoutes = require('../backend/routes/facturaRoutes');
 const tiendaRoutes = require('../backend/routes/tiendaRoutes');
+const notificacionRoutes = require('../backend/routes/notificacionRoutes');
 const fs = require('fs');
 
 // Middleware
@@ -242,6 +243,9 @@ app.use('/api/facturas', facturaRoutes);
 // Rutas de tienda
 app.use('/api/tienda', tiendaRoutes);
 
+// Rutas de notificaciones
+app.use('/api/notificaciones', notificacionRoutes);
+
 // Rutas de órdenes
 app.post('/api/ordenes', verificarToken, async (req, res) => {
   try {
@@ -264,6 +268,14 @@ app.post('/api/ordenes', verificarToken, async (req, res) => {
       
       if (fechaSeleccionada < fechaActual) {
         return res.status(400).json({ error: 'La fecha programada no puede ser anterior a la fecha actual' });
+      }
+      
+      // Validar que la hora esté dentro del horario permitido (7:00 AM - 5:00 PM)
+      const hora = fechaSeleccionada.getHours();
+      const minutos = fechaSeleccionada.getMinutes();
+      
+      if (hora < 7 || (hora === 17 && minutos > 0) || hora > 17) {
+        return res.status(400).json({ error: 'El horario de programación debe estar entre las 7:00 AM y las 5:00 PM' });
       }
     }
 
@@ -306,6 +318,9 @@ app.post('/api/ordenes', verificarToken, async (req, res) => {
       data: {
         usuarioId: cliente.usuarioId,
         mensaje: `Nueva orden creada #${orden.id}`,
+        tipo: 'ORDEN',
+        enlaceId: orden.id,
+        enlaceTipo: 'ORDEN'
       }
     });
 
@@ -1457,6 +1472,9 @@ app.put('/api/ordenes/:id/cancelar', verificarToken, async (req, res) => {
       data: {
         usuarioId: orden.cliente.usuarioId,
         mensaje: `La orden #${orden.id} ha sido cancelada`,
+        tipo: 'ORDEN',
+        enlaceId: ordenId,
+        enlaceTipo: 'ORDEN'
       }
     });
 
@@ -1568,6 +1586,9 @@ app.put('/api/ordenes/:id/estado', verificarToken, async (req, res) => {
       data: {
         usuarioId: orden.cliente.usuarioId,
         mensaje: `El estado de la orden #${orden.id} ha cambiado a ${estado}`,
+        tipo: 'ORDEN',
+        enlaceId: ordenId,
+        enlaceTipo: 'ORDEN',
         leida: false
       }
     });

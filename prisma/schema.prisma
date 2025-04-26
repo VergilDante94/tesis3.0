@@ -7,176 +7,195 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum TipoUsuario {
+model Factura {
+  id           Int      @id @default(autoincrement())
+  ordenId      Int      @unique
+  subtotal     Float
+  total        Float
+  fechaEmision DateTime @default(now())
+  estado       String   @default("PENDIENTE")
+  archivoPath  String?
+  firmaCliente String?
+  firmaAdmin   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  orden        orden    @relation(fields: [ordenId], references: [id])
+
+  @@map("facturas")
+}
+
+model categoria {
+  id          Int        @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime
+  producto    producto[]
+}
+
+model cliente {
+  id        Int     @id @default(autoincrement())
+  usuarioId Int     @unique(map: "Cliente_usuarioId_key")
+  direccion String
+  telefono  String
+  usuario   usuario @relation(fields: [usuarioId], references: [id], map: "Cliente_usuarioId_fkey")
+  orden     orden[]
+  venta     venta[]
+}
+
+model detalleventa {
+  id             Int      @id @default(autoincrement())
+  ventaId        Int
+  productoId     Int
+  cantidad       Int
+  precioUnitario Float
+  subtotal       Float
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime
+  producto       producto @relation(fields: [productoId], references: [id], map: "DetalleVenta_productoId_fkey")
+  venta          venta    @relation(fields: [ventaId], references: [id], map: "DetalleVenta_ventaId_fkey")
+
+  @@index([productoId], map: "DetalleVenta_productoId_fkey")
+  @@index([ventaId], map: "DetalleVenta_ventaId_fkey")
+}
+
+model notificacion {
+  id         Int      @id @default(autoincrement())
+  usuarioId  Int
+  mensaje    String   @db.Text
+  fecha      DateTime @default(now())
+  createdAt  DateTime @default(now())
+  enlaceId   Int?
+  enlaceTipo String?
+  estado     String   @default("PENDIENTE")
+  tipo       String
+  updatedAt  DateTime
+  usuario    usuario  @relation(fields: [usuarioId], references: [id], map: "Notificacion_usuarioId_fkey")
+
+  @@index([usuarioId], map: "Notificacion_usuarioId_fkey")
+}
+
+model orden {
+  id              Int             @id @default(autoincrement())
+  clienteId       Int
+  fecha           DateTime        @default(now())
+  estado          String
+  descripcion     String?         @db.Text
+  fechaProgramada DateTime?
+  tipo            orden_tipo      @default(SERVICIO)
+  ventaId         Int?            @unique(map: "Orden_ventaId_key")
+  factura         Factura?
+  cliente         cliente         @relation(fields: [clienteId], references: [id], map: "Orden_clienteId_fkey")
+  venta           venta?          @relation(fields: [ventaId], references: [id], map: "Orden_ventaId_fkey")
+  ordenservicio   ordenservicio[]
+
+  @@index([clienteId], map: "Orden_clienteId_fkey")
+}
+
+model ordenservicio {
+  id             Int      @id @default(autoincrement())
+  ordenId        Int
+  servicioId     Int
+  cantidad       Int
+  precioUnitario Float
+  orden          orden    @relation(fields: [ordenId], references: [id], map: "OrdenServicio_ordenId_fkey")
+  servicio       servicio @relation(fields: [servicioId], references: [id], map: "OrdenServicio_servicioId_fkey")
+
+  @@index([ordenId], map: "OrdenServicio_ordenId_fkey")
+  @@index([servicioId], map: "OrdenServicio_servicioId_fkey")
+}
+
+model producto {
+  id           Int            @id @default(autoincrement())
+  nombre       String
+  descripcion  String?        @db.Text
+  precio       Float
+  imagen       String?
+  categoriaId  Int
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime
+  activo       Boolean        @default(true)
+  detalleventa detalleventa[]
+  categoria    categoria      @relation(fields: [categoriaId], references: [id], map: "Producto_categoriaId_fkey")
+  stock        stock?
+
+  @@index([categoriaId], map: "Producto_categoriaId_fkey")
+}
+
+model servicio {
+  id            Int             @id @default(autoincrement())
+  nombre        String
+  descripcion   String
+  precioBase    Float
+  createdAt     DateTime        @default(now())
+  estado        String          @default("ACTIVO")
+  updatedAt     DateTime
+  tipo          servicio_tipo
+  ordenservicio ordenservicio[]
+}
+
+model stock {
+  id         Int      @id @default(autoincrement())
+  productoId Int      @unique(map: "Stock_productoId_key")
+  cantidad   Int
+  minimo     Int      @default(5)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  producto   producto @relation(fields: [productoId], references: [id], map: "Stock_productoId_fkey")
+}
+
+model trabajador {
+  id           Int     @id @default(autoincrement())
+  usuarioId    Int     @unique(map: "Trabajador_usuarioId_key")
+  posicion     String
+  departamento String
+  usuario      usuario @relation(fields: [usuarioId], references: [id], map: "Trabajador_usuarioId_fkey")
+}
+
+model usuario {
+  id           Int            @id @default(autoincrement())
+  nombre       String
+  email        String         @unique(map: "Usuario_email_key")
+  contrasena   String
+  tipo         usuario_tipo
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime
+  createdBy    Int?
+  direccion    String?
+  telefono     String?
+  activo       Boolean        @default(true)
+  cliente      cliente?
+  notificacion notificacion[]
+  trabajador   trabajador?
+}
+
+model venta {
+  id           Int            @id @default(autoincrement())
+  clienteId    Int
+  fecha        DateTime       @default(now())
+  total        Float
+  estado       String         @default("PENDIENTE")
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime
+  detalleventa detalleventa[]
+  orden        orden?
+  cliente      cliente        @relation(fields: [clienteId], references: [id], map: "Venta_clienteId_fkey")
+
+  @@index([clienteId], map: "Venta_clienteId_fkey")
+}
+
+enum usuario_tipo {
   ADMIN
   CLIENTE
   TRABAJADOR
 }
 
-enum TipoServicio {
-  POR_HORA
-  POR_CANTIDAD
-}
-
-enum TipoOrden {
+enum orden_tipo {
   SERVICIO
   COMPRA
 }
 
-model Usuario {
-  id            Int            @id @default(autoincrement())
-  nombre        String
-  email         String         @unique
-  contrasena    String
-  tipo          TipoUsuario
-  direccion     String?
-  telefono      String?
-  cliente       Cliente?
-  trabajador    Trabajador?
-  notificaciones Notificacion[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  createdBy     Int?
-  activo        Boolean        @default(true)
+enum servicio_tipo {
+  POR_HORA
+  POR_CANTIDAD
 }
-
-model Cliente {
-  id        Int      @id @default(autoincrement())
-  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
-  usuarioId Int      @unique
-  direccion String
-  telefono  String
-  ordenes   Orden[]
-  ventas    Venta[]
-}
-
-model Trabajador {
-  id          Int      @id @default(autoincrement())
-  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
-  usuarioId   Int      @unique
-  posicion    String
-  departamento String
-}
-
-model Servicio {
-  id            Int             @id @default(autoincrement())
-  nombre        String
-  descripcion   String
-  precioBase    Float
-  tipo          TipoServicio
-  estado        String         @default("ACTIVO")
-  ordenes       OrdenServicio[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-}
-
-model Orden {
-  id                Int      @id @default(autoincrement())
-  cliente           Cliente  @relation(fields: [clienteId], references: [id])
-  clienteId         Int
-  fecha             DateTime @default(now())
-  fechaProgramada   DateTime?
-  estado            String
-  tipo              TipoOrden @default(SERVICIO)
-  descripcion       String?  @db.Text
-  servicios         OrdenServicio[]
-  factura           Factura?
-  venta             Venta?   @relation(fields: [ventaId], references: [id])
-  ventaId           Int?     @unique
-}
-
-model OrdenServicio {
-  id          Int      @id @default(autoincrement())
-  orden       Orden    @relation(fields: [ordenId], references: [id])
-  ordenId     Int
-  servicio    Servicio @relation(fields: [servicioId], references: [id])
-  servicioId  Int
-  cantidad    Int
-  precioUnitario Float
-}
-
-model Factura {
-  id            Int      @id @default(autoincrement())
-  ordenId       Int      @unique
-  orden         Orden    @relation(fields: [ordenId], references: [id])
-  subtotal      Float
-  total         Float
-  fechaEmision  DateTime @default(now())
-  estado        String   @default("PENDIENTE")
-  archivoPath   String?
-  firmaCliente  String?
-  firmaAdmin    String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  @@map("facturas")
-}
-
-model Notificacion {
-  id          Int      @id @default(autoincrement())
-  usuario     Usuario  @relation(fields: [usuarioId], references: [id])
-  usuarioId   Int
-  mensaje     String
-  fecha       DateTime @default(now())
-  leida       Boolean  @default(false)
-}
-
-model Categoria {
-  id          Int       @id @default(autoincrement())
-  nombre      String
-  descripcion String?
-  productos   Producto[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-}
-
-model Producto {
-  id          Int       @id @default(autoincrement())
-  nombre      String
-  descripcion String?   @db.Text
-  precio      Float
-  imagen      String?
-  categoria   Categoria @relation(fields: [categoriaId], references: [id])
-  categoriaId Int
-  stock       Stock?
-  detallesVenta DetalleVenta[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  activo      Boolean   @default(true)
-}
-
-model Stock {
-  id          Int      @id @default(autoincrement())
-  producto    Producto @relation(fields: [productoId], references: [id])
-  productoId  Int      @unique
-  cantidad    Int
-  minimo      Int      @default(5)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Venta {
-  id          Int            @id @default(autoincrement())
-  cliente     Cliente        @relation(fields: [clienteId], references: [id])
-  clienteId   Int
-  fecha       DateTime       @default(now())
-  total       Float
-  estado      String         @default("PENDIENTE")
-  detalles    DetalleVenta[]
-  orden       Orden?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-}
-
-model DetalleVenta {
-  id          Int      @id @default(autoincrement())
-  venta       Venta    @relation(fields: [ventaId], references: [id])
-  ventaId     Int
-  producto    Producto @relation(fields: [productoId], references: [id])
-  productoId  Int
-  cantidad    Int
-  precioUnitario Float
-  subtotal    Float
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-} 

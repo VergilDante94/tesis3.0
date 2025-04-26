@@ -1130,3 +1130,179 @@ label.required:after {
     100% { background-color: #fff; }
 }
 
+/* Agregando estilos para notificaciones */
+.notificaciones-container {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.notificacion-item {
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.notificacion-item:hover {
+    transform: translateX(3px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.notificacion-item.list-group-item-primary {
+    border-left-color: #0d6efd;
+}
+
+.notificacion-item.list-group-item-success {
+    border-left-color: #198754;
+}
+
+.notificacion-item.list-group-item-secondary {
+    border-left-color: #6c757d;
+}
+
+.notificacion-item.list-group-item-warning {
+    border-left-color: #ffc107;
+}
+
+.notificacion-item.list-group-item-info {
+    border-left-color: #0dcaf0;
+}
+
+.notificacion-item.list-group-item-dark {
+    border-left-color: #212529;
+}
+
+.notificacion-item.list-group-item-light {
+    border-left-color: #f8f9fa;
+}
+
+/* Estilo para el contador de notificaciones */
+#notificacionesContador {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 10px;
+    background: #ff5252;
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Animación para nuevas notificaciones */
+@keyframes nueva-notificacion {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.nueva-notificacion {
+    animation: nueva-notificacion 1s;
+}
+
+/* Estilos para el Dashboard */
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+
+.border-left-danger {
+    border-left: 0.25rem solid #e74a3b !important;
+}
+
+.text-xs {
+    font-size: 0.7rem;
+}
+
+.text-gray-300 {
+    color: #dddfeb !important;
+}
+
+.text-gray-800 {
+    color: #5a5c69 !important;
+}
+
+.chart-area {
+    position: relative;
+    height: 300px;
+    margin: 0 auto;
+}
+
+.chart-pie {
+    position: relative;
+    height: 300px;
+    margin: 0 auto;
+}
+
+.activity-stream {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.activity-item:last-child {
+    border-bottom: none !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Estilos para las tarjetas de estadísticas */
+#datos .card {
+    transition: transform 0.2s;
+}
+
+#datos .card:hover {
+    transform: translateY(-5px);
+}
+
+/* Estilo para la barra de progreso */
+.progress {
+    height: 1rem;
+    overflow: hidden;
+    background-color: #e9ecef;
+    border-radius: 0.35rem;
+}
+
+.progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background-color: #4e73df;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+/* Animación para cargar los datos */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.fadeIn {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Adaptación para dispositivos móviles */
+@media (max-width: 768px) {
+    #datos .row > div {
+        margin-bottom: 1rem;
+    }
+    
+    .chart-area, .chart-pie {
+        height: 250px;
+    }
+}
+

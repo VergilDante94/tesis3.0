@@ -1,0 +1,103 @@
+/* Estilos específicos para el Dashboard */
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+
+.border-left-danger {
+    border-left: 0.25rem solid #e74a3b !important;
+}
+
+.text-xs {
+    font-size: 0.7rem;
+}
+
+.text-gray-300 {
+    color: #dddfeb !important;
+}
+
+.text-gray-800 {
+    color: #5a5c69 !important;
+}
+
+.chart-area {
+    position: relative;
+    height: 300px;
+    margin: 0 auto;
+}
+
+.chart-pie {
+    position: relative;
+    height: 300px;
+    margin: 0 auto;
+}
+
+.activity-stream {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.activity-item:last-child {
+    border-bottom: none !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Estilos para las tarjetas de estadísticas */
+#datos .card {
+    transition: transform 0.2s;
+}
+
+#datos .card:hover {
+    transform: translateY(-5px);
+}
+
+/* Estilo para la barra de progreso */
+.progress {
+    height: 1rem;
+    overflow: hidden;
+    background-color: #e9ecef;
+    border-radius: 0.35rem;
+}
+
+.progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background-color: #4e73df;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+/* Animación para cargar los datos */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.fadeIn {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Adaptación para dispositivos móviles */
+@media (max-width: 768px) {
+    #datos .row > div {
+        margin-bottom: 1rem;
+    }
+    
+    .chart-area, .chart-pie {
+        height: 250px;
+    }
+} 

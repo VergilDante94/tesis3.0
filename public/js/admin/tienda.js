@@ -343,7 +343,7 @@ async function manejarEnvioProducto(event) {
         const cantidad = parseInt(formData.get('stock'));
         
         // Obtener categoriaId y asegurarse de que sea un número
-        let categoriaId = formData.get('categoria');
+        let categoriaId = formData.get('categoriaId');
         categoriaId = categoriaId ? parseInt(categoriaId) : null;
         
         // Validar que los valores sean números válidos

@@ -5,7 +5,7 @@ const ordenController = {
     // Crear nueva orden
     async crear(req, res) {
         try {
-            const { clienteId: usuarioId, servicios } = req.body;
+            const { clienteId: usuarioId, servicios, fechaProgramada, descripcion } = req.body;
 
             // Buscar el cliente asociado al usuario
             const cliente = await prisma.cliente.findUnique({
@@ -16,18 +16,27 @@ const ordenController = {
                 return res.status(404).json({ error: 'Cliente no encontrado para este usuario' });
             }
 
+            // Preparar la data para crear la orden
+            const ordenData = {
+                clienteId: cliente.id, // Usar el ID real del cliente
+                estado: 'PENDIENTE', // Establecer estado inicial
+                descripcion: descripcion || null,
+                servicios: {
+                    create: servicios.map(s => ({
+                        servicioId: s.servicioId,
+                        cantidad: s.cantidad,
+                        precioUnitario: 0 // Será actualizado después
+                    }))
+                }
+            };
+
+            // Si se proporciona fechaProgramada, añadirla a los datos
+            if (fechaProgramada) {
+                ordenData.fechaProgramada = new Date(fechaProgramada);
+            }
+
             const orden = await prisma.orden.create({
-                data: {
-                    clienteId: cliente.id, // Usar el ID real del cliente
-                    estado: 'PENDIENTE', // Establecer estado inicial
-                    servicios: {
-                        create: servicios.map(s => ({
-                            servicioId: s.servicioId,
-                            cantidad: s.cantidad,
-                            precioUnitario: 0 // Será actualizado después
-                        }))
-                    }
-                },
+                data: ordenData,
                 include: {
                     cliente: true,
                     servicios: {
@@ -52,7 +61,10 @@ const ordenController = {
             await prisma.notificacion.create({
                 data: {
                     usuarioId: usuarioId,
+                    tipo: 'ORDEN',
                     mensaje: `Nueva orden creada #${orden.id}`,
+                    enlaceId: orden.id,
+                    enlaceTipo: 'ORDEN'
                 }
             });
 
@@ -84,7 +96,10 @@ const ordenController = {
             await prisma.notificacion.create({
                 data: {
                     usuarioId: trabajadorId,
-                    mensaje: `Se te ha asignado la orden #${ordenId}`
+                    tipo: 'ORDEN',
+                    mensaje: `Se te ha asignado la orden #${ordenId}`,
+                    enlaceId: parseInt(ordenId),
+                    enlaceTipo: 'ORDEN'
                 }
             });
 
@@ -113,8 +128,11 @@ const ordenController = {
             // Notificar al cliente
             await prisma.notificacion.create({
                 data: {
-                    usuarioId: orden.clienteId,
-                    mensaje: `Tu orden #${ordenId} ha cambiado a estado: ${estado}`
+                    usuarioId: orden.cliente.usuarioId,
+                    tipo: 'ORDEN',
+                    mensaje: `Tu orden #${ordenId} ha cambiado a estado: ${estado}`,
+                    enlaceId: parseInt(ordenId),
+                    enlaceTipo: 'ORDEN'
                 }
             });
 
@@ -147,7 +165,7 @@ const ordenController = {
                     }
                 },
                 orderBy: {
-                    fechaCreacion: 'desc'
+                    fecha: 'desc'
                 }
             });
 
@@ -155,6 +173,61 @@ const ordenController = {
         } catch (error) {
             console.error('Error al listar órdenes:', error);
             res.status(500).json({ error: 'Error al obtener órdenes' });
+        }
+    },
+    
+    // Cancelar orden
+    async cancelarOrden(req, res) {
+        try {
+            const { ordenId } = req.params;
+            
+            // Primero verificar que la orden exista y no esté ya cancelada o completada
+            const ordenExistente = await prisma.orden.findUnique({
+                where: { id: parseInt(ordenId) },
+                include: { cliente: true }
+            });
+            
+            if (!ordenExistente) {
+                return res.status(404).json({ error: 'Orden no encontrada' });
+            }
+            
+            if (ordenExistente.estado === 'CANCELADA') {
+                return res.status(400).json({ error: 'La orden ya está cancelada' });
+            }
+            
+            if (ordenExistente.estado === 'COMPLETADA') {
+                return res.status(400).json({ error: 'No se puede cancelar una orden completada' });
+            }
+            
+            // Actualizar la orden a estado CANCELADA
+            const orden = await prisma.orden.update({
+                where: { id: parseInt(ordenId) },
+                data: { estado: 'CANCELADA' },
+                include: {
+                    cliente: true,
+                    servicios: {
+                        include: {
+                            servicio: true
+                        }
+                    }
+                }
+            });
+            
+            // Crear notificación para el cliente
+            await prisma.notificacion.create({
+                data: {
+                    usuarioId: orden.cliente.usuarioId,
+                    tipo: 'ORDEN',
+                    mensaje: `Tu orden #${ordenId} ha sido cancelada`,
+                    enlaceId: parseInt(ordenId),
+                    enlaceTipo: 'ORDEN'
+                }
+            });
+            
+            res.json({ mensaje: 'Orden cancelada exitosamente', orden });
+        } catch (error) {
+            console.error('Error al cancelar orden:', error);
+            res.status(500).json({ error: 'Error al cancelar la orden' });
         }
     }
 };

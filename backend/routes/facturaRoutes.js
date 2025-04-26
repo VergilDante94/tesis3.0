@@ -47,4 +47,18 @@ router.post('/sync-estados',
     facturaController.sincronizarEstadosFacturas
 );
 
+// Ruta para actualizar el total de una factura
+router.put('/:id/actualizar-total',
+    authMiddleware.verificarToken,
+    authMiddleware.verificarRol(['ADMIN', 'TRABAJADOR', 'CLIENTE']),
+    facturaController.actualizarTotal
+);
+
+// Ruta para eliminar una factura (solo admin)
+router.delete('/:id',
+    authMiddleware.verificarToken,
+    authMiddleware.verificarRol(['ADMIN']),
+    facturaController.eliminar
+);
+
 module.exports = router;

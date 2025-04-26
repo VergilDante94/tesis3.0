@@ -128,7 +128,9 @@ const facturaController = {
                         usuarioId: orden.cliente.usuarioId,
                         mensaje: `Se ha generado la factura #${factura.id} para tu orden #${orden.id}`,
                         tipo: 'FACTURA',
-                        entidadId: factura.id
+                        enlaceId: factura.id,
+                        enlaceTipo: 'FACTURA',
+                        estado: 'PENDIENTE'
                     }
                 });
                 console.log('Notificación creada exitosamente');
@@ -570,6 +572,159 @@ const facturaController = {
         } catch (error) {
             console.error('Error en sincronización de facturas:', error);
             res.status(500).json({ error: 'Error al sincronizar estados de facturas' });
+        }
+    },
+
+    // Actualizar el total de una factura
+    async actualizarTotal(req, res) {
+        try {
+            const { id } = req.params;
+            const { total } = req.body;
+
+            if (!total || total <= 0) {
+                return res.status(400).json({ message: 'El total debe ser un número positivo' });
+            }
+
+            // Buscar la factura
+            const factura = await prisma.factura.findUnique({
+                where: { id: parseInt(id) }
+            });
+
+            if (!factura) {
+                return res.status(404).json({ message: 'Factura no encontrada' });
+            }
+
+            // Actualizar el total (y subtotal si es necesario)
+            const facturaActualizada = await prisma.factura.update({
+                where: { id: parseInt(id) },
+                data: {
+                    total: parseFloat(total),
+                    subtotal: parseFloat(total) // También actualizamos el subtotal
+                }
+            });
+
+            // Intentar actualizar el PDF si existe
+            try {
+                if (factura.archivoPath) {
+                    // Buscar datos completos para regenerar el PDF
+                    const facturaCompleta = await prisma.factura.findUnique({
+                        where: { id: parseInt(id) },
+                        include: {
+                            orden: {
+                                include: {
+                                    cliente: {
+                                        include: { 
+                                            usuario: { 
+                                                select: { nombre: true, email: true, direccion: true, telefono: true } 
+                                            } 
+                                        }
+                                    },
+                                    servicios: {
+                                        include: { servicio: true }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    
+                    // Preparar datos para el PDF
+                    const detalles = facturaCompleta.orden.servicios.map(os => ({
+                        servicio: os.servicio.nombre,
+                        cantidad: os.cantidad,
+                        precioUnitario: os.precioUnitario,
+                        importe: os.cantidad * os.precioUnitario
+                    }));
+                    
+                    // Si no hay detalles (compra), crear uno genérico
+                    if (detalles.length === 0) {
+                        detalles.push({
+                            servicio: 'Productos',
+                            cantidad: 1,
+                            precioUnitario: total,
+                            importe: total
+                        });
+                    }
+                    
+                    const pdfData = {
+                        numeroFactura: `FC-${facturaCompleta.id}`,
+                        fecha: new Date(facturaCompleta.fechaEmision).toISOString().split('T')[0],
+                        cliente: {
+                            nombre: facturaCompleta.orden.cliente.usuario.nombre,
+                            email: facturaCompleta.orden.cliente.usuario.email,
+                            direccion: facturaCompleta.orden.cliente.usuario.direccion || 'N/A',
+                            telefono: facturaCompleta.orden.cliente.usuario.telefono || 'N/A'
+                        },
+                        numeroOrden: facturaCompleta.orden.id,
+                        detalles,
+                        subtotal: parseFloat(total),
+                        total: parseFloat(total)
+                    };
+                    
+                    // Regenerar el PDF
+                    const pdfBuffer = await PDFService.generarFacturaPDF(pdfData);
+                    const pdfFileName = path.basename(factura.archivoPath);
+                    
+                    // Guardar el PDF actualizado
+                    await PDFService.guardarPDF(pdfBuffer, pdfFileName);
+                }
+            } catch (pdfError) {
+                console.error('Error al actualizar el PDF de la factura:', pdfError);
+                // No interrumpimos el proceso por un error en la actualización del PDF
+            }
+
+            res.json({
+                message: 'Total de factura actualizado correctamente',
+                factura: facturaActualizada
+            });
+        } catch (error) {
+            console.error('Error al actualizar el total de la factura:', error);
+            res.status(500).json({ 
+                message: 'Error al actualizar el total de la factura',
+                error: error.message
+            });
+        }
+    },
+
+    // Eliminar una factura
+    async eliminar(req, res) {
+        try {
+            const { id } = req.params;
+            console.log(`Iniciando eliminación de factura ${id}`);
+
+            // Verificar si la factura existe
+            const factura = await prisma.factura.findUnique({
+                where: { id: parseInt(id) }
+            });
+
+            if (!factura) {
+                return res.status(404).json({ message: 'Factura no encontrada' });
+            }
+
+            // Guardar la ruta del archivo para eliminarlo después
+            const archivoPath = factura.archivoPath;
+
+            // Eliminar la factura de la base de datos
+            await prisma.factura.delete({
+                where: { id: parseInt(id) }
+            });
+
+            // Eliminar el archivo PDF si existe
+            if (archivoPath) {
+                const pdfPath = path.join(__dirname, '../../public', archivoPath);
+                if (fs.existsSync(pdfPath)) {
+                    fs.unlinkSync(pdfPath);
+                    console.log(`Archivo PDF eliminado: ${pdfPath}`);
+                }
+            }
+
+            console.log(`Factura ${id} eliminada correctamente`);
+            res.json({ message: 'Factura eliminada correctamente' });
+        } catch (error) {
+            console.error('Error al eliminar factura:', error);
+            res.status(500).json({
+                message: 'Error al eliminar la factura',
+                error: error.message
+            });
         }
     }
 };

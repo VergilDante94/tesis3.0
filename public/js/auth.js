@@ -10,6 +10,11 @@ const auth = {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${this.token || localStorage.getItem('token')}`
         };
+    },
+    
+    // Método para verificar si el usuario está autenticado
+    estaAutenticado() {
+        return !!(this.token || localStorage.getItem('token'));
     }
 };
 

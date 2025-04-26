@@ -10,7 +10,20 @@ const facturasManager = {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Error al generar prefactura');
             }
-            return await response.json();
+            const factura = await response.json();
+            
+            // Obtener datos de la orden para la notificación
+            const ordenResponse = await fetch(`/api/ordenes/${ordenId}`, {
+                headers: auth.getHeaders()
+            });
+            const orden = await ordenResponse.json();
+            
+            // Generar notificación
+            if (window.notificacionesUtils) {
+                notificacionesUtils.notificarEventoFactura(factura, 'CREAR', orden);
+            }
+            
+            return factura;
         } catch (error) {
             console.error('Error al generar prefactura:', error);
             throw error;
@@ -48,6 +61,54 @@ const facturasManager = {
             return await response.json();
         } catch (error) {
             console.error('Error al obtener prefacturas:', error);
+            throw error;
+        }
+    },
+
+    async eliminarFactura(facturaId) {
+        try {
+            const response = await fetch(`/api/facturas/${facturaId}`, {
+                method: 'DELETE',
+                headers: auth.getHeaders()
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al eliminar la prefactura');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Error al eliminar prefactura:', error);
+            throw error;
+        }
+    },
+
+    async actualizarFactura(facturaId, datos) {
+        try {
+            const response = await fetch(`/api/facturas/${facturaId}`, {
+                method: 'PUT',
+                headers: auth.getHeaders(),
+                body: JSON.stringify(datos)
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al actualizar la prefactura');
+            }
+            const factura = await response.json();
+            
+            // Obtener datos de la orden para la notificación
+            const ordenResponse = await fetch(`/api/ordenes/${factura.ordenId}`, {
+                headers: auth.getHeaders()
+            });
+            const orden = await ordenResponse.json();
+            
+            // Generar notificación
+            if (window.notificacionesUtils) {
+                notificacionesUtils.notificarEventoFactura(factura, 'ACTUALIZAR', orden);
+            }
+            
+            return factura;
+        } catch (error) {
+            console.error('Error al actualizar prefactura:', error);
             throw error;
         }
     }
@@ -149,10 +210,14 @@ async function mostrarListaPrefacturas() {
                     <th>Total</th>
                     <th>Estado</th>
                     <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                ${prefacturas.map(prefactura => `
+                </tr>
+            </thead>
+            <tbody>
+                ${prefacturas.map(prefactura => {
+                    // Verificar si el usuario es administrador
+                    const esAdmin = usuarioInfo.tipo === 'ADMIN';
+                    
+                    return `
                     <tr>
                         <td>${prefactura.id}</td>
                         <td>#${prefactura.ordenId}</td>
@@ -163,7 +228,7 @@ async function mostrarListaPrefacturas() {
                         <td>$${prefactura.total.toFixed(2)}</td>
                         <td>
                             <span class="badge bg-success">
-                                COMPLETADA
+                                ${prefactura.estado || 'COMPLETADA'}
                             </span>
                         </td>
                         <td>
@@ -174,10 +239,15 @@ async function mostrarListaPrefacturas() {
                                 <button class="btn btn-sm btn-info" onclick="imprimirFactura(${prefactura.id})">
                                     <i class="fas fa-print"></i>
                                 </button>
+                                ${esAdmin ? `
+                                <button class="btn btn-sm btn-danger" onclick="eliminarFactura(${prefactura.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                ` : ''}
                             </div>
                         </td>
                     </tr>
-                `).join('')}
+                `}).join('')}
             </tbody>
         `;
         
@@ -215,74 +285,22 @@ async function descargarFactura(prefacturaId) {
 
         console.log('Iniciando descarga de prefactura:', prefacturaId);
         
-        // Configurar el timeout para la petición
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos de timeout
-
-        try {
-            // Solicitar el PDF al servidor usando auth.getHeaders()
-            const response = await fetch(`/api/facturas/${prefacturaId}/pdf`, {
-                method: 'GET',
-            headers: {
-                    ...auth.getHeaders(),
-                    'Accept': 'application/pdf'
-                },
-                signal: controller.signal
-            });
-            
-            clearTimeout(timeoutId); // Limpiar el timeout si la petición fue exitosa
-            
-            // Verificar si la respuesta es un PDF o un error JSON
-            const contentType = response.headers.get('content-type');
-        
-        if (!response.ok) {
-                // Si es un error, intentar leerlo como JSON
-                if (contentType && contentType.includes('application/json')) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || `Error al generar PDF: ${response.status}`);
-                } else {
-            throw new Error(`Error al generar PDF: ${response.status}`);
-                }
-            }
-            
-            // Verificar que sea un PDF
-            if (!contentType || !contentType.includes('application/pdf')) {
-                throw new Error('La respuesta no es un PDF válido');
+        // Obtener el token para incluirlo en la URL
+        const token = localStorage.getItem('token');
+        if (!token) {
+            throw new Error('No hay token de autenticación disponible');
         }
         
-        // Convertir la respuesta a blob
-        const blob = await response.blob();
+        // Abrir directamente en una nueva ventana para evitar problemas con Content-Type
+        // Usamos el endpoint pdf-download que ya existe en el servidor
+        const url = `/api/facturas/${prefacturaId}/pdf-download?token=${token}`;
+        window.open(url, '_blank');
         
-        // Crear URL para el blob
-        const url = window.URL.createObjectURL(blob);
-        
-        // Crear enlace de descarga
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-            a.download = `factura-${prefacturaId}.pdf`;
-        
-            // Agregar al documento y hacer clic
-        document.body.appendChild(a);
-        a.click();
-        
-        // Limpiar
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-        
-            // Mostrar mensaje de éxito
-            mostrarAlerta('PDF descargado exitosamente', 'success');
-        } catch (fetchError) {
-            clearTimeout(timeoutId); // Limpiar el timeout en caso de error
-            
-            if (fetchError.name === 'AbortError') {
-                throw new Error('La solicitud tardó demasiado tiempo en responder');
-            }
-            throw fetchError;
-        }
+        // Mostrar mensaje de éxito
+        mostrarAlerta('PDF abierto en nueva ventana', 'success');
     } catch (error) {
-        console.error('Error al descargar prefactura:', error);
-        mostrarAlerta(`Error al descargar la prefactura: ${error.message}`, 'error');
+        console.error('Error al abrir prefactura:', error);
+        mostrarAlerta(`Error al abrir la prefactura: ${error.message}`, 'danger');
     }
 }
 
@@ -385,6 +403,31 @@ function mostrarAlerta(mensaje, tipo) {
     }, 3000);
 }
 
+// Función para eliminar una factura
+async function eliminarFactura(facturaId) {
+    // Confirmar la eliminación
+    if (!confirm('¿Está seguro de que desea eliminar esta factura? Esta acción no se puede deshacer.')) {
+        return;
+    }
+
+    try {
+        // Mostrar cargando
+        mostrarAlerta('Eliminando factura...', 'info');
+
+        // Llamar al servicio para eliminar la factura
+        await facturasManager.eliminarFactura(facturaId);
+
+        // Mostrar mensaje de éxito
+        mostrarAlerta('Factura eliminada correctamente', 'success');
+
+        // Recargar la lista de facturas
+        await mostrarListaPrefacturas();
+    } catch (error) {
+        console.error('Error al eliminar factura:', error);
+        mostrarAlerta(`Error al eliminar la factura: ${error.message}`, 'danger');
+    }
+}
+
 // Inicializar módulo de prefacturas
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Inicializando módulo de prefacturas...');
@@ -409,9 +452,17 @@ document.addEventListener('DOMContentLoaded', function() {
     window.mostrarListaFacturas = mostrarListaPrefacturas; // Mantener compatibilidad con nombre antiguo
     window.descargarFactura = descargarFactura;
     window.imprimirFactura = imprimirFactura;
+    window.eliminarFactura = eliminarFactura;
     
     // Exponer el módulo de prefacturas
     window.facturasManager = facturasManager;
     
     console.log('Módulo de prefacturas inicializado correctamente');
+});
+
+// Inicializar la vista de facturas cuando se cargue la página
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('facturasDatos')) {
+        mostrarListaPrefacturas();
+    }
 });
