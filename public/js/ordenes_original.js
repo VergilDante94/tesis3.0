@@ -560,9 +560,9 @@ async function mostrarDetalleOrden(ordenId) {
                             </small>
                         </div>
                         </div>
-                    </div>
+                    </div>  
                 `;
-        }).join('');
+        }).jo  in('');
         
         // Añadir eventos para ver detalles
         document.querySelectorAll('.ver-detalle-orden').forEach(btn => {
@@ -838,9 +838,10 @@ async function mostrarListaOrdenes(filtros = {}) {
         
         if (!Array.isArray(ordenes) || ordenes.length === 0) {
             ordenesContainer.innerHTML = `
-                <div class="alert alert-info">
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
                     <i class="fas fa-info-circle"></i>
                     No hay órdenes disponibles con los filtros seleccionados.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             `;
             return;
@@ -1028,7 +1029,11 @@ function confirmarCancelarOrden(ordenId) {
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
         confirmButtonText: 'Sí, cancelar',
-        cancelButtonText: 'No, mantener'
+        cancelButtonText: 'No, mantener',
+        input: undefined,
+        file: undefined,
+        select: undefined,
+        textarea: undefined
     }).then((result) => {
         if (result.isConfirmed) {
             ordenesManager.cancelarOrden(ordenId);
@@ -1048,7 +1053,11 @@ function confirmarEliminarOrden(ordenId) {
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
         confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'No, mantener'
+        cancelButtonText: 'No, mantener',
+        input: undefined,
+        file: undefined,
+        select: undefined,
+        textarea: undefined
     }).then((result) => {
         if (result.isConfirmed) {
             eliminarOrden(ordenId);

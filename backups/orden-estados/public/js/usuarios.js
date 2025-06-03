@@ -111,6 +111,20 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.log('La tabla de usuarios no está visible actualmente');
     }
+
+    // Asegurar que el checkbox recargue la lista de usuarios al cambiar y recuerde su estado
+    const checkbox = document.getElementById('mostrar-inactivos');
+    if (checkbox) {
+        // Restaurar estado guardado
+        const saved = localStorage.getItem('mostrarInactivos');
+        if (saved !== null) {
+            checkbox.checked = saved === 'true';
+        }
+        checkbox.addEventListener('change', function() {
+            localStorage.setItem('mostrarInactivos', checkbox.checked);
+            loadUsers();
+        });
+    }
 });
 
 // Función para cargar usuarios
@@ -149,6 +163,11 @@ async function loadUsers() {
 
         const usuarios = await response.json();
         mostrarUsuarios(usuarios);
+        // Sincronizar el estado visual del checkbox con la lógica (opcional, pero seguro)
+        const checkbox = document.getElementById('mostrar-inactivos');
+        if (checkbox) {
+            checkbox.checked = mostrarInactivos;
+        }
     } catch (error) {
         console.error('Error al cargar usuarios:', error);
         mostrarAlerta('Error al cargar usuarios', 'danger');
@@ -736,4 +755,4 @@ function showSection(sectionId) {
             link.classList.add('active');
         }
     });
-} 
+}

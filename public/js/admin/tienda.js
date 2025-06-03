@@ -188,7 +188,11 @@ async function eliminarCategoria(id) {
             cancelButtonColor: '#1a472a',
             confirmButtonText: 'Sí, eliminar',
             cancelButtonText: 'Cancelar',
-            buttonsStyling: true
+            buttonsStyling: true,
+            input: undefined,
+            file: undefined,
+            select: undefined,
+            textarea: undefined
         });
 
         if (!confirmacion.isConfirmed) return;
@@ -480,7 +484,11 @@ async function eliminarProducto(id) {
             cancelButtonColor: '#1a472a',
             confirmButtonText: 'Sí, eliminar',
             cancelButtonText: 'Cancelar',
-            buttonsStyling: true
+            buttonsStyling: true,
+            input: undefined,
+            file: undefined,
+            select: undefined,
+            textarea: undefined
         });
 
         if (!confirmacion.isConfirmed) return;
@@ -578,7 +586,11 @@ function mostrarExito(mensaje) {
         title: 'Éxito',
         text: mensaje,
         timer: 1500,
-        showConfirmButton: false
+        showConfirmButton: false,
+        input: undefined,
+        file: undefined,
+        select: undefined,
+        textarea: undefined
     });
 }
 
@@ -586,7 +598,11 @@ function mostrarError(mensaje) {
     Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: mensaje
+        text: mensaje,
+        input: undefined,
+        file: undefined,
+        select: undefined,
+        textarea: undefined
     });
 }
 

@@ -115,43 +115,53 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Función para cargar usuarios
 async function loadUsers() {
+    console.log('Iniciando loadUsers()...');
     try {
         const token = localStorage.getItem('token');
+        console.log('Token obtenido:', token ? 'Sí' : 'No');
+        
         const userData = window.getUserInfo();
+        console.log('Datos del usuario:', userData);
         
         if (!userData || userData.tipo !== 'ADMIN') {
-            console.error('Usuario no autorizado');
+            console.error('Usuario no autorizado:', userData);
             mostrarAlerta('No tienes permisos para ver usuarios', 'error');
             return;
         }
 
         const tbody = document.getElementById('tablaUsuarios');
         if (!tbody) {
-            console.error('No se encontró la tabla de usuarios');
+            console.error('No se encontró el elemento tablaUsuarios');
             return;
         }
+        console.log('Elemento tablaUsuarios encontrado');
 
         const mostrarInactivos = document.getElementById('mostrar-inactivos')?.checked || false;
+        console.log('Mostrar inactivos:', mostrarInactivos);
         
         const url = mostrarInactivos 
             ? '/api/usuarios?mostrarInactivos=true'
             : '/api/usuarios';
+        console.log('URL de la petición:', url);
 
+        console.log('Realizando petición a la API...');
         const response = await fetch(url, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         });
 
+        console.log('Respuesta recibida:', response.status, response.statusText);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const usuarios = await response.json();
+        console.log('Usuarios recibidos:', usuarios);
         mostrarUsuarios(usuarios);
     } catch (error) {
-        console.error('Error al cargar usuarios:', error);
-        mostrarAlerta('Error al cargar usuarios', 'danger');
+        console.error('Error detallado en loadUsers:', error);
+        mostrarAlerta('Error al cargar usuarios: ' + error.message, 'danger');
     }
 }
 

@@ -123,9 +123,18 @@ async function refreshUserInfo() {
     }
 }
 
+/**
+ * Obtiene el token JWT almacenado en localStorage
+ * @returns {string|null} - El token JWT o null si no existe
+ */
+function getToken() {
+    return localStorage.getItem('token');
+}
+
 // Exponer las funciones globalmente
 window.decodeJWT = decodeJWT;
 window.getUserType = getUserType;
 window.getUserId = getUserId;
 window.getUserInfo = getUserInfo;
-window.refreshUserInfo = refreshUserInfo; 
+window.refreshUserInfo = refreshUserInfo;
+window.getToken = getToken;

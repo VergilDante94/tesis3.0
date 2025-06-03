@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const usuarioController = require('../controllers/usuarioController');
-const verificarToken = require('../middleware/auth');
+const { verificarToken } = require('../middleware/auth');
 
 // Ruta pública para crear el administrador inicial
 router.post('/admin/inicial', usuarioController.crearAdminInicial);

@@ -159,7 +159,7 @@ const crearProducto = async (req, res) => {
         await prisma.stock.create({
             data: {
                 productoId: producto.id,
-                cantidad: 0
+                cantidad: req.body.cantidad ? parseInt(req.body.cantidad) : 0
             }
         });
 

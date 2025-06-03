@@ -407,6 +407,71 @@ async function realizarCompra() {
     }
 }
 
+/**
+ * Elimina una categoría por su ID
+ * @param {number} categoriaId - ID de la categoría a eliminar
+ */
+async function eliminarCategoria(categoriaId) {
+    // DEBUG: Confirma que la función se llama
+    console.log('%c[Admin Tienda] eliminarCategoria llamada con ID:', 'color: purple; font-weight: bold;', categoriaId);
+
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.warn('%c[Admin Tienda] No token found', 'color: orange; font-weight: bold;');
+            mostrarError('No tienes permisos para realizar esta acción');
+            return;
+        }
+
+        console.log('%c[Admin Tienda] Intentando eliminar categoría: ' + categoriaId, 'color: #1976d2; font-weight: bold;');
+
+        const response = await fetch(`/api/tienda/categorias/${categoriaId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        console.log('%c[Admin Tienda] DELETE /api/tienda/categorias/' + categoriaId, 'color: #1976d2; font-weight: bold;');
+        console.log('%cStatus: ' + response.status, 'color: #388e3c; font-weight: bold;');
+        console.log('%cHeaders:', 'color: #388e3c;', [...response.headers.entries()]);
+
+        if (!response.ok) {
+            let errorMsg = `Error al eliminar la categoría (HTTP ${response.status})`;
+            let responseText = '';
+            try {
+                responseText = await response.text();
+                console.log('%cResponse body:', 'color: #d32f2f;', responseText);
+                try {
+                    const data = JSON.parse(responseText);
+                    if (data && data.error) errorMsg = data.error + ` (HTTP ${response.status})`;
+                    else if (data && data.message) errorMsg = data.message + ` (HTTP ${response.status})`;
+                } catch (jsonErr) {
+                    if (responseText) errorMsg = responseText + ` (HTTP ${response.status})`;
+                }
+            } catch (e) {
+                console.log('%cNo se pudo leer el cuerpo de la respuesta.', 'color: #d32f2f;');
+            }
+            console.warn('%c[Admin Tienda] Lanzando error: ' + errorMsg, 'color: orange; font-weight: bold;');
+            throw new Error(errorMsg);
+        }
+
+        console.log('%c[Admin Tienda] Categoría eliminada correctamente', 'color: #388e3c; font-weight: bold;');
+        mostrarExito('Categoría eliminada correctamente');
+        await cargarCategorias();
+        await cargarProductos();
+    } catch (error) {
+        console.error('%c[Admin Tienda] Error al eliminar categoría:', 'color: red; font-weight: bold;', error);
+        if (error && typeof error === 'object') {
+            console.error('%c[Admin Tienda] Error details:', 'color: red;', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+        }
+        mostrarError(error && error.message ? error.message : String(error));
+    }
+}
+
+// Asegura que la función esté disponible globalmente
+window.eliminarCategoria = eliminarCategoria;
+
 // Funciones de utilidad
 function mostrarExito(mensaje) {
     Swal.fire({

@@ -1,30 +1,21 @@
+// Archivo: public/js/notificaciones.js
+
+// --- NOTIFICACIONES ---
 const notificacionesManager = {
     async obtenerNotificaciones() {
         try {
-            // Verificar si auth y usuario existen
-            if (!auth || !auth.usuario) {
-                console.warn('Usuario no autenticado o no inicializado completamente');
-                return [];
-            }
-            
             const response = await fetch(`/api/notificaciones/usuario/${auth.usuario.id}`, {
                 headers: auth.getHeaders()
             });
             return await response.json();
         } catch (error) {
             console.error('Error al obtener notificaciones:', error);
-            return []; // Devolver array vacío en caso de error
+            throw error;
         }
     },
 
     async marcarComoLeida(notificacionId) {
         try {
-            // Verificar si auth y usuario existen
-            if (!auth || !auth.usuario) {
-                console.warn('Usuario no autenticado o no inicializado completamente');
-                return { success: false };
-            }
-            
             const response = await fetch(`/api/notificaciones/${notificacionId}/leer`, {
                 method: 'PUT',
                 headers: auth.getHeaders()
@@ -38,12 +29,6 @@ const notificacionesManager = {
 
     async marcarTodasComoLeidas() {
         try {
-            // Verificar si auth y usuario existen
-            if (!auth || !auth.usuario) {
-                console.warn('Usuario no autenticado o no inicializado completamente');
-                return { success: false };
-            }
-            
             const response = await fetch(`/api/notificaciones/usuario/${auth.usuario.id}/leer-todas`, {
                 method: 'PUT',
                 headers: auth.getHeaders()
@@ -53,342 +38,187 @@ const notificacionesManager = {
             console.error('Error al marcar notificaciones:', error);
             throw error;
         }
-    },
-
-    async crearNotificacion(usuarioId, tipo, mensaje) {
-        try {
-            // Verificar autenticación
-            if (!auth || !auth.usuario) {
-                console.warn('Usuario no autenticado o no inicializado completamente');
-                return { success: false };
-            }
-            
-            const response = await fetch(`/api/notificaciones`, {
-                method: 'POST',
-                headers: auth.getHeaders(),
-                body: JSON.stringify({
-                    usuarioId,
-                    tipo,
-                    mensaje
-                })
-            });
-            
-            return await response.json();
-        } catch (error) {
-            console.error('Error al crear notificación:', error);
-            throw error;
-        }
-    },
-
-    async notificarAdmins(tipo, mensaje) {
-        try {
-            // Verificar autenticación
-            if (!auth || !auth.usuario) {
-                console.warn('Usuario no autenticado o no inicializado completamente');
-                return { success: false };
-            }
-            
-            const response = await fetch(`/api/notificaciones/admins`, {
-                method: 'POST',
-                headers: auth.getHeaders(),
-                body: JSON.stringify({
-                    tipo,
-                    mensaje
-                })
-            });
-            
-            return await response.json();
-        } catch (error) {
-            console.error('Error al notificar a administradores:', error);
-            throw error;
-        }
     }
 };
 
-// Sistema de notificaciones en tiempo real
 let notificacionesInterval;
 
 function iniciarNotificaciones() {
-    // Verificar si auth y usuario existen
-    console.log('[NotificacionesDebug] Iniciando sistema de notificaciones, estado auth:', {
-        auth: typeof auth,
-        initialized: auth && auth.initialized,
-        token: auth && auth.token ? 'presente' : 'ausente',
-        usuario: auth && auth.usuario
-    });
-    
-    // Intentar recuperar el usuario desde localStorage
-    if (!auth || !auth.usuario) {
-        console.warn('Usuario no autenticado o no inicializado completamente, no se puede iniciar notificaciones');
-        
-        try {
-            const usuarioGuardado = JSON.parse(localStorage.getItem('usuario'));
-            if (usuarioGuardado && usuarioGuardado.id) {
-                console.log('[NotificacionesDebug] Usuario recuperado desde localStorage:', usuarioGuardado);
-                // Actualizar auth
-                if (auth) {
-                    auth.usuario = usuarioGuardado;
-                    auth.initialized = true;
-                    auth.token = localStorage.getItem('token');
-                    console.log('[NotificacionesDebug] Objeto auth actualizado con localStorage');
-                }
-            } else {
-                return; // Salir si no hay usuario
-            }
-        } catch (e) {
-            console.error('[NotificacionesDebug] Error al recuperar usuario:', e);
-            return;
-        }
-    }
-    
-    // Verificar autenticación de manera segura
-    const estaAutenticado = auth && (typeof auth.estaAutenticado === 'function' ? 
-        auth.estaAutenticado() : !!localStorage.getItem('token'));
-    
-    if (!auth || !auth.usuario || !estaAutenticado) {
-        console.warn('[NotificacionesDebug] Verificación de autenticación falló, no se iniciará el sistema de notificaciones');
-        return;
-    }
-    
-    console.log('Iniciando sistema de notificaciones para usuario:', auth.usuario.id);
+    console.log('[NOTIF DEBUG] iniciarNotificaciones called');
     actualizarNotificaciones();
-    notificacionesInterval = setInterval(actualizarNotificaciones, 30000); // Actualizar cada 30 segundos
+    notificacionesInterval = setInterval(actualizarNotificaciones, 30000); // 30s
 }
 
 function detenerNotificaciones() {
+    console.log('[NOTIF DEBUG] detenerNotificaciones called');
     if (notificacionesInterval) {
         clearInterval(notificacionesInterval);
     }
 }
 
 async function actualizarNotificaciones() {
+    console.log('[NOTIF DEBUG] actualizarNotificaciones called');
     try {
-        // Verificar si auth existe y está inicializado
-        console.log('[NotificacionesDebug] Actualizando notificaciones, estado auth:', {
-            auth: typeof auth,
-            initialized: auth && auth.initialized,
-            usuario: auth && auth.usuario
-        });
-        
-        // Siempre intentar recargar el objeto auth desde localStorage
-        if (!auth || !auth.usuario) {
-            console.warn('[NotificacionesDebug] Auth no inicializado, intentando recargar desde localStorage');
-            try {
-                const usuarioGuardado = JSON.parse(localStorage.getItem('usuario'));
-                if (usuarioGuardado && usuarioGuardado.id) {
-                    if (auth) {
-                        auth.usuario = usuarioGuardado;
-                        auth.initialized = true;
-                        auth.token = localStorage.getItem('token');
-                        console.log('[NotificacionesDebug] Auth recargado exitosamente:', auth.usuario);
-                    }
-                }
-            } catch (e) {
-                console.error('[NotificacionesDebug] Error al recargar auth desde localStorage:', e);
-            }
-        }
-        
-        // Verificar autenticación de manera segura
-        const estaAutenticado = auth && (typeof auth.estaAutenticado === 'function' ? 
-            auth.estaAutenticado() : !!localStorage.getItem('token'));
-        
-        if (!auth || !auth.usuario || !estaAutenticado) {
-            console.warn('Usuario no autenticado o no inicializado completamente, omitiendo actualización');
-            return;
-        }
-        
         const notificaciones = await notificacionesManager.obtenerNotificaciones();
-        
-        // Verificar que notificaciones sea un array
-        if (!Array.isArray(notificaciones)) {
-            console.warn('[NotificacionesDebug] La respuesta no es un array:', notificaciones);
-            // Si no hay ruta de notificaciones en el backend, mostrar un mensaje y mostrar array vacío
-            const container = document.getElementById('notificacionesDatos');
-            if (container && container.style.display !== 'none') {
-                container.innerHTML = `
-                    <div class="alert alert-warning">
-                        El servicio de notificaciones no está disponible en este momento.
-                    </div>
-                `;
-            }
-            
-            // Actualizar contador a 0
-            const contador = document.getElementById('notificacionesContador');
-            if (contador) {
-                contador.textContent = '0';
-                contador.style.display = 'none';
-            }
-            return;
-        }
-        
+        console.log('[NOTIF DEBUG] notificaciones obtenidas:', notificaciones);
         const notificacionesNoLeidas = notificaciones.filter(n => n.estado === 'PENDIENTE');
-        
         // Actualizar contador en el menú
         const contador = document.getElementById('notificacionesContador');
         if (contador) {
             contador.textContent = notificacionesNoLeidas.length;
             contador.style.display = notificacionesNoLeidas.length > 0 ? 'inline' : 'none';
         }
-
         // Actualizar panel de notificaciones si está visible
         const container = document.getElementById('notificacionesDatos');
-        if (container && container.style.display !== 'none') {
+        if (container && container.offsetParent !== null) {
             mostrarNotificaciones(notificaciones);
         }
     } catch (error) {
-        console.error('Error al actualizar notificaciones:', error);
-        
-        // Manejo de error
-        const container = document.getElementById('notificacionesDatos');
-        if (container && container.style.display !== 'none') {
-            container.innerHTML = `
-                <div class="alert alert-danger">
-                    Error al cargar notificaciones: ${error.message || 'Error desconocido'}
-                </div>
-            `;
-        }
+        console.error('[NOTIF DEBUG] Error al actualizar notificaciones:', error);
     }
 }
 
-function mostrarNotificaciones(notificaciones) {
-    const container = document.getElementById('notificacionesDatos');
-    
-    if (!container) {
-        console.warn('Contenedor de notificaciones no encontrado');
+// Adaptación para notificaciones.html (cargar en #notificacionesList)
+async function cargarNotificaciones() {
+    const container = document.getElementById('notificacionesList');
+    if (container) {
+        container.innerHTML = '<div class="loader" aria-label="Cargando notificaciones..."></div>';
+    }
+    let timeoutId;
+    try {
+        // Mostrar mensaje si tarda más de 3 segundos
+        timeoutId = setTimeout(() => {
+            if (container) {
+                container.innerHTML = '<div class="alert alert-info">La carga de notificaciones está tardando más de lo normal...</div>';
+            }
+        }, 3000);
+        if (typeof auth === 'undefined' || !auth.usuario) {
+            if (container) container.innerHTML = '<div class="alert alert-warning">Debes iniciar sesión para ver tus notificaciones.</div>';
+            return;
+        }
+        console.log('[NOTIF DEBUG] cargarNotificaciones: auth.usuario', auth.usuario);
+        const tFetch0 = performance.now();
+        const notificaciones = await notificacionesManager.obtenerNotificaciones();
+        const tFetch1 = performance.now();
+        console.log(`[NOTIF PERF] obtenerNotificaciones (fetch) tardó ${(tFetch1-tFetch0).toFixed(2)} ms`);
+        clearTimeout(timeoutId);
+        console.log('[NOTIF DEBUG] cargarNotificaciones: notificaciones', notificaciones);
+        const t0 = performance.now();
+        mostrarNotificaciones(notificaciones, true); // true: modo notificaciones.html
+        const t1 = performance.now();
+        console.log(`[NOTIF PERF] mostrarNotificaciones ejecutada en ${(t1-t0).toFixed(2)} ms`);
+        // Log después de mostrar notificaciones
+        setTimeout(() => {
+            if (!container) return;
+            const loader = container.querySelector('.loader');
+            if (!loader) {
+                console.log('[NOTIF PERF] Loader oculto tras renderizado');
+            } else {
+                console.log('[NOTIF PERF] Loader sigue visible tras renderizado');
+            }
+        }, 0);
+    } catch (error) {
+        clearTimeout(timeoutId);
+        if (container) container.innerHTML = '<div class="alert alert-danger">Error al cargar notificaciones.</div>';
+        console.error('[NOTIF DEBUG] Error en cargarNotificaciones:', error);
+    }
+}
+
+function mostrarNotificaciones(notificaciones, enNotificacionesHtml = false) {
+    const t0 = performance.now();
+    console.log('[NOTIF DEBUG] mostrarNotificaciones', {notificaciones, enNotificacionesHtml});
+    const container = enNotificacionesHtml ? document.getElementById('notificacionesList') : document.getElementById('notificacionesDatos');
+    if (!container) return;
+    container.innerHTML = '';
+    if (!notificaciones.length) {
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'alert alert-info';
+        infoDiv.textContent = 'No tienes notificaciones.';
+        container.appendChild(infoDiv);
         return;
     }
-    
-    // Asegurar que notificaciones sea un array
-    if (!Array.isArray(notificaciones)) {
-        console.warn('mostrarNotificaciones: notificaciones no es un array', notificaciones);
-        notificaciones = [];
+    const listGroup = document.createElement('div');
+    listGroup.className = 'list-group';
+    const fragment = document.createDocumentFragment();
+    for (const notif of notificaciones) {
+        const item = document.createElement('div');
+        item.className = 'list-group-item' + (notif.estado === 'PENDIENTE' ? ' list-group-item-primary' : '');
+        // Cabecera
+        const header = document.createElement('div');
+        header.className = 'd-flex w-100 justify-content-between';
+        const tipo = document.createElement('h6');
+        tipo.className = 'mb-1';
+        tipo.textContent = notif.tipo;
+        const fecha = document.createElement('small');
+        fecha.textContent = new Date(notif.fecha).toLocaleString();
+        header.appendChild(tipo);
+        header.appendChild(fecha);
+        // Mensaje
+        const mensaje = document.createElement('p');
+        mensaje.className = 'mb-1';
+        mensaje.textContent = notif.mensaje;
+        // Botón marcar como leída
+        item.appendChild(header);
+        item.appendChild(mensaje);
+        if (notif.estado === 'PENDIENTE') {
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-sm btn-light mt-2';
+            btn.textContent = 'Marcar como leída';
+            btn.onclick = () => marcarNotificacionLeida(notif.id);
+            item.appendChild(btn);
+        }
+        listGroup.appendChild(item);
     }
-    
-    if (notificaciones.length === 0) {
-        container.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3>Notificaciones</h3>
-            </div>
-            <div class="alert alert-info">
-                No tienes notificaciones nuevas
-            </div>
-        `;
-        return;
-    }
-    
-    // Ordenar notificaciones con las pendientes primero y luego por fecha
-    notificaciones.sort((a, b) => {
-        // Primero por estado (PENDIENTE primero)
-        if (a.estado === 'PENDIENTE' && b.estado !== 'PENDIENTE') return -1;
-        if (a.estado !== 'PENDIENTE' && b.estado === 'PENDIENTE') return 1;
-        // Luego por fecha (más reciente primero)
-        return new Date(b.fecha) - new Date(a.fecha);
-    });
-    
-    container.innerHTML = `
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3>Notificaciones</h3>
-            <button class="btn btn-sm btn-secondary" onclick="marcarTodasLeidas()">
-                Marcar todas como leídas
-            </button>
-        </div>
-        <div class="list-group">
-            ${notificaciones.map(notif => `
-                <div class="list-group-item ${notif.estado === 'PENDIENTE' ? 'list-group-item-primary' : ''}">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h6 class="mb-1">${notif.tipo}</h6>
-                        <small>${new Date(notif.fecha).toLocaleString()}</small>
-                    </div>
-                    <p class="mb-1">${notif.mensaje}</p>
-                    ${notif.estado === 'PENDIENTE' ? `
-                        <button class="btn btn-sm btn-light mt-2" 
-                                onclick="marcarNotificacionLeida(${notif.id})">
-                            Marcar como leída
-                        </button>
-                    ` : ''}
-                </div>
-            `).join('')}
-        </div>
-    `;
+    fragment.appendChild(listGroup);
+    container.appendChild(fragment);
+    const t1 = performance.now();
+    console.log(`[NOTIF PERF] mostrarNotificaciones DOM update: ${(t1-t0).toFixed(2)} ms`);
+    // Log después de actualizar el DOM
+    setTimeout(() => {
+        if (!container) return;
+        const loader = container.querySelector('.loader');
+        if (!loader) {
+            console.log('[NOTIF PERF] Loader oculto tras mostrarNotificaciones');
+        } else {
+            console.log('[NOTIF PERF] Loader sigue visible tras mostrarNotificaciones');
+        }
+    }, 0);
 }
 
 async function marcarNotificacionLeida(notificacionId) {
+    console.log('[NOTIF DEBUG] marcarNotificacionLeida', notificacionId);
     try {
         await notificacionesManager.marcarComoLeida(notificacionId);
-        actualizarNotificaciones();
+        if (esNotificacionesHtml()) {
+            cargarNotificaciones();
+        } else {
+            actualizarNotificaciones();
+        }
     } catch (error) {
-        console.error('Error al marcar notificación:', error);
+        console.error('[NOTIF DEBUG] Error al marcar notificación:', error);
         alert('Error al marcar la notificación como leída');
     }
 }
 
 async function marcarTodasLeidas() {
+    console.log('[NOTIF DEBUG] marcarTodasLeidas called');
     try {
         await notificacionesManager.marcarTodasComoLeidas();
-        actualizarNotificaciones();
+        if (esNotificacionesHtml()) {
+            cargarNotificaciones();
+        } else {
+            actualizarNotificaciones();
+        }
     } catch (error) {
-        console.error('Error al marcar notificaciones:', error);
+        console.error('[NOTIF DEBUG] Error al marcar notificaciones:', error);
         alert('Error al marcar las notificaciones como leídas');
     }
 }
 
-// Exponer funciones en el objeto window
-window.marcarNotificacionLeida = marcarNotificacionLeida;
-window.marcarTodasLeidas = marcarTodasLeidas;
-window.iniciarNotificaciones = iniciarNotificaciones;
-window.detenerNotificaciones = detenerNotificaciones;
-window.actualizarNotificaciones = actualizarNotificaciones;
+// Exponer cargarNotificaciones globalmente para notificaciones.html
+window.cargarNotificaciones = cargarNotificaciones;
 
-// Función helper para crear notificaciones a todos los usuarios
-async function notificarTodosUsuarios(tipo, mensaje) {
-    try {
-        // Obtener todos los usuarios
-        const response = await fetch('/api/usuarios', {
-            headers: auth.getHeaders()
-        });
-        
-        if (!response.ok) {
-            throw new Error('Error al obtener la lista de usuarios');
-        }
-        
-        const usuarios = await response.json();
-        
-        // Verificar que tengamos un array de usuarios
-        if (!Array.isArray(usuarios)) {
-            throw new Error('La respuesta no es un array de usuarios');
-        }
-        
-        console.log(`Enviando notificación a ${usuarios.length} usuarios`);
-        
-        // Crear notificación para cada usuario
-        const promises = usuarios
-            .filter(usuario => usuario.activo)
-            .map(usuario => 
-                notificacionesManager.crearNotificacion(
-                    usuario.id,
-                    tipo,
-                    mensaje
-                )
-            );
-        
-        const results = await Promise.allSettled(promises);
-        
-        // Contar éxitos y fallos
-        const exitosos = results.filter(r => r.status === 'fulfilled').length;
-        const fallidos = results.filter(r => r.status === 'rejected').length;
-        
-        console.log(`Notificaciones enviadas: ${exitosos} exitosas, ${fallidos} fallidas`);
-        
-        return {
-            total: usuarios.length,
-            exitosos,
-            fallidos
-        };
-    } catch (error) {
-        console.error('Error al enviar notificaciones a todos los usuarios:', error);
-        throw error;
-    }
-}
+// ** NOTA: Exponer funciones necesarias globalmente si script.js las llama directamente **
+// window.cargarNotificaciones = cargarNotificaciones; // Podría ser necesario dependiendo de cómo script.js llama a esta función
 
-// Exponer la función helper
-window.notificarTodosUsuarios = notificarTodosUsuarios;
+// ** En el siguiente paso, integraremos esta función con la lógica de navegación **

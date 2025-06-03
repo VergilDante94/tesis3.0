@@ -104,9 +104,7 @@ const dashboardManager = {
             return {
                 servidorActivo: true,
                 baseDatosActiva: true,
-                ultimoReinicio: new Date().toISOString(),
-                espacioDisponible: "Desconocido",
-                memoria: "Desconocida"
+                ultimoReinicio: new Date().toISOString()
             };
         }
     },
@@ -180,9 +178,7 @@ const dashboardManager = {
         const estadoSistema = {
             servidorActivo: true,
             baseDatosActiva: true,
-            ultimoReinicio: new Date(Date.now() - Math.floor(Math.random() * 864000000)).toISOString(), // Entre 0 y 10 días atrás
-            espacioDisponible: `${Math.floor(Math.random() * 400) + 100} GB`,
-            memoria: `${Math.floor(Math.random() * 60) + 20}%`
+            ultimoReinicio: new Date(Date.now() - Math.floor(Math.random() * 864000000)).toISOString() // Entre 0 y 10 días atrás
         };
         
         return {
@@ -198,12 +194,189 @@ const dashboardManager = {
     }
 };
 
+// Variable global para almacenar las instancias de los gráficos
+let ordenesChart = null;
+let serviciosChart = null;
+let ingresosChart = null;
+
+function crearGraficoOrdenes(datos) {
+    const ctx = document.getElementById('ordenesChart');
+    if (!ctx) {
+        console.warn('No se encontró el canvas para el gráfico de órdenes');
+        return;
+    }
+
+    // Destruir el gráfico existente si existe
+    if (ordenesChart) {
+        ordenesChart.destroy();
+    }
+
+    // Crear nuevo gráfico
+    ordenesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: datos.labels,
+            datasets: [{
+                label: 'Órdenes',
+                data: datos.valores,
+                backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                borderColor: 'rgba(78, 115, 223, 1)',
+                pointBackgroundColor: 'rgba(78, 115, 223, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(78, 115, 223, 1)',
+                tension: 0.3,
+                borderWidth: 2,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        drawBorder: false
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+}
+
+function crearGraficoServicios(datos) {
+    const ctx = document.getElementById('serviciosChart');
+    if (!ctx) {
+        console.warn('No se encontró el canvas para el gráfico de servicios');
+        return;
+    }
+
+    // Destruir el gráfico existente si existe
+    if (serviciosChart) {
+        serviciosChart.destroy();
+    }
+
+    // Crear nuevo gráfico
+    serviciosChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: datos.labels,
+            datasets: [{
+                data: datos.valores,
+                backgroundColor: [
+                    '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'
+                ],
+                hoverBackgroundColor: [
+                    '#2e59d9', '#17a673', '#2c9faf', '#dda20a', '#be2617'
+                ],
+                hoverBorderColor: "rgba(234, 236, 244, 1)",
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            cutout: '70%'
+        }
+    });
+}
+
+function crearGraficoIngresos(datos) {
+    const ctx = document.getElementById('ingresosChart');
+    if (!ctx) {
+        console.warn('No se encontró el canvas para el gráfico de ingresos');
+        return;
+    }
+
+    // Destruir el gráfico existente si existe
+    if (ingresosChart) {
+        ingresosChart.destroy();
+    }
+
+    // Crear nuevo gráfico
+    ingresosChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: datos.labels,
+            datasets: [{
+                label: 'Ingresos',
+                data: datos.valores,
+                backgroundColor: 'rgba(28, 200, 138, 0.05)',
+                borderColor: 'rgba(28, 200, 138, 1)',
+                pointBackgroundColor: 'rgba(28, 200, 138, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(28, 200, 138, 1)',
+                tension: 0.3,
+                borderWidth: 2,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        drawBorder: false
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Función para limpiar todos los gráficos
+function limpiarGraficos() {
+    if (ordenesChart) {
+        ordenesChart.destroy();
+        ordenesChart = null;
+    }
+    if (serviciosChart) {
+        serviciosChart.destroy();
+        serviciosChart = null;
+    }
+    if (ingresosChart) {
+        ingresosChart.destroy();
+        ingresosChart = null;
+    }
+}
+
 // Función principal para cargar el dashboard
 async function cargarDashboard() {
     console.log('Función cargarDashboard ejecutándose...');
     console.log('Chart disponible:', typeof Chart !== 'undefined' ? 'SÍ' : 'NO');
     
     try {
+        // Limpiar gráficos existentes antes de cargar nuevos
+        limpiarGraficos();
+        
         const container = document.getElementById('datos');
         if (!container) {
             console.error('No se encontró el contenedor de datos');
@@ -355,6 +528,22 @@ async function cargarDashboard() {
                     </div>
                 </div>
             </div>
+
+            <!-- Gráfico de Ingresos -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Ingresos Mensuales</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-area">
+                                <canvas id="ingresosChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <!-- Actividad reciente y Estado del sistema -->
             <div class="row">
@@ -401,14 +590,6 @@ async function cargarDashboard() {
                                 <span>Último reinicio:</span>
                                 <span>${new Date(estadoSistema.ultimoReinicio).toLocaleString()}</span>
                             </div>
-                            <div class="d-flex justify-content-between mb-3">
-                                <span>Espacio disponible:</span>
-                                <span>${estadoSistema.espacioDisponible}</span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-3">
-                                <span>Memoria utilizada:</span>
-                                <span>${estadoSistema.memoria}</span>
-                            </div>
                         </div>
                     </div>
                     
@@ -448,78 +629,26 @@ async function cargarDashboard() {
         
         // Cargar gráficos una vez que el DOM esté listo
         setTimeout(() => {
-            // Gráfico de órdenes por mes
-            const ordenesCtx = document.getElementById('ordenesChart').getContext('2d');
-            new Chart(ordenesCtx, {
-                type: 'line',
-                data: {
-                    labels: datosGraficos.ordenesUltimos6Meses.map(d => d.mes),
-                    datasets: [{
-                        label: 'Órdenes',
-                        data: datosGraficos.ordenesUltimos6Meses.map(d => d.total),
-                        backgroundColor: 'rgba(78, 115, 223, 0.05)',
-                        borderColor: 'rgba(78, 115, 223, 1)',
-                        pointBackgroundColor: 'rgba(78, 115, 223, 1)',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgba(78, 115, 223, 1)',
-                        tension: 0.3,
-                        borderWidth: 2,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                drawBorder: false
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                }
-            });
+            // Preparar datos para los gráficos
+            const datosOrdenes = {
+                labels: datosGraficos.ordenesUltimos6Meses.map(d => d.mes),
+                valores: datosGraficos.ordenesUltimos6Meses.map(d => d.total)
+            };
             
-            // Gráfico de servicios más vendidos
-            const serviciosCtx = document.getElementById('serviciosChart').getContext('2d');
-            new Chart(serviciosCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: datosGraficos.serviciosMasVendidos.map(d => d.nombre),
-                    datasets: [{
-                        data: datosGraficos.serviciosMasVendidos.map(d => d.cantidad),
-                        backgroundColor: [
-                            '#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'
-                        ],
-                        hoverBackgroundColor: [
-                            '#2e59d9', '#17a673', '#2c9faf', '#dda20a', '#be2617'
-                        ],
-                        hoverBorderColor: "rgba(234, 236, 244, 1)",
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    },
-                    cutout: '70%'
-                }
-            });
+            const datosServicios = {
+                labels: datosGraficos.serviciosMasVendidos.map(d => d.nombre),
+                valores: datosGraficos.serviciosMasVendidos.map(d => d.cantidad)
+            };
+            
+            const datosIngresos = {
+                labels: datosGraficos.ingresosMensuales.map(d => d.mes),
+                valores: datosGraficos.ingresosMensuales.map(d => d.ingreso)
+            };
+
+            // Crear los gráficos usando las funciones definidas
+            crearGraficoOrdenes(datosOrdenes);
+            crearGraficoServicios(datosServicios);
+            crearGraficoIngresos(datosIngresos);
         }, 100);
 
     } catch (error) {

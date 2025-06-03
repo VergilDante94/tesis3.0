@@ -3,6 +3,9 @@ let modalServicio = null;
 let servicioIdAEliminar = null; // Variable para almacenar el ID del servicio a eliminar
 let modalConfirm;
 
+// Variables globales para filtros
+let serviciosGlobal = [];
+
 // Inicialización cuando el DOM está listo
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚨 Inicializando script de servicios...');
@@ -74,44 +77,45 @@ async function loadServices() {
             throw new Error('Error al cargar servicios');
         }
 
-        const servicios = await response.json();
-        console.log('Servicios cargados:', servicios);
-        mostrarServicios(servicios, window.getUserInfo()?.tipo === 'ADMIN');
+        serviciosGlobal = await response.json();
+        mostrarServiciosFiltrados();
     } catch (error) {
         console.error('Error:', error);
         mostrarAlerta(error.message, 'danger');
     }
 }
 
-// Función para mostrar los servicios en el contenedor
-function mostrarServicios(servicios, isAdmin) {
+// Mostrar servicios filtrados según los filtros
+function mostrarServiciosFiltrados() {
     const container = document.getElementById('servicios-container');
-    
-    // Filtrar solo servicios activos
-    const serviciosActivos = servicios.filter(servicio => servicio.estado === 'ACTIVO');
-    
-    if (serviciosActivos.length === 0) {
+    const filtroNombre = document.getElementById('filtroNombre').value.toLowerCase();
+    const filtroTipo = document.getElementById('filtroTipo').value;
+    const filtroPrecio = document.getElementById('filtroPrecio') ? parseFloat(document.getElementById('filtroPrecio').value) : NaN;
+    const isAdmin = window.getUserInfo()?.tipo === 'ADMIN';
+    let serviciosFiltrados = serviciosGlobal.filter(servicio => {
+        const nombreMatch = servicio.nombre.toLowerCase().includes(filtroNombre);
+        const tipoMatch = !filtroTipo || (servicio.tipoServicio ? servicio.tipoServicio === filtroTipo : (servicio.tipo === filtroTipo));
+        const precioMatch = isNaN(filtroPrecio) || servicio.precioBase === filtroPrecio;
+        return servicio.estado === 'ACTIVO' && nombreMatch && tipoMatch && precioMatch;
+    });
+    if (serviciosFiltrados.length === 0) {
         container.innerHTML = `
             <div class="col-12">
                 <div class="alert alert-info">
-                    No hay servicios disponibles en este momento.
+                    No hay servicios que coincidan con el filtro.
                 </div>
             </div>
         `;
         return;
     }
-
-    console.log('Generando HTML para', serviciosActivos.length, 'servicios activos. isAdmin:', isAdmin);
-    
-    // Crear el HTML con formularios para la eliminación
-    container.innerHTML = serviciosActivos.map(servicio => `
+    container.innerHTML = serviciosFiltrados.map(servicio => `
         <div class="col-md-4 mb-4 servicio-card" id="servicio-${servicio.id}">
             <div class="card h-100">
                 <div class="card-body">
                     <h5 class="card-title">${servicio.nombre}</h5>
                     <p class="card-text">${servicio.descripcion}</p>
                     <div class="mb-2">
-                        <span class="badge bg-primary">${servicio.tipo === 'POR_HORA' ? 'Por Hora' : 'Por Cantidad'}</span>
+                        <span class="badge bg-primary">${servicio.tipoServicio ? servicio.tipoServicio : (servicio.tipo === 'POR_HORA' ? 'Por Hora' : 'Por Cantidad')}</span>
                     </div>
                     <p class="card-text">
                         <strong>Precio:</strong> $${servicio.precioBase.toFixed(2)}
@@ -131,27 +135,17 @@ function mostrarServicios(servicios, isAdmin) {
             </div>
         </div>
     `).join('');
-    
-    // Configurar eventos
     if (isAdmin) {
-        console.log('Configurando eventos para botones...');
-        
-        // Eventos para botones de editar
         document.querySelectorAll('.btn-editar').forEach(btn => {
             const id = btn.getAttribute('data-id');
             btn.addEventListener('click', function() {
-                console.log('Botón editar clickeado para ID:', id);
                 editarServicio(parseInt(id));
             });
         });
-        
-        // Eventos para botones de eliminar, usando el modal de confirmación
         document.querySelectorAll('.btn-eliminar').forEach(btn => {
             const id = parseInt(btn.getAttribute('data-id'));
             const nombre = btn.getAttribute('data-nombre');
-            
             btn.addEventListener('click', function() {
-                console.log('🌟 Botón eliminar clickeado para ID:', id);
                 confirmarEliminarServicio(id, nombre);
             });
         });
@@ -427,4 +421,12 @@ style.textContent = `
         transition: all 0.5s ease-out;
     }
 `;
-document.head.appendChild(style); 
+document.head.appendChild(style);
+
+// Listeners para los filtros
+['filtroNombre', 'filtroTipo', 'filtroPrecio'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+        el.addEventListener(id === 'filtroNombre' ? 'input' : 'change', mostrarServiciosFiltrados);
+    }
+});

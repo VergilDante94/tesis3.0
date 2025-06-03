@@ -12,7 +12,7 @@
 
     <!-- Bootstrap core CSS y Bootstrap Icons -->
     <link href="/css/bootstrap-5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/css/bootstrap-icons-1.7.2.css" rel="stylesheet">
     <link href="/css/styles.css" rel="stylesheet">
 </head>
 <body>
@@ -27,6 +27,31 @@
                         </button>
                     </div>
                     <div class="card-body">
+                        <!-- Filtros de servicios -->
+                        <div class="row mb-4">
+                            <div class="col-md-4 mb-2">
+                                <input type="text" id="filtroNombre" class="form-control" placeholder="Filtrar por nombre...">
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <select id="filtroDepartamento" class="form-select">
+                                    <option value="">Todos los departamentos</option>
+                                    <option value="Mantenimiento">Mantenimiento</option>
+                                    <option value="Reparación">Reparación</option>
+                                    <option value="Instalación">Instalación</option>
+                                    <option value="Consultoría">Consultoría</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <select id="filtroTipo" class="form-select">
+                                    <option value="">Todos los tipos</option>
+                                    <option value="Básico">Básico</option>
+                                    <option value="Estándar">Estándar</option>
+                                    <option value="Premium">Premium</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Fin filtros -->
+
                         <!-- Formulario de servicio -->
                         <form id="servicioForm" class="needs-validation mb-4" novalidate style="display: none;">
                             <div class="row">
@@ -131,6 +156,7 @@
     <script src="/js/auth.js"></script>
     <script>
         let servicioIdSeleccionado = null;
+        let serviciosGlobal = [];
         const eliminarModal = new bootstrap.Modal(document.getElementById('eliminarServicioModal'));
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -149,6 +175,11 @@
                     eliminarServicio(servicioIdSeleccionado);
                 }
             });
+
+            // Configurar filtros
+            document.getElementById('filtroNombre').addEventListener('input', mostrarServiciosFiltrados);
+            document.getElementById('filtroDepartamento').addEventListener('change', mostrarServiciosFiltrados);
+            document.getElementById('filtroTipo').addEventListener('change', mostrarServiciosFiltrados);
         });
 
         function cargarServicios() {
@@ -165,45 +196,8 @@
                 return response.json();
             })
             .then(servicios => {
-                serviciosList.innerHTML = '';
-                servicios.forEach(servicio => {
-                    const card = document.createElement('div');
-                    card.className = 'col-md-6 col-lg-4 mb-4';
-                    card.innerHTML = `
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">${servicio.nombre}</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">$${parseFloat(servicio.precioBase).toFixed(2)}</h6>
-                                <p class="card-text">${servicio.descripcion}</p>
-                                <div class="mb-2">
-                                    <span class="badge bg-primary">${servicio.departamento}</span>
-                                    <span class="badge bg-secondary">${servicio.tipoServicio}</span>
-                                </div>
-                            </div>
-                            <div class="card-footer bg-transparent border-top-0">
-                                <div class="d-flex justify-content-end gap-2">
-                                    <button class="btn btn-sm btn-outline-primary" onclick="editarServicio(${servicio.id})">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-danger" onclick="confirmarEliminar(${servicio.id})">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    serviciosList.appendChild(card);
-                });
-
-                if (servicios.length === 0) {
-                    serviciosList.innerHTML = `
-                        <div class="col-12">
-                            <div class="alert alert-info" role="alert">
-                                No hay servicios registrados. ¡Crea el primero!
-                            </div>
-                        </div>
-                    `;
-                }
+                serviciosGlobal = servicios;
+                mostrarServiciosFiltrados();
             })
             .catch(error => {
                 serviciosList.innerHTML = `
@@ -214,6 +208,60 @@
                     </div>
                 `;
             });
+        }
+
+        function mostrarServiciosFiltrados() {
+            const serviciosList = document.getElementById('serviciosList');
+            const filtroNombre = document.getElementById('filtroNombre').value.toLowerCase();
+            const filtroDepartamento = document.getElementById('filtroDepartamento').value;
+            const filtroTipo = document.getElementById('filtroTipo').value;
+
+            let serviciosFiltrados = serviciosGlobal.filter(servicio => {
+                const nombreMatch = servicio.nombre.toLowerCase().includes(filtroNombre);
+                const departamentoMatch = !filtroDepartamento || servicio.departamento === filtroDepartamento;
+                const tipoMatch = !filtroTipo || servicio.tipoServicio === filtroTipo;
+                return nombreMatch && departamentoMatch && tipoMatch;
+            });
+
+            serviciosList.innerHTML = '';
+            serviciosFiltrados.forEach(servicio => {
+                const card = document.createElement('div');
+                card.className = 'col-md-6 col-lg-4 mb-4';
+                card.innerHTML = `
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">${servicio.nombre}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">$${parseFloat(servicio.precioBase).toFixed(2)}</h6>
+                            <p class="card-text">${servicio.descripcion}</p>
+                            <div class="mb-2">
+                                <span class="badge bg-primary">${servicio.departamento}</span>
+                                <span class="badge bg-secondary">${servicio.tipoServicio}</span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-flex justify-content-end gap-2">
+                                <button class="btn btn-sm btn-outline-primary" onclick="editarServicio(${servicio.id})">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="confirmarEliminar(${servicio.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                serviciosList.appendChild(card);
+            });
+
+            if (serviciosFiltrados.length === 0) {
+                serviciosList.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-info" role="alert">
+                            No hay servicios que coincidan con el filtro.
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         function mostrarFormularioServicio() {
@@ -307,28 +355,34 @@
                 return response.json();
             })
             .then(() => {
-                eliminarModal.hide();
                 showStatusMessage('Servicio eliminado exitosamente');
                 cargarServicios();
             })
             .catch(error => {
-                eliminarModal.hide();
                 showStatusMessage(error.message, 'error');
+            })
+            .finally(() => {
+                eliminarModal.hide();
+                servicioIdSeleccionado = null;
             });
         }
 
         function showStatusMessage(message, type = 'success') {
-            const statusContainer = document.createElement('div');
-            statusContainer.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
-            statusContainer.style.zIndex = '1050';
-            statusContainer.innerHTML = `
+            const alertPlaceholder = document.getElementById('liveAlertPlaceholder');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-dismissible fade show alert-${type}`;
+            alert.role = 'alert';
+            alert.innerHTML = `
                 ${message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             `;
-            document.body.appendChild(statusContainer);
+            alertPlaceholder.appendChild(alert);
 
             setTimeout(() => {
-                statusContainer.remove();
+                alert.classList.remove('show');
+                setTimeout(() => {
+                    alertPlaceholder.removeChild(alert);
+                }, 150);
             }, 3000);
         }
     </script>
